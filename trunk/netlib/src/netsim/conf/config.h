@@ -1,0 +1,112 @@
+/**
+ * @file config.h
+ * Define user configurations
+ *
+ * @date Created on: Apr 16, 2011
+ * @author iizke
+ */
+
+#ifndef MYCONFIG_H_
+#define MYCONFIG_H_
+
+#include <stdio.h>
+#include "../../random.h"
+
+/*
+ * Definition of some constants used in type of RANDOM_CONF
+ */
+#define RANDOM_OTHER              1
+#define RANDOM_MARKOVIAN          2
+#define RANDOM_UNIFORM            3
+#define RANDOM_FILE               4
+#define RANDOM_BERNOULLI          5
+
+#define PROTOCOL_CSMA             0
+#define PROTOCOL_ONE_QUEUE        1
+
+/**
+ * Flow configuration is used to characterize a flow: what is its
+ * distribution, define some parameters.
+ */
+typedef struct random_config {
+  /// types of flow: RANDOM_MARKOVIAN, RANDOM_UNIFORM, RANDOM_FILE, RANDOM_OTHER.
+  int type;
+  /// used when type is RANDOM_MARKOVIAN
+  double lambda;
+  /// used for RANDOM_UNIFORM
+  double from;
+  /// used for RANDOM_UNIFORM
+  double to;
+  /// used for FLOW_BERNOULLI
+  double prob;
+  /// file name that storing the this flow when it is generated
+  FILE *to_file;
+  /// used when type is RANDOM_FILE
+  FILE *from_file;
+  /// Random Distribution of flow
+  RANDOM_DIST distribution;
+} RANDOM_CONF;
+
+/**
+ * Queue configuration
+ */
+typedef struct queue_config {
+  /// type of queue, now only support QUEUE_FIFO
+  int type;
+  /// number of servers in a system
+  int num_servers;
+  /// maximum number of clients allowing to wait in a system
+  int max_waiters;
+  /// file name used to store event of departure flow
+  FILE *out_file;
+} QUEUE_CONF;
+
+/**
+ * Define conditions of stopping program
+ */
+typedef struct stop_config {
+  /// Maximum time is allowed to run simulation
+  float max_time;
+  /// Maximum number of arrival events
+  int max_arrival;
+} STOP_CONF;
+
+typedef struct csma_conf {
+  /// slot time
+  double slot_time;
+  /// Collision time
+  double collision_time;
+  /// number of queues or station
+  int nstations;
+  /// Backoff
+  RANDOM_CONF backoff_conf;
+  /// persistent probability
+  RANDOM_CONF persistent_conf;
+  /// ratio: propagation / avg transmission time
+  /// double propagation;
+} CSMA_CONF;
+
+/**
+ * Configuration from user
+ */
+typedef struct config {
+  /// Configuration of arrival flow
+  RANDOM_CONF arrival_conf;
+  /// flow configuration of service time
+  RANDOM_CONF service_conf;
+  /// Configuration of queue system
+  QUEUE_CONF queue_conf;
+  /// Configuration of terminated conditions
+  STOP_CONF stop_conf;
+  /// Configuration of random library (IRAND, RANDLIB)
+  int random_lib;
+  /// CSMA configuration
+  CSMA_CONF csma_conf;
+  /// protocol: ONE_QUEUE or CSMA
+  int protocol;
+} CONFIG;
+
+int config_random_distribution (RANDOM_CONF *rc);
+int config_init (CONFIG *conf);
+int config_setup (CONFIG *conf);
+#endif /* MYCONFIG_H_ */

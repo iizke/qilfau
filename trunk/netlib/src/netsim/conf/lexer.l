@@ -1,0 +1,72 @@
+%{ 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "parser.h"
+%} 
+%option bison-bridge bison-locations
+
+DIGIT						[0-9]
+SIGN						"-"
+CHAR						[a-zA-Z_/]
+COMMENT 					"//"
+POINT						"."
+%% 
+\/\/[^\n]*\n				; 
+
+RANDOM_MARKOV				return R_MARKOV;
+RANDOM_UNIFORM				return R_UNF;
+RANDOM_FILE					return R_FILE;
+RANDOM_OTHER				return R_OTHER;
+ 
+arrival.type				return ARRIVAL_TYPE;
+arrival.lambda				return ARRIVAL_LAMBDA;
+arrival.from				return ARRIVAL_FROM;
+arrival.to					return ARRIVAL_TO;
+arrival.saveto				return ARRIVAL_SAVETO;
+arrival.loadfrom			return ARRIVAL_LOADFROM;
+
+queue.maxlength				return QUEUE_MAXLENGTH;
+queue.servers				return QUEUE_SERVERS;
+queue.type					return QUEUE_KIND;
+QUEUE_FIFO					return FIFO_QUEUE;
+service.type				return SERVICE_TYPE;
+service.lambda				return SERVICE_LAMBDA;
+service.to					return SERVICE_TO;
+service.from				return SERVICE_FROM;
+service.saveto				return SERVICE_SAVETO;
+service.loadfrom			return SERVICE_LOADFROM;
+departure.saveto			return DEPARTURE_SAVETO;
+
+stop.maxtime				return STOP_MAXTIME;
+stop.maxarrival				return STOP_MAXARRIVAL;
+
+csma.nstations				return CSMA_NSTATIONS;
+csma.probability			return CSMA_PROB;
+csma.slottime				return CSMA_SLOTTIME;
+csma.collision				return CSMA_COLLISION;
+csma.maxbackoff				return CSMA_MAXBACKOFF;
+
+protocol					return PROTOCOL;
+ONE_QUEUE					return PROTO_ONE_QUEUE;
+CSMA						return PROTO_CSMA;
+
+debug.error					return DEBUG_ERROR;
+debug.warning				return DEBUG_WARNING;
+debug.info					return DEBUG_INFO;
+libs.random					return LIBS_RANDOM;
+LIB_RANDOM_IRAND			return LIB_RAND_IRAND;
+LIB_RANDOM_RANDLIB			return LIB_RAND_RANDLIB;
+=							return EQ;
+;							return ENDLINE;
+yes							return YES;
+no							return NO;
+{SIGN}{DIGIT}+{POINT}{DIGIT}+		{yylval->dval = atof(yytext); return REALNUM;}
+{DIGIT}+{POINT}{DIGIT}+				{yylval->dval = atof(yytext); return REALNUM;}
+{SIGN}{DIGIT}+						{yylval->ival = atoi(yytext); return INTNUM;}
+{DIGIT}+							{yylval->ival = atoi(yytext); return INTNUM;}
+{CHAR}+[{CHAR}|{DIGIT}|{POINT}]*	{yylval->str = strdup(yytext); return STRING;}
+
+[ \t\n]+        			;       /* ignore whitespace */ 
+
+%% 
