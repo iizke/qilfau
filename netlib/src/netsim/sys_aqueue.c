@@ -13,8 +13,6 @@
 #include "../queues/fifo.h"
 #include "sys_aqueue.h"
 
-#define get_sys_state_from_ops(_ops) (container_of(_ops, SYS_STATE, ops))
-
 /**
  * Create new packet
  * @param state : System state

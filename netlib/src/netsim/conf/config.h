@@ -104,9 +104,15 @@ typedef struct config {
   CSMA_CONF csma_conf;
   /// protocol: ONE_QUEUE or CSMA
   int protocol;
+  /**
+   * Current simulation: used for handling signal SIGINT (we dont want to wait
+   * to long time, but also want to see the itermediate result
+   */
+  void *runtime_state;
 } CONFIG;
 
-int config_random_distribution (RANDOM_CONF *rc);
+int config_random_conf (RANDOM_CONF *rc);
 int config_init (CONFIG *conf);
 int config_setup (CONFIG *conf);
+int config_parse_file (char *file);
 #endif /* MYCONFIG_H_ */

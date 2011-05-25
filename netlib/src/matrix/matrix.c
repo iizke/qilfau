@@ -8,14 +8,14 @@
 #include "../error.h"
 #include "matrix.h"
 
-int matrix_get_row (MATRIX *, ROW *) {
+int matrix_get_row (MATRIX *m, ROW *r) {
   return SUCCESS;
 }
 
-int matrix_init (MATRIX *) {
+int matrix_init (MATRIX *m) {
   return SUCCESS;
 }
 
-int matrix_setup (FILE *) {
+int matrix_setup (FILE *f) {
   return SUCCESS;
 }

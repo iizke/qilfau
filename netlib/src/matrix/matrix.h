@@ -7,6 +7,7 @@
 
 #ifndef MATRIX_H_
 #define MATRIX_H_
+#include <stdio.h>
 
 typedef struct edge {
   int source;

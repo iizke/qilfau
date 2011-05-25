@@ -7,7 +7,10 @@
 
 #include <stdio.h>
 
+#include "netsim/netsim.h"
+
 int main (int nargs, char** args) {
   printf("hello \n");
+  netsim_start("/home/iizke/projects/netlib/src/netsim/conf/test.conf");
   return 0;
 }

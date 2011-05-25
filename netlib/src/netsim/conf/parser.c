@@ -68,7 +68,7 @@
 /* Copy the first part of user declarations.  */
 
 /* Line 189 of yacc.c  */
-#line 2 "../src/netsim/conf/parser.y"
+#line 2 "parser.y"
 
 //#include <math.h>
 #include <stdio.h>
@@ -81,7 +81,7 @@ CONFIG conf;
 
 
 /* Line 189 of yacc.c  */
-#line 85 "y.tab.c"
+#line 85 "parser.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -98,7 +98,7 @@ CONFIG conf;
 
 /* Enabling the token table.  */
 #ifndef YYTOKEN_TABLE
-# define YYTOKEN_TABLE 0
+# define YYTOKEN_TABLE 1
 #endif
 
 
@@ -208,12 +208,12 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 16 "../src/netsim/conf/parser.y"
+#line 16 "parser.y"
 char* str; int ival; double dval;
 
 
 /* Line 214 of yacc.c  */
-#line 217 "y.tab.c"
+#line 217 "parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -238,7 +238,7 @@ typedef struct YYLTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 242 "y.tab.c"
+#line 242 "parser.c"
 
 #ifdef short
 # undef short
@@ -1553,308 +1553,308 @@ yyreduce:
         case 6:
 
 /* Line 1455 of yacc.c  */
-#line 81 "../src/netsim/conf/parser.y"
+#line 81 "parser.y"
     { conf.arrival_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 82 "../src/netsim/conf/parser.y"
+#line 82 "parser.y"
     { conf.arrival_conf.type = RANDOM_MARKOVIAN; }
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 83 "../src/netsim/conf/parser.y"
+#line 83 "parser.y"
     { conf.arrival_conf.type = RANDOM_UNIFORM; }
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 84 "../src/netsim/conf/parser.y"
+#line 84 "parser.y"
     { conf.arrival_conf.type = RANDOM_FILE; }
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 85 "../src/netsim/conf/parser.y"
+#line 85 "parser.y"
     { conf.arrival_conf.type = RANDOM_OTHER; }
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 86 "../src/netsim/conf/parser.y"
+#line 86 "parser.y"
     { conf.arrival_conf.from = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 87 "../src/netsim/conf/parser.y"
+#line 87 "parser.y"
     { conf.arrival_conf.to = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 88 "../src/netsim/conf/parser.y"
+#line 88 "parser.y"
     { conf.arrival_conf.lambda = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 89 "../src/netsim/conf/parser.y"
+#line 89 "parser.y"
     { conf.arrival_conf.lambda = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 90 "../src/netsim/conf/parser.y"
+#line 90 "parser.y"
     { conf.arrival_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+"); }
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 91 "../src/netsim/conf/parser.y"
+#line 91 "parser.y"
     { conf.arrival_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r"); }
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 93 "../src/netsim/conf/parser.y"
+#line 93 "parser.y"
     { conf.queue_conf.max_waiters = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 94 "../src/netsim/conf/parser.y"
+#line 94 "parser.y"
     { conf.queue_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 95 "../src/netsim/conf/parser.y"
+#line 95 "parser.y"
     { conf.queue_conf.type = QUEUE_FIFO; }
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 96 "../src/netsim/conf/parser.y"
+#line 96 "parser.y"
     { conf.queue_conf.num_servers = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 97 "../src/netsim/conf/parser.y"
+#line 97 "parser.y"
     {conf.service_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 98 "../src/netsim/conf/parser.y"
+#line 98 "parser.y"
     {conf.service_conf.type = RANDOM_MARKOVIAN; }
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 99 "../src/netsim/conf/parser.y"
+#line 99 "parser.y"
     {conf.service_conf.type = RANDOM_UNIFORM; }
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 100 "../src/netsim/conf/parser.y"
+#line 100 "parser.y"
     {conf.service_conf.type = RANDOM_OTHER; }
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 101 "../src/netsim/conf/parser.y"
+#line 101 "parser.y"
     { conf.service_conf.from = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 102 "../src/netsim/conf/parser.y"
+#line 102 "parser.y"
     { conf.service_conf.to = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 103 "../src/netsim/conf/parser.y"
+#line 103 "parser.y"
     { conf.service_conf.lambda = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 104 "../src/netsim/conf/parser.y"
+#line 104 "parser.y"
     { conf.service_conf.lambda = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 105 "../src/netsim/conf/parser.y"
+#line 105 "parser.y"
     {conf.service_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+");}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 106 "../src/netsim/conf/parser.y"
+#line 106 "parser.y"
     {conf.service_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r");}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 108 "../src/netsim/conf/parser.y"
+#line 108 "parser.y"
     { conf.queue_conf.out_file = fopen((yyvsp[(3) - (3)].str), "w+");}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 109 "../src/netsim/conf/parser.y"
+#line 109 "parser.y"
     { conf.stop_conf.max_time = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 110 "../src/netsim/conf/parser.y"
+#line 110 "parser.y"
     { conf.stop_conf.max_arrival = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 112 "../src/netsim/conf/parser.y"
+#line 112 "parser.y"
     {conf.random_lib = LIB_RANDOM_IRAND; }
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 113 "../src/netsim/conf/parser.y"
+#line 113 "parser.y"
     {conf.random_lib = LIB_RANDOM_RANDLIB; }
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 115 "../src/netsim/conf/parser.y"
+#line 115 "parser.y"
     {debug |= LEVEL_ERROR; }
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 116 "../src/netsim/conf/parser.y"
+#line 116 "parser.y"
     {debug &= ~LEVEL_ERROR;}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 117 "../src/netsim/conf/parser.y"
+#line 117 "parser.y"
     {debug |= LEVEL_WARNING;}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 118 "../src/netsim/conf/parser.y"
+#line 118 "parser.y"
     {debug &= ~LEVEL_WARNING;}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 119 "../src/netsim/conf/parser.y"
+#line 119 "parser.y"
     {debug |= LEVEL_INFO;}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 120 "../src/netsim/conf/parser.y"
+#line 120 "parser.y"
     {debug &= ~LEVEL_INFO;}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 122 "../src/netsim/conf/parser.y"
+#line 122 "parser.y"
     {conf.csma_conf.nstations = (yyvsp[(3) - (3)].ival);}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 123 "../src/netsim/conf/parser.y"
+#line 123 "parser.y"
     {conf.csma_conf.persistent_conf.prob = (yyvsp[(3) - (3)].dval); conf.csma_conf.persistent_conf.type = RANDOM_BERNOULLI;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 124 "../src/netsim/conf/parser.y"
+#line 124 "parser.y"
     {conf.csma_conf.slot_time = (yyvsp[(3) - (3)].dval);}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 125 "../src/netsim/conf/parser.y"
+#line 125 "parser.y"
     {conf.csma_conf.collision_time = (yyvsp[(3) - (3)].dval);}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 126 "../src/netsim/conf/parser.y"
+#line 126 "parser.y"
     {conf.csma_conf.backoff_conf.to = (yyvsp[(3) - (3)].ival); conf.csma_conf.backoff_conf.from = 1; conf.csma_conf.backoff_conf.type = RANDOM_UNIFORM;}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 128 "../src/netsim/conf/parser.y"
+#line 128 "parser.y"
     {conf.protocol = PROTOCOL_CSMA; }
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 129 "../src/netsim/conf/parser.y"
+#line 129 "parser.y"
     {conf.protocol = PROTOCOL_ONE_QUEUE;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1858 "y.tab.c"
+#line 1858 "parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2073,7 +2073,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 131 "../src/netsim/conf/parser.y"
+#line 131 "parser.y"
 
 
 int yyerror (char *s)  /* Called by yyparse on error */
