@@ -6,13 +6,16 @@
  * @author iizke
  */
 
+#include <stdlib.h>
+#include <signal.h>
 #include <string.h>
-#include "netsim.h"
-#include "conf/parser.h"
 #include "../error.h"
 #include "../queues/fifo.h"
-//#include "sys_aqueue.h"
-//#include "csma.h"
+#include "conf/parser.h"
+#include "conf/config.h"
+#include "sys_aqueue.h"
+#include "csma.h"
+#include "netsim.h"
 
 extern CONFIG conf;
 extern long debug;
@@ -99,43 +102,54 @@ int pisas_sched (CONFIG *conf, SYS_STATE_OPS *sys_ops) {
   return SUCCESS;
 }
 
+static void netsim_print_result(CONFIG *conf) {
+  SYS_STATE *sys_state;
+  CSMA_STATE *csma_state;
+  int i = 0;
+  switch (conf->protocol) {
+    case PROTOCOL_ONE_QUEUE:
+      sys_state = get_sys_state_from_ops(((SYS_STATE_OPS*)conf->runtime_state));
+      print_measurement(&sys_state->measurement);
+      print_measurement(&((FIFO_QINFO*)(sys_state->queues.curr_queue->info))->measurement);
+      break;
+    case PROTOCOL_CSMA:
+      csma_state = get_csma_state_from_ops(((SYS_STATE_OPS*)conf->runtime_state));
+      print_measurement(&csma_state->measurement);
+      for (i=0; i<csma_state->nqueues; i++)
+        print_measurement(&((FIFO_QINFO*)(csma_state->queues[i].curr_queue->info))->measurement);
+      break;
+    default:
+      break;
+  }
+}
+
+static void netsim_sig_handler(int n, siginfo_t *info, void *data) {
+  netsim_print_result(&conf);
+  printf("Cleaning system ...\n");
+  ((SYS_STATE_OPS*)conf.runtime_state)->clean(&conf, conf.runtime_state);
+  printf("Stopping program ... Done\n");
+  exit(1);
+}
+
 /**
  * Main program. Do parse user configuration file, and run a chosen simulation
  * @param nargs : number of parameters
  * @param args : parameters
  * @return Error code (see more in def.h and error.h)
- *
-int start (int nargs, char** args) {
+ */
+int netsim_start (char *conf_file) {
   SYS_STATE sys_state;
   CSMA_STATE csma_state;
   SYS_STATE_OPS *ops = NULL;
-  int i = 0;
-
-  /**
-   * Initialize parameters of random, config, parse file configuration
-   *
+  struct sigaction ac;
+  ac.sa_sigaction = netsim_sig_handler;
+  ac.sa_flags = SA_SIGINFO;
+  sigaction(SIGINT, &ac, NULL);
+  sigaction(SIGTERM, &ac, NULL);
 
   random_init();
-  /*
-   * TEST PART
-   *
-  //test_gen_distribution();
-  //check_chisqr_pvalue();
-  //return 0;
-  /************************************************
-  if (nargs < 2) {
-    printf("We need configuration \n");
-    return -1;
-  }
+  try( config_parse_file (conf_file) );
 
-  config_init(&conf);
-  try( parse_file (args[1]) );
-  config_random_conf (&conf);
-
-  /**
-   * From user configuration, configure and initialize which module will
-   * be executed (CSMA or one-queue system)
-   *
   switch (conf.protocol) {
   case PROTOCOL_CSMA:
     csma_state_init (&csma_state, &conf);
@@ -149,23 +163,8 @@ int start (int nargs, char** args) {
     iprintf(LEVEL_WARNING, "This protocol is not supported right now \n");
     return SUCCESS;
   }
-
-  /// Start to do simulation
+  conf.runtime_state = ops;
   pisas_sched(&conf, ops);
-
-  /// Print out the measurement of simulation
-  switch (conf.protocol) {
-  case PROTOCOL_ONE_QUEUE:
-    print_measurement(&sys_state.measurement);
-    print_measurement(&((FIFO_QINFO*)(sys_state.queues.curr_queue->info))->measurement);
-    break;
-  case PROTOCOL_CSMA:
-    print_measurement(&csma_state.measurement);
-    for (i=0; i<csma_state.nqueues; i++)
-      print_measurement(&((FIFO_QINFO*)(csma_state.queues[i].curr_queue->info))->measurement);
-    break;
-  }
-
+  netsim_print_result(&conf);
   return SUCCESS;
 }
-*/

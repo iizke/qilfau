@@ -32,6 +32,8 @@ typedef struct sys_state {
   PACKET_LIST free_packets;
 } SYS_STATE;
 
+#define get_sys_state_from_ops(_ops) (container_of(_ops, SYS_STATE, ops))
+
 int sys_state_init (SYS_STATE *state, CONFIG *conf);
 
 #endif /* SYS_AQUEUE_H_ */

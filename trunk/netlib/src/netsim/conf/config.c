@@ -10,14 +10,17 @@
 
 #include "../../error.h"
 #include "../../random.h"
+#include "parser.h"
 #include "config.h"
+
+extern CONFIG conf;
 
 /**
  * Configure random distribution from parameters in RANDOM_CONFIG
  * @param rc : Random configuration
  * @return Error code (see more in def.h and error.h)
  */
-int config_random_distribution (RANDOM_CONF *rc) {
+int config_random_conf (RANDOM_CONF *rc) {
   switch (rc->type) {
   case RANDOM_MARKOVIAN:
     random_dist_init_exp0(&rc->distribution, &rc->lambda);
@@ -58,10 +61,10 @@ int config_init (CONFIG *conf) {
 int config_setup (CONFIG *conf) {
   extern int librand;
 
-  config_random_distribution(&conf->arrival_conf);
-  config_random_distribution(&conf->service_conf);
-  config_random_distribution(&conf->csma_conf.backoff_conf);
-  config_random_distribution(&conf->csma_conf.persistent_conf);
+  config_random_conf(&conf->arrival_conf);
+  config_random_conf(&conf->service_conf);
+  config_random_conf(&conf->csma_conf.backoff_conf);
+  config_random_conf(&conf->csma_conf.persistent_conf);
   librand = conf->random_lib;
   return SUCCESS;
 }
@@ -71,12 +74,15 @@ int config_setup (CONFIG *conf) {
  * @param f : file name
  * @return : Error code (see more in def.h and error.h)
  */
-int config_parse_file(char * const f) {
+int config_parse_file(char * f) {
   extern FILE *yyin;
   extern int yylex();
   extern int yyparse();
 
+  config_init(&conf);
   yyin = fopen(f, "r");
   yyparse();
+  config_setup(&conf);
+
   return SUCCESS;
 }

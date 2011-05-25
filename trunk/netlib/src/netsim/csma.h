@@ -32,6 +32,8 @@ typedef struct csma_state {
   PACKET_LIST free_packets;
 } CSMA_STATE;
 
+#define get_csma_state_from_ops(_ops) (container_of(_ops, CSMA_STATE, ops))
+
 /// Channel state is Busy
 #define CHANNEL_BUSY              1
 /// Channel state is Free

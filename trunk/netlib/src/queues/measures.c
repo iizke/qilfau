@@ -30,22 +30,22 @@ int measures_init (MEASURES *m) {
  */
 int print_measurement (MEASURES *m) {
   check_null_pointer(m);
-  printf("queue length          : mean %4.2f, var %4.2f, min %4.2f, max %4.2f\n",
+  printf("queue length          : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
       m->queue_len.avg,
       m->queue_len.var,
       m->queue_len.min,
       m->queue_len.max);
-  printf("waiting time          : mean %4.2f, var %4.2f, min %4.2f, max %4.2f\n",
+  printf("waiting time          : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
       m->waittime.avg,
       m->waittime.var,
       m->waittime.min,
       m->waittime.max);
-  printf("service time          : mean %4.2f, var %4.2f, min %4.2f, max %4.2f\n",
+  printf("service time          : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
       m->servtime.avg,
       m->servtime.var,
       m->servtime.min,
       m->servtime.max);
-  printf("inter-arrival time    : mean %4.2f, var %4.2f, min %4.2f, max %4.2f\n",
+  printf("inter-arrival time    : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
       m->interarrival_time.avg,
       m->interarrival_time.var,
       m->interarrival_time.min,

@@ -13,7 +13,6 @@
 #include "../random.h"
 #include "csma.h"
 
-#define get_csma_state_from_ops(_ops) (container_of(_ops, CSMA_STATE, ops))
 #define queue_state(qm) (((FIFO_QINFO*)(qm->curr_queue->info))->state)
 
 /**
