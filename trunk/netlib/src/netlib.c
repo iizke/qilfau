@@ -6,11 +6,16 @@
  */
 
 #include <stdio.h>
-
+#include "error.h"
 #include "netsim/netsim.h"
 
-int main (int nargs, char** args) {
+int check_netsim () {
   printf("hello \n");
   netsim_start("/home/iizke/projects/netlib/src/netsim/conf/test.conf");
   return 0;
+}
+
+int main (int nargs, char** args) {
+  check_netsim();
+  return SUCCESS;
 }

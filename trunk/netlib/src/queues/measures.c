@@ -23,6 +23,15 @@ int measures_init (MEASURES *m) {
   return SUCCESS;
 }
 
+#define print_statistical_value(_var_name,_var, _conf) { \
+    printf("%20s : mean %4.5f, var %4.5f, min %4.3f, max %4.3f, confidency %4.3f\n", \
+      _var_name, \
+      (_var)->avg, \
+      (_var)->var, \
+      (_var)->min, \
+      (_var)->max, \
+      stat_num_calc_confidence_interval(_var, _conf)); }
+
 /**
  * Print out to screen measured information
  * @param m : pointer to a MEASURES structure.
@@ -30,30 +39,14 @@ int measures_init (MEASURES *m) {
  */
 int print_measurement (MEASURES *m) {
   check_null_pointer(m);
-  printf("queue length          : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
-      m->queue_len.avg,
-      m->queue_len.var,
-      m->queue_len.min,
-      m->queue_len.max);
-  printf("waiting time          : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
-      m->waittime.avg,
-      m->waittime.var,
-      m->waittime.min,
-      m->waittime.max);
-  printf("service time          : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
-      m->servtime.avg,
-      m->servtime.var,
-      m->servtime.min,
-      m->servtime.max);
-  printf("inter-arrival time    : mean %4.5f, var %4.5f, min %4.3f, max %4.3f\n",
-      m->interarrival_time.avg,
-      m->interarrival_time.var,
-      m->interarrival_time.min,
-      m->interarrival_time.max);
-  printf("total arrival         : %d \n", (int)m->total_arrivals);
-  printf("total departure       : %d \n", (int)m->total_departures);
-  printf("total dropped         : %d \n", (int)m->total_dropped);
-  printf("total time            : %.3f \n", m->total_time);
+  print_statistical_value("queue length", &m->queue_len, 0.9);
+  print_statistical_value("waiting time", &m->waittime, 0.9);
+  print_statistical_value("service time", &m->servtime, 0.9);
+  print_statistical_value("inter-arrival time", &m->interarrival_time, 0.9);
+  printf("%20s : %d \n", "total arrival",(int)m->total_arrivals);
+  printf("%20s : %d \n","total departure", (int)m->total_departures);
+  printf("%20s : %d \n", "total dropped", (int)m->total_dropped);
+  printf("%20s : %.3f \n", "total time", m->total_time);
 
   return SUCCESS;
 }

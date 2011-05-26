@@ -11,6 +11,7 @@
 #include "stat_num.h"
 #include "error.h"
 #include "math.h"
+#include "quantile.h"
 
 /// Calculate minimum of two values
 #define min(a,b)  (a==0?b:(a<b?a:b))
@@ -71,6 +72,11 @@ int stat_num_new_time_sample (STAT_NUM *sn, float sample, float time) {
   sn->max = max(sn->max, sample);
   sn->last_time = time;
   return SUCCESS;
+}
+
+double stat_num_calc_confidence_interval (STAT_NUM *sn, double confidence) {
+  double c = get_normal_pvalue(confidence);
+  return c*sn->var/sqrt(sn->num_samples);
 }
 
 /**
