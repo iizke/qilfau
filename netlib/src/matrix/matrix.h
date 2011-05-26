@@ -12,7 +12,7 @@
 typedef struct edge {
   int source;
   int dest;
-  double weight;
+  void *data;
 } EDGE;
 
 typedef struct row {
@@ -26,6 +26,8 @@ typedef struct matrix {
 } MATRIX;
 
 int matrix_get_row (MATRIX *, ROW *);
-int matrix_init (MATRIX *);
+int matrix_init (MATRIX **);
 int matrix_setup (FILE *);
+int matrix_build_index(MATRIX *, int);
+void* matrix_get_value (MATRIX *, int, int);
 #endif /* MATRIX_H_ */
