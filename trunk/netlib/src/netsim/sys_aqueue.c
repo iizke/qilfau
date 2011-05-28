@@ -65,9 +65,14 @@ static int update_time (EVENT *e, SYS_STATE *state) {
  */
 EVENT* _generate_arrival (CONFIG *conf, SYS_STATE *state) {
   EVENT *e = NULL;
+  int error_code = SUCCESS;
   event_list_new_event(&state->future_events, &e);
   e->info.type = EVENT_ARRIVAL;
-  event_setup(e, &conf->arrival_conf, state->curr_time);
+  error_code = event_setup(e, &conf->arrival_conf, state->curr_time);
+  if (error_code < 0) {
+    free (e);
+    return NULL;
+  }
   event_list_insert_event(&state->future_events, e);
 
   return e;
@@ -102,8 +107,12 @@ int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
   STOP_CONF *stop_conf = &conf->stop_conf;
   if (stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time)
     return 0;
-  if (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival)
+  if (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) {
+    conf->arrival_conf.type = RANDOM_OTHER;
+    if (!event_list_is_empty(&state->future_events))
+      return 1;
     return 0;
+  }
   if ((conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))
     return 0;
   return 1;
@@ -174,7 +183,11 @@ int _process_arrival (EVENT *e, CONFIG *conf, SYS_STATE *state) {
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   qt->push_packet(qt, packet);
   measurement_collect_data(&state->measurement, packet, state->curr_time);
+  if (packet->info.state == PACKET_STATE_DROPPED)
+    _free_packet(state, packet);
+
   _generate_arrival(conf, state);
+
   if (qt->is_idle(qt))
     _process_packet(conf, state);
 
