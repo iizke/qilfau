@@ -36,4 +36,6 @@ typedef struct statistical_number {
 int stat_num_new_sample (STAT_NUM *snum, float sample);
 int stat_num_new_time_sample (STAT_NUM *sn, float sample, float time);
 int stat_num_init (STAT_NUM *snum);
+double stat_num_calc_confidence_interval (STAT_NUM *sn, double confidence);
+
 #endif /* STAT_NUM_H_ */

@@ -47,7 +47,7 @@ extern long debug;
 #define check_null_pointer(_p)                            \
   {                                                       \
     if (!_p) {                                            \
-      iprintf(LEVEL_ERROR, "NULL pointer\n");             \
+      iprintf(LEVEL_WARNING, "NULL pointer\n");             \
       return ERR_POINTER_NULL;                            \
     }                                                     \
   }
@@ -68,5 +68,6 @@ extern long debug;
 #define ERR_EVENT_TYPE_FAIL         (-19)
 /// Error when packet state is not correct
 #define ERR_PACKET_STATE_WRONG      (-20)
-
+/// Error while inconsistent happen in simulating CSMA
+#define ERR_CSMA_INCONSISTENT       (-30)
 #endif /* ERROR_H_ */

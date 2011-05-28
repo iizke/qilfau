@@ -16,6 +16,18 @@
 #define queue_state(qm) (((FIFO_QINFO*)(qm->curr_queue->info))->state)
 
 /**
+ * Remove an event out of event list
+ * @param ops : Abstract system operations
+ * @param e : Event
+ * @return Error code (more in def.h and error.h)
+ */
+int csma_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
+  CSMA_STATE *state = get_csma_state_from_ops(ops);
+  try (event_list_remove_event(&state->future_events, e) );
+  return SUCCESS;
+}
+
+/**
  * Update system time.
  * @param e : Event
  * @param state : system state
@@ -27,7 +39,7 @@ static int csma_update_time (EVENT *e, CSMA_STATE *state) {
   if (state->curr_time.real <= e->info.time.real)
     state->curr_time.real = e->info.time.real;
   else {
-    iprintf(LEVEL_WARNING, "Event is late, may be FES is not sorted \n");
+    iprintf(LEVEL_ERROR, "Event is late, may be FES is not sorted \n");
     return ERR_EVENT_TIME_WRONG;
   }
   return SUCCESS;
@@ -43,6 +55,7 @@ static int csma_new_packet (CSMA_STATE *state, PACKET **p) {
   try ( packet_list_new_packet(&state->free_packets, p) );
   return SUCCESS;
 }
+
 /**
  * Free a packet. This action is controlled by program to have a good performance
  * by avoiding free/malloc operations frequently
@@ -65,17 +78,32 @@ static int csma_free_packet (CSMA_STATE *state, PACKET *p) {
 EVENT* csma_generate_arrival(CONFIG *conf, CSMA_STATE *state) {
   EVENT *e = NULL;
   PACKET *packet = NULL;
+  int error_code = SUCCESS;
 
-  event_list_new_event(&state->future_events, &e);
+  //iprintf(LEVEL_ERROR, "Gen Arrival Event\n");
+
+  if (event_list_new_event(&state->future_events, &e) < 0)
+    return NULL;
   e->info.type = EVENT_ARRIVAL;
-  event_setup(e, &conf->arrival_conf, state->curr_time);
+  error_code = event_setup(e, &conf->arrival_conf, state->curr_time);
+  if (error_code < 0) {
+    free (e);
+    return NULL;
+  }
   csma_new_packet(state, &packet);
+  if (!packet) {
+    csma_remove_event(&state->ops, e);
+    iprintf(LEVEL_WARNING, "Cannot allocate new packet \n");
+    return NULL;
+  }
   e->info.packet = packet;
   packet->info.atime.real = e->info.time.real;
   packet->info.state = PACKET_STATE_IN;
+  packet->info.queue = NULL;
   event_list_insert_event(&state->future_events, e);
   return e;
 }
+
 /**
  * Generate new end-service event.
  * @param p : Processing packet (for this event)
@@ -85,7 +113,13 @@ EVENT* csma_generate_arrival(CONFIG *conf, CSMA_STATE *state) {
  */
 EVENT * csma_generate_end_service(PACKET *p, CONFIG *conf, CSMA_STATE *state) {
   EVENT *e = NULL;
-  event_list_new_event(&state->future_events, &e);
+
+  if (!p) {
+    iprintf(LEVEL_ERROR, "BUG! Cannot generate end-service event because packet is null \n");
+    return NULL;
+  }
+  if (event_list_new_event(&state->future_events, &e) < 0)
+    return NULL;
   e->info.type = EVENT_END_SERVICE;
   e->info.packet = p;
   event_setup(e, &conf->service_conf, state->curr_time);
@@ -95,6 +129,7 @@ EVENT * csma_generate_end_service(PACKET *p, CONFIG *conf, CSMA_STATE *state) {
   state->channel_state = CHANNEL_BUSY;
   return e;
 }
+
 /**
  * Generate new tentative access event.
  * @param p : Processing packet (for this event)
@@ -106,7 +141,12 @@ EVENT * csma_generate_end_service(PACKET *p, CONFIG *conf, CSMA_STATE *state) {
 static EVENT * csma_generate_access_nopersistent (PACKET *p, double collision_time, CONFIG *conf, CSMA_STATE *state) {
   EVENT *e = NULL;
   int backoff = 0;
-  event_list_new_event(&state->future_events, &e);
+  if (!p) {
+    iprintf(LEVEL_ERROR, "BUG! Queue is persistent but no waiting packet !\n");
+    //exit(1);
+  }
+  if (event_list_new_event(&state->future_events, &e) < 0)
+    return NULL;
   e->info.type = EVENT_ACCESS_CHANNEL;
   e->info.packet = p;
   backoff = random_dist_gen((&conf->csma_conf.backoff_conf.distribution));
@@ -116,6 +156,7 @@ static EVENT * csma_generate_access_nopersistent (PACKET *p, double collision_ti
     p->info.ctime.real = e->info.time.real;
 
   event_list_insert_event(&state->future_events, e);
+
   return e;
 }
 
@@ -134,9 +175,14 @@ EVENT * csma_generate_access(PACKET *p, CONFIG *conf, CSMA_STATE *state) {
   if (persistent == 0)
     e = csma_generate_access_nopersistent(p, 0, conf, state);
   else {
-    ((FIFO_QINFO*)(p->info.queue->info))->state = QUEUE_STATE_PERSISTENT;
-    if (p->info.ctime.real == 0)
-      p->info.ctime.real = state->curr_time.real;
+    QUEUE_TYPE *qt = p->info.queue;
+    if (qt->get_waiting_length(qt) == 0) {
+      iprintf(LEVEL_ERROR, "BUG! Generate access with persistent but no waiting packet \n");
+    } else {
+      ((FIFO_QINFO*)(p->info.queue->info))->state = QUEUE_STATE_PERSISTENT;
+      if (p->info.ctime.real == 0)
+        p->info.ctime.real = state->curr_time.real;
+    }
   }
 
   return e;
@@ -153,9 +199,10 @@ EVENT * csma_generate_collision(PACKET *p, CONFIG *conf, CSMA_STATE *state) {
   EVENT *e = NULL;
   event_list_new_event(&state->future_events, &e);
   e->info.type = EVENT_END_COLLISION;
-  e->info.packet = p;
+  e->info.packet = NULL;
   e->info.time.real = state->curr_time.real + conf->csma_conf.collision_time;
   event_list_insert_event(&state->future_events, e);
+
   return e;
 }
 
@@ -170,7 +217,14 @@ static int csma_process_a_packet (QUEUE_TYPE *qt, CONFIG *conf, CSMA_STATE *stat
   EVENT *e = NULL;
   PACKET *p = NULL;
   qt->select_waiting_packet(qt, &p);
+  if (p == NULL) {
+    iprintf(LEVEL_ERROR, "BUG! There is no waiting packet but still have to process it\n");
+    return ERR_POINTER_NULL;
+  }
+
+  state->channel_state = CHANNEL_BUSY;
   p->info.stime.real = state->curr_time.real;
+  ((FIFO_QINFO*)(qt->info))->state = QUEUE_STATE_TRANSFERING;
   qt->process_packet(qt, p);
   measurement_collect_data(&state->measurement, p, state->curr_time);
   e = csma_generate_end_service (p, conf, state);
@@ -191,10 +245,10 @@ static int csma_process_a_packet (QUEUE_TYPE *qt, CONFIG *conf, CSMA_STATE *stat
 int csma_process_access_event(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
   if (state->channel_state == CHANNEL_BUSY)
     csma_generate_access(e->info.packet, conf, state);
-  else
+  else {
     /// If channel is idle/free then occuppy the channel
     csma_process_a_packet(e->info.packet->info.queue, conf, state);
-
+  }
   return SUCCESS;
 }
 
@@ -211,16 +265,20 @@ int csma_process_arrival(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
   QUEUE_TYPE *qt = state->queues[station].curr_queue;
 
   try ( csma_update_time(e, state) );
-  measurement_collect_data(&state->measurement, packet, state->curr_time);
-  qt->push_packet(qt, packet);
-  measurement_collect_data(&state->measurement, packet, state->curr_time);
-
   // generate next arrival event
   csma_generate_arrival(conf, state);
 
-  if (qt->is_idle(qt)) {
+  measurement_collect_data(&state->measurement, packet, state->curr_time);
+  qt->push_packet(qt, packet);
+  measurement_collect_data(&state->measurement, packet, state->curr_time);
+  if (packet->info.state == PACKET_STATE_DROPPED) {
+    csma_free_packet(state, packet);
+    return SUCCESS;
+  }
+
+  if ((qt->get_waiting_length(qt) == 0) && (qt->is_idle(qt))) {
     // process packet
-    e->info.type = EVENT_ACCESS_CHANNEL;
+    //e->info.type = EVENT_ACCESS_CHANNEL;
     csma_process_access_event(e, conf, state);
   }
   return SUCCESS;
@@ -237,7 +295,15 @@ static int csma_count_persistent_queue(CONFIG *conf, CSMA_STATE *state, QUEUE_TY
   int i = 0;
   int sum = 0;
   for (i = 0; i < conf->csma_conf.nstations; i++) {
-    if (((FIFO_QINFO*)state->queues[i].curr_queue->info)->state == QUEUE_STATE_PERSISTENT) {
+    QUEUE_TYPE *qt = state->queues[i].curr_queue;
+    if (((FIFO_QINFO*)qt->info)->state == QUEUE_STATE_PERSISTENT) {
+      if (qt->get_waiting_length(qt) <= 0) {
+        iprintf(LEVEL_ERROR, "BUG! Queue in state Persistent while no waiting packet \n");
+        ((FIFO_QINFO*)qt->info)->state = QUEUE_STATE_NOPERSISTENT;
+        continue;
+        //exit(1);
+        //return ERR_CSMA_INCONSISTENT;
+      }
       sum++;
       *persistent_q = state->queues[i].curr_queue;
     }
@@ -261,7 +327,7 @@ int csma_process_collision(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
   persistent_count = csma_count_persistent_queue(conf, state, &qt);
     // if the station still has waiting packets, then ...
   if (persistent_count > 1){
-    // now is collision -> create collision event to all  persistent queues
+    // now is collision again -> create collision event to all  persistent queues
     int i = 0;
     EVENT *collsion = csma_generate_collision(NULL, conf, state);
     double collision_time = collsion->info.time.real - state->curr_time.real;
@@ -269,6 +335,7 @@ int csma_process_collision(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
 
     for (i=0; i < conf->csma_conf.nstations; i++) {
       qt = state->queues[i].curr_queue;
+      packet = NULL;
       if (queue_state((&state->queues[i])) == QUEUE_STATE_PERSISTENT) {
         queue_state((&state->queues[i])) = QUEUE_STATE_NOPERSISTENT;
         qt->get_waiting_packet(qt, &packet);
@@ -277,7 +344,7 @@ int csma_process_collision(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
       }
     }
   }else if (persistent_count == 1) {
-      csma_process_a_packet(qt, conf, state);
+    csma_process_a_packet(qt, conf, state);
   }
 
   return SUCCESS;
@@ -298,6 +365,7 @@ int csma_process_end_service(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
   qt->finish_packet(qt, packet);
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   try ( csma_free_packet(state, packet) );
+  ((FIFO_QINFO*)qt->info)->state = QUEUE_STATE_NOPERSISTENT;
   if (qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0))
     ((FIFO_QINFO*)qt->info)->state = QUEUE_STATE_PERSISTENT;
 
@@ -375,17 +443,6 @@ int csma_get_next_event (SYS_STATE_OPS *ops, EVENT **e) {
   event_list_get_first(&state->future_events, e);
   return SUCCESS;
 }
-/**
- * Remove an event out of event list
- * @param ops : Abstract system operations
- * @param e : Event
- * @return Error code (more in def.h and error.h)
- */
-int csma_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
-  CSMA_STATE *state = get_csma_state_from_ops(ops);
-  try (event_list_remove_event(&state->future_events, e) );
-  return SUCCESS;
-}
 
 /**
  * Check whether system should be stopped or not.
@@ -395,16 +452,22 @@ int csma_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
  */
 int csma_allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
   CSMA_STATE *state = get_csma_state_from_ops(ops);
-
   STOP_CONF *stop_conf = &conf->stop_conf;
+
   if (stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time)
     return 0;
-  if (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival)
-    return 0;
+  if (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) {
+    // stop generating arrival-event
+    conf->arrival_conf.type = RANDOM_OTHER;
+    if (event_list_is_empty(&state->future_events))
+      return 0;
+    return 1;
+  }
   if ((conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))
     return 0;
   return 1;
 }
+
 /**
  * Clean the system.
  * @param conf : user configuration
@@ -427,12 +490,14 @@ static int csma_system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
     free(p);
   }
 
-  for (i = 0; i < conf->csma_conf.nstations; i++) {
-    free(state->queues[i].curr_queue);
-  }
+//  for (i = 0; i < conf->csma_conf.nstations; i++) {
+//    free(state->queues[i].curr_queue);
+//  }
+  free(state->queues[0].curr_queue);
   free(state->queues);
   return SUCCESS;
 }
+
 /**
  * Initialize CSMA system state
  * @param state : system state
@@ -455,12 +520,15 @@ int csma_state_init (CSMA_STATE *state, CONFIG *conf) {
   if (!state->queues)
     return ERR_MALLOC_FAIL;
 
+  ffq = malloc (sizeof(QUEUE_TYPE) * state->nqueues);
+  if (!ffq)
+    return ERR_MALLOC_FAIL;
+
   for (i = 0; i < conf->csma_conf.nstations; i++) {
-    ffq = NULL;
     queue_man_init(&state->queues[i]);
-    fifo_init(&ffq, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
-    queue_man_register_new_type(&state->queues[i], ffq);
-    state->queues[i].curr_queue = ffq;
+    fifo_setup(&ffq[i], conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
+    queue_man_register_new_type(&state->queues[i], &ffq[i]);
+    state->queues[i].curr_queue = &ffq[i];
     queue_man_activate_type(&state->queues[i], conf->queue_conf.type);
   }
 

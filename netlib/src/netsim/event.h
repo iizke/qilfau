@@ -32,7 +32,7 @@ typedef struct event {
   LINKED_LIST list_node;
   /// Event information
   EVENTINFO info;
-  int (*process) (void *, ...);
+  //int (*process) (void *, ...);
 } EVENT;
 
 /**

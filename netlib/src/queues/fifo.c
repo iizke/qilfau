@@ -38,7 +38,7 @@ static int ff_is_idle (QUEUE_TYPE *q) {
   FIFO_QINFO *fq = NULL;
   check_null_pointer(q);
   fq = (FIFO_QINFO*)q->info;
-  return  (fq->max_executing < 0) ? 1 : (fq->executing_packets.size < fq->max_executing);
+  return  (fq->max_executing < 0) ? 1 : ((fq->executing_packets.size < fq->max_executing) ? 1 : 0);
 }
 
 /**

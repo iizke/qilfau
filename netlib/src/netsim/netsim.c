@@ -165,6 +165,7 @@ int netsim_start (char *conf_file) {
   }
   conf.runtime_state = ops;
   pisas_sched(&conf, ops);
+
   netsim_print_result(&conf);
   return SUCCESS;
 }
