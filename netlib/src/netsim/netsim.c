@@ -102,6 +102,10 @@ int pisas_sched (CONFIG *conf, SYS_STATE_OPS *sys_ops) {
   return SUCCESS;
 }
 
+/**
+ * Print out result of measurement of simulation
+ * @param conf : User configuration
+ */
 static void netsim_print_result(CONFIG *conf) {
   SYS_STATE *sys_state;
   CSMA_STATE *csma_state;
@@ -123,6 +127,13 @@ static void netsim_print_result(CONFIG *conf) {
   }
 }
 
+/**
+ * Signal handler (SIGINT and SIGTERM) used whenever main process is stopped by
+ * user (normally with Ctrl+C).
+ * @param n : interrupt number (no use)
+ * @param info : signal information (no use)
+ * @param data : context data (no use)
+ */
 static void netsim_sig_handler(int n, siginfo_t *info, void *data) {
   netsim_print_result(&conf);
   printf("Cleaning system ...\n");

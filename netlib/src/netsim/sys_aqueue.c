@@ -105,16 +105,21 @@ int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
   SYS_STATE *state = get_sys_state_from_ops(ops);
 
   STOP_CONF *stop_conf = &conf->stop_conf;
-  if (stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time)
-    return 0;
-  if (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) {
-    conf->arrival_conf.type = RANDOM_OTHER;
-    if (!event_list_is_empty(&state->future_events))
-      return 1;
+  if ((stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time) ||
+      (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) ||
+      ((conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))) {
+    if (conf->stop_conf.queue_zero == STOP_QUEUE_ZERO) {
+      QUEUE_TYPE *qt = NULL;
+      qt = state->queues.curr_queue;
+      if (qt->get_waiting_length(qt) > 0)
+        return 1;
+    } else {
+      conf->arrival_conf.type = RANDOM_OTHER;
+      if (!event_list_is_empty(&state->future_events))
+        return 1;
+    }
     return 0;
   }
-  if ((conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))
-    return 0;
   return 1;
 }
 

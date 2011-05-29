@@ -50,6 +50,7 @@ int config_init (CONFIG *conf) {
   check_null_pointer(conf);
   memset(conf, 0, sizeof(CONFIG));
   conf->random_lib = LIB_RANDOM_IRAND;
+  conf->stop_conf.queue_zero = STOP_QUEUE_ZERO;
   return SUCCESS;
 }
 

@@ -24,6 +24,9 @@
 #define PROTOCOL_CSMA             0
 #define PROTOCOL_ONE_QUEUE        1
 
+#define STOP_QUEUE_ZERO           0
+#define STOP_QUEUE_NONZERO        1
+
 /**
  * Flow configuration is used to characterize a flow: what is its
  * distribution, define some parameters.
@@ -69,6 +72,8 @@ typedef struct stop_config {
   float max_time;
   /// Maximum number of arrival events
   int max_arrival;
+  /// Stop when queue length is zero
+  int queue_zero;
 } STOP_CONF;
 
 typedef struct csma_conf {
