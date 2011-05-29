@@ -40,6 +40,7 @@ departure.saveto			return DEPARTURE_SAVETO;
 
 stop.maxtime				return STOP_MAXTIME;
 stop.maxarrival				return STOP_MAXARRIVAL;
+stop.queuezero				return STOP_QUEUEZERO;
 
 csma.nstations				return CSMA_NSTATIONS;
 csma.probability			return CSMA_PROB;

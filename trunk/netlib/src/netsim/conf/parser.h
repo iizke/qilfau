@@ -58,31 +58,32 @@
      DEPARTURE_SAVETO = 274,
      STOP_MAXTIME = 275,
      STOP_MAXARRIVAL = 276,
-     CSMA_NSTATIONS = 277,
-     CSMA_PROB = 278,
-     CSMA_MAXBACKOFF = 279,
-     CSMA_COLLISION = 280,
-     CSMA_SLOTTIME = 281,
-     PROTOCOL = 282,
-     PROTO_CSMA = 283,
-     PROTO_ONE_QUEUE = 284,
-     LIBS_RANDOM = 285,
-     LIB_RAND_IRAND = 286,
-     LIB_RAND_RANDLIB = 287,
-     R_MARKOV = 288,
-     R_UNF = 289,
-     R_FILE = 290,
-     R_OTHER = 291,
-     DEBUG_ERROR = 292,
-     DEBUG_WARNING = 293,
-     DEBUG_INFO = 294,
-     YES = 295,
-     NO = 296,
-     EQ = 297,
-     ENDLINE = 298,
-     REALNUM = 299,
-     INTNUM = 300,
-     STRING = 301
+     STOP_QUEUEZERO = 277,
+     CSMA_NSTATIONS = 278,
+     CSMA_PROB = 279,
+     CSMA_MAXBACKOFF = 280,
+     CSMA_COLLISION = 281,
+     CSMA_SLOTTIME = 282,
+     PROTOCOL = 283,
+     PROTO_CSMA = 284,
+     PROTO_ONE_QUEUE = 285,
+     LIBS_RANDOM = 286,
+     LIB_RAND_IRAND = 287,
+     LIB_RAND_RANDLIB = 288,
+     R_MARKOV = 289,
+     R_UNF = 290,
+     R_FILE = 291,
+     R_OTHER = 292,
+     DEBUG_ERROR = 293,
+     DEBUG_WARNING = 294,
+     DEBUG_INFO = 295,
+     YES = 296,
+     NO = 297,
+     EQ = 298,
+     ENDLINE = 299,
+     REALNUM = 300,
+     INTNUM = 301,
+     STRING = 302
    };
 #endif
 /* Tokens.  */
@@ -105,31 +106,32 @@
 #define DEPARTURE_SAVETO 274
 #define STOP_MAXTIME 275
 #define STOP_MAXARRIVAL 276
-#define CSMA_NSTATIONS 277
-#define CSMA_PROB 278
-#define CSMA_MAXBACKOFF 279
-#define CSMA_COLLISION 280
-#define CSMA_SLOTTIME 281
-#define PROTOCOL 282
-#define PROTO_CSMA 283
-#define PROTO_ONE_QUEUE 284
-#define LIBS_RANDOM 285
-#define LIB_RAND_IRAND 286
-#define LIB_RAND_RANDLIB 287
-#define R_MARKOV 288
-#define R_UNF 289
-#define R_FILE 290
-#define R_OTHER 291
-#define DEBUG_ERROR 292
-#define DEBUG_WARNING 293
-#define DEBUG_INFO 294
-#define YES 295
-#define NO 296
-#define EQ 297
-#define ENDLINE 298
-#define REALNUM 299
-#define INTNUM 300
-#define STRING 301
+#define STOP_QUEUEZERO 277
+#define CSMA_NSTATIONS 278
+#define CSMA_PROB 279
+#define CSMA_MAXBACKOFF 280
+#define CSMA_COLLISION 281
+#define CSMA_SLOTTIME 282
+#define PROTOCOL 283
+#define PROTO_CSMA 284
+#define PROTO_ONE_QUEUE 285
+#define LIBS_RANDOM 286
+#define LIB_RAND_IRAND 287
+#define LIB_RAND_RANDLIB 288
+#define R_MARKOV 289
+#define R_UNF 290
+#define R_FILE 291
+#define R_OTHER 292
+#define DEBUG_ERROR 293
+#define DEBUG_WARNING 294
+#define DEBUG_INFO 295
+#define YES 296
+#define NO 297
+#define EQ 298
+#define ENDLINE 299
+#define REALNUM 300
+#define INTNUM 301
+#define STRING 302
 
 
 
@@ -144,7 +146,7 @@ char* str; int ival; double dval;
 
 
 /* Line 1676 of yacc.c  */
-#line 148 "parser.h"
+#line 150 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

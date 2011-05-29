@@ -37,6 +37,7 @@ CONFIG conf;
 
 %token STOP_MAXTIME;
 %token STOP_MAXARRIVAL;
+%token STOP_QUEUEZERO;
 
 %token CSMA_NSTATIONS;
 %token CSMA_PROB;
@@ -108,6 +109,8 @@ exp:      ARRIVAL_TYPE EQ INTNUM { conf.arrival_conf.type = $3; }
 		| DEPARTURE_SAVETO EQ STRING { conf.queue_conf.out_file = fopen($3, "w+");}
 		| STOP_MAXTIME EQ INTNUM { conf.stop_conf.max_time = $3; }
 		| STOP_MAXARRIVAL EQ INTNUM { conf.stop_conf.max_arrival = $3; }
+		| STOP_QUEUEZERO EQ YES {conf.stop_conf.queue_zero = STOP_QUEUE_ZERO; }
+		| STOP_QUEUEZERO EQ NO {conf.stop_conf.queue_zero = STOP_QUEUE_NONZERO; }
 		
 		| LIBS_RANDOM EQ LIB_RAND_IRAND {conf.random_lib = LIB_RANDOM_IRAND; }
 		| LIBS_RANDOM EQ LIB_RAND_RANDLIB {conf.random_lib = LIB_RANDOM_RANDLIB; }

@@ -1,5 +1,6 @@
 /**
  * @file quantile.h
+ * Support quantile of essential distributions
  *
  * @date Created on: May 26, 2011
  * @author iizke
@@ -8,6 +9,7 @@
 #ifndef QUANTILE_H_
 #define QUANTILE_H_
 
+/// Quantile pvalue of chi-square distribution
 static double chisqr_pvalues[][11] =
 {
 ///p_value
@@ -40,6 +42,7 @@ static double chisqr_pvalues[][11] =
 
 #define get_chisqr_pvalue(_d, _p)  (chisqr_pvalues[_d - 1][pvalue_chi_id(_p)])
 
+/// Pvalue (quantile) of standard normal distribution
 static double normal_pvalues[] =
 {
 //   0.9      0.95    0.975    0.99    0.995   0.999

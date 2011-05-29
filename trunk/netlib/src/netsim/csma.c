@@ -276,7 +276,7 @@ int csma_process_arrival(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
     return SUCCESS;
   }
 
-  if ((qt->get_waiting_length(qt) == 0) && (qt->is_idle(qt))) {
+  if ((qt->get_waiting_length(qt) == 1) && (qt->is_idle(qt))) {
     // process packet
     //e->info.type = EVENT_ACCESS_CHANNEL;
     csma_process_access_event(e, conf, state);
@@ -454,17 +454,25 @@ int csma_allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
   CSMA_STATE *state = get_csma_state_from_ops(ops);
   STOP_CONF *stop_conf = &conf->stop_conf;
 
-  if (stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time)
+  if ((stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time) ||
+      (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) ||
+      ((conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file))) ) {
+    if (conf->stop_conf.queue_zero == STOP_QUEUE_ZERO) {
+      int i = 0;
+      QUEUE_TYPE *qt = NULL;
+      for (i=0; i<state->nqueues;i++) {
+        qt = state->queues[i].curr_queue;
+        if (qt->get_waiting_length(qt) > 0)
+          return 1;
+      }
+    } else {
+      // stop generating arrival-event
+      conf->arrival_conf.type = RANDOM_OTHER;
+      if (!event_list_is_empty(&state->future_events))
+        return 1;
+    }
     return 0;
-  if (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) {
-    // stop generating arrival-event
-    conf->arrival_conf.type = RANDOM_OTHER;
-    if (event_list_is_empty(&state->future_events))
-      return 0;
-    return 1;
   }
-  if ((conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))
-    return 0;
   return 1;
 }
 
@@ -476,7 +484,6 @@ int csma_allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
  */
 static int csma_system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
   CSMA_STATE *state = get_csma_state_from_ops(ops);
-  int i = 0;
 
   if (conf->arrival_conf.to_file)
     fclose(conf->arrival_conf.to_file);
@@ -490,9 +497,6 @@ static int csma_system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
     free(p);
   }
 
-//  for (i = 0; i < conf->csma_conf.nstations; i++) {
-//    free(state->queues[i].curr_queue);
-//  }
   free(state->queues[0].curr_queue);
   free(state->queues);
   return SUCCESS;
