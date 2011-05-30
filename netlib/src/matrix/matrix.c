@@ -8,7 +8,7 @@
 #include "../error.h"
 #include "matrix.h"
 
-int matrix_get_row (MATRIX *m, ROW *r) {
+int matrix_get_row (MATRIX *m, int row, ROW **r) {
   return SUCCESS;
 }
 
