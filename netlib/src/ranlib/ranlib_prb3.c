@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
+
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 
 extern void pr_ans( float av, float avtr, float var, float vartr,

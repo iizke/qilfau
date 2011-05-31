@@ -11,6 +11,7 @@ SIGN						"-"
 CHAR						[a-zA-Z_/]
 COMMENT 					"//"
 POINT						"."
+FCHAR						({CHAR}|{POINT}|{DIGIT})
 %% 
 \/\/[^\n]*\n				; 
 
@@ -66,7 +67,8 @@ no							return NO;
 {DIGIT}+{POINT}{DIGIT}+				{yylval->dval = atof(yytext); return REALNUM;}
 {SIGN}{DIGIT}+						{yylval->ival = atoi(yytext); return INTNUM;}
 {DIGIT}+							{yylval->ival = atoi(yytext); return INTNUM;}
-{CHAR}+[{CHAR}|{DIGIT}|{POINT}]*	{yylval->str = strdup(yytext); return STRING;}
+{CHAR}{FCHAR}*						{yylval->str = strdup(yytext); return STRING;}
+
 
 [ \t\n]+        			;       /* ignore whitespace */ 
 

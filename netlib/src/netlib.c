@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "error.h"
 #include "netsim/netsim.h"
+#include "graph/main_graph.h"
+#include "graph/main_rwa.h"
 
 int check_netsim () {
   netsim_start("/home/iizke/projects/netlib/src/netsim/conf/test.conf");
@@ -15,6 +17,7 @@ int check_netsim () {
 }
 
 int main (int nargs, char** args) {
-  check_netsim();
+  //check_netsim();
+  main_graph(nargs, args);
   return SUCCESS;
 }
