@@ -5,7 +5,7 @@
 */
 
 /* This module is taken from the Class simulator but it's updated with
-** "aggiunta ( a cura di Simone Toniolo ) " of the routine randint() at
+** "aggiunta ( a cura di Simone Toniolo ) " of the routine polirand_randint() at
 ** the end of this file.
 ** Date     : 31/01/1995
 */
@@ -42,13 +42,13 @@ long polirand_rnd32(long seed)
 }
 
 /*
-**  Function: double uniform(double a, double b, long *seed)
+**  Function: double polirand_uniform(double a, double b, long *seed)
 **  Return  : a value uniformly distributed between 'a' and 'b'
 **  Remarks : The value of '*seed' is changed
 */	  
-long double polirand_uniform(long double a, long double b, long *seed)
+double polirand_uniform(double a, double b, long *seed)
 {
-long  double u;
+double u;
  *seed = polirand_rnd32 (*seed);
  u = (*seed) * RATIO;
  u = a + u * (b-a);
@@ -60,12 +60,12 @@ long  double u;
 **  Return  : a value exponentially distributed with mean 'mean'
 **  Remarks : The value of '*seed' is changed
 */	  
-long double polirand_negexp (long double mean, long *seed)
+double polirand_negexp (double mean, long *seed)
 {
-long  double u;
+ double u;
  *seed = polirand_rnd32 (*seed);
  u = (*seed) * RATIO;
- return ( - mean*logl(u) );
+ return ( - mean*log(u) );
 }
 
 /*	  
@@ -74,20 +74,22 @@ long  double u;
 **            with rate 'alpha' user/slot, in a slot
 **  Remarks : The value of '*seed' is changed
 */	  
-long polirand_poisson(long double alpha,long *seed)
+long polirand_poisson(double alpha,long *seed)
 {
- int n = 0;
-long  double pn,lim;
-long  double prob;
+  int n = 0;
+  double pn, lim;
+  double prob;
 
- lim = pn = -alpha;
- prob = logl(polirand_uniform(0.0,1.0,seed));
- while(prob>lim)
-  { n++;
-    pn += logl(alpha)-logl((long double)n);
-    lim += logl(1.0+expl(pn)/expl(lim));  
-  }
- return(n);
+  lim = pn = exp (-alpha);
+  prob = polirand_uniform (0.0, 1.0, seed);
+  while (prob > lim)
+    {
+      n++;
+      pn *= alpha / n;
+      lim += pn;
+    }
+  return n;
+
 }
 
 /*	  
@@ -246,7 +248,7 @@ int polirand_trunc_exp(double mean,long length,long *seed)
 
 
 
-/*  Function : int randint(int min,int max,long *seed)
+/*  Function : int polirand_randint(int min,int max,long *seed)
 **  Return   : an integer number uniformly distributed between MIN and
 **             MAX.
 **  Remarks  : The value of '*seed' is changed
@@ -263,5 +265,172 @@ int polirand_randint(int min,int max,long *seed)
 	return( (int)temp + min );
 }
 
+/*
+ * **  Function  : double eval_gauss_sample(long *seed, double mean, **
+ *                                 double variance) **  Return    : a value
+ * extracted from a gaussian density function. **  Remarks   : the sum of 12
+ * independent variables uniformly distributed **              between -0.5
+ * and 0.5 is used to obtain a Normally **              distributed variable.
+ */
+double
+polirand_eval_gauss_sample (long *seed, double mean, double variance)
+{
+  double acc_x = 0.0;
+  int i = 0;
+
+  for (; i < 12; i++)
+    acc_x += polirand_uniform (-0.5, 0.5, seed);
+
+  return (acc_x * sqrt (variance) + mean);
+}
+
+/*
+**  Function: double weibull(long *seed, double a, double b)
+**  Return  : a random variable with a Weibull p.d.f.:
+**
+**          b * x^(b-1)
+**        f(x) = ------------ * exp(-(x/a)^b)
+**             a^b
+**
+**  "a" is the "scale" parameter;
+**  "b" is the "shape" parameter.
+**
+**  If  b = 3.602, the Weibull distr. is very close to a normal;
+**  for b > 3.602, it has a long left tail;
+**  for b < 3.602, it has a long right tail.
+**
+**  If  b <= 1 the Weibull p.d.f. is "L-shaped", while
+**  if  b >  1 it is "bell-shaped".
+**
+**  For large values of b the Weibull p.d.f. has a sharp peak
+**  at the mode.
+**  The mean of the r.v. is:
+**
+**     a
+**      --- * Gamma(1/b),
+**       b
+**
+**  and the variance is:
+**
+**     a^2
+**    ----- * (2b*Gamma(2/b)-(Gamma(1/b))^2).
+**     b^2
+**
+**  (Gamma(x) is the Gamma Eulero's function).
+**
+**  Remarks : The value of '*seed' is changed
+*/
+double
+polirand_weibull (double a, double b, long *seed)
+{
+  double u;
+  u = polirand_uniform (0.0, 1.0, seed);
+  return (a * pow (log (1 / u), 1 / b));
+}
+
+
+
+/*
+**  Function: double iperexp(long *seed, double alpha, double mu_1, double mu_2)
+**  Return  : a random variable with a 2th order
+**  hyperexponential p.d.f.:
+**
+**  f(x) = alpha*mu_1*exp(-mu_1*x)+(1-alpha)*mu_2*exp(-mu_2*x)
+**
+**  Remarks : The value of '*seed' is changed
+*/
+double
+polirand_iperexp (double alpha, double mu_1, double mu_2, long *seed)
+{
+  double u;
+  u = polirand_uniform (0.0, 1.0, seed);
+  if (u <= alpha)
+    return (polirand_negexp (mu_1, seed)); /* ?? DUBBIO ?? avendo gia' scelto, ci
+             vuole ancora la moltiplicazione
+             per alpha?                        */
+  else        /* u > alpha */
+    return (polirand_negexp (mu_2, seed)); /* Stesso DUBBIO di sopra!              */
+}
+
+
+/*
+**  Function: double pareto(long *seed, double a)
+**  Return  : a random variable with a Pareto p.d.f.:
+**
+**  f(x) =  a * x^(-(a+1))
+**
+**  The mean of the r.v. is:
+**
+**     a
+**  -------   for a > 1
+**   a - 1
+**
+** while its variance is:
+**
+**      a
+**  -----------------------   for a > 2
+**   ((a - 1)^2) * (a - 2)
+**
+** ???? (chiarire i dubbi: per a<1  la media DIVERGE???
+** Idem per la varianza!!!)
+**
+**  Remarks : The value of '*seed' is changed
+**
+*/
+
+
+double
+polirand_pareto (double a, long *seed)
+{
+  double u;
+  u = polirand_uniform (0.0, 1.0, seed);
+  return (pow (1 / u, 1 / a));
+}
+
+/*
+** Return : a random variable with Erlang p.d.f.:
+**
+**  f(x) = x^(M-1)*exp(-x/a)/((a^M)*(M-1)!)
+** Remarks : The value of '*seed' is changed
+**
+*/
+
+double
+polirand_erlang (double a, double M, long *seed)
+{
+  double u;
+  double p;
+  int i;
+  for (p = 1, i = 0; i < M; i++)
+    {
+      u = polirand_uniform (0.0, 1.0, seed);
+      p *= u;
+    }
+  return (-a * log (p));
+}
+
+
+/*
+**  Function: double ipererl(long *seed, double alpha, double m_1, double a_1,double m_2, double a_2)
+**  Return  : a random variable with a 2th order
+**  hypererlang p.d.f.:
+**
+**  f(x) =
+** alpha*((x^(m_1-1)*exp(-x/a_1))/((a_1^m_1)*(m_1-1)!))+(1-alpha)*((x^(m_2-1)*exp(-x/a_2))/((a_2^m_2)*(m_2-1)!))
+**  Remarks : The value of '*seed' is changed
+*/
+double
+polirand_ipererl (double alpha, double m_1, double a_1, double m_2, double a_2,
+   long *seed)
+{
+  double u;
+  u = polirand_uniform (0.0, 1.0, seed);
+  if (u <= alpha)
+    return (polirand_erlang (a_1, m_1, seed)); /* ?? DUBBIO ?? avendo gia' scelto, ci
+             vuole ancora la moltiplicazione
+             per alpha?                     */
+  else        /* u > alpha */
+    return (polirand_erlang (a_2, m_2, seed)); /* Stesso DUBBIO di sopra!              */
+}
 
 

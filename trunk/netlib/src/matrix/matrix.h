@@ -1,5 +1,6 @@
 /**
  * @file matrix.h
+ * Matrix data structure
  *
  * @date Created on: May 25, 2011
  * @author iizke

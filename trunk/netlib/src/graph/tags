@@ -1,0 +1,246 @@
+add_item	graph.c	/^PITEM add_item (PGRAPH g, PLINK p, NODEID from, NODEID to, TRAFFIC flow)$/;"	f
+add_link	graph.c	/^PLINK add_link (PGRAPH g, NODEID from, NODEID to, CAPACITY capacity)$/;"	f
+ADD	main.h	21;"	d
+alloc_matrix	matrix.c	/^MATRIX alloc_matrix (MATRIX matrix, int n)$/;"	f
+alloc_PR_QUEUE	routing.c	/^alloc_PR_QUEUE (int n)$/;"	f
+A	random.c	9;"	d	file:
+BEST_MOVE	main.h	25;"	d
+BOOL	main.h	/^typedef int BOOL;$/;"	t
+botch	misc.c	/^botch (char *expr, char *fname, int line, FILE * fp)$/;"	f
+broken_capacity	graph.h	/^  CAPACITY broken_capacity;	\/* Capacità sul link massima dovuta a guasti *\/$/;"	m	struct:_link
+build_heap	routing.c	/^build_heap (ITEM_HEAP * pr_queue, int heap_size)$/;"	f
+build_initial_solution	graph.c	/^PGRAPH build_initial_solution (PGRAPH g, double prob, int iter_start)$/;"	f
+capacity	graph.h	/^  CAPACITY capacity;		\/* Capacità sul link senza guasti *\/$/;"	m	struct:_link
+CAPACITY	main.h	/^typedef double CAPACITY;$/;"	t
+clone_graph	graph.c	/^clone_graph (PGRAPH g1, PGRAPH g2)$/;"	f
+CONNECTED	main.h	18;"	d
+cost_broken_graph	graph.h	194;"	d
+cost_broken_graph	graph.h	/^  COST cost_broken_graph;	\/* Costo associato al grafo considerato con guasti *\/$/;"	m	struct:_graph
+cost_cap	matrix.h	/^  double cost_cap;$/;"	m	struct:_field_dis_cap
+cost_graph	graph.h	193;"	d
+cost_graph	graph.h	/^  COST cost_graph;		\/* Costo associato al grafo considerato *\/$/;"	m	struct:_graph
+COST	main.h	/^typedef double COST;$/;"	t
+DEALAY_MAX	main.h	27;"	d
+decrease_num_links	graph.h	199;"	d
+decrease_num_nodes	graph.h	197;"	d
+DELAY_MEAN	main.h	26;"	d
+DELETE	main.h	22;"	d
+dijkstra_heap	routing.c	/^dijkstra_heap (PGRAPH g, NODEID source, ITEM_HEAP * pr_queue)$/;"	f
+disable_in_out_link	fault.c	/^disable_in_out_link (PGRAPH g, NODEID node)$/;"	f
+disable_link	fault.h	5;"	d
+disable_node	fault.c	/^disable_node (PGRAPH g, NODEID node)$/;"	f
+dis_cap	matrix.h	/^  double dis_cap;$/;"	m	struct:_field_dis_cap
+DISCONNECTED	main.h	19;"	d
+_DISCRETE_CAP_MATRIX_	matrix.h	13;"	d
+DISCRETE_CAP_MATRIX	matrix.h	/^typedef FIELD_DIS_CAP ***DISCRETE_CAP_MATRIX;$/;"	t
+economic_cost	graph.h	/^    COST (*economic_cost) (struct _link * p);	\/* Costo monetario associato al $/;"	m	struct:_link
+economic_cost_link	graph.h	75;"	d
+enable_in_out_link	fault.c	/^enable_in_out_link (PGRAPH g, NODEID node)$/;"	f
+enable_link	fault.h	4;"	d
+enable_node	fault.c	/^enable_node (PGRAPH g, NODEID node)$/;"	f
+entry3_d_cap	matrix.h	22;"	d
+entry3_d_cost	matrix.h	23;"	d
+entry	matrix.h	7;"	d
+erlang	random.c	/^erlang (double a, double M, long *seed)$/;"	f
+error	misc.c	/^error (char *msg, FILE * fp)$/;"	f
+eval_gauss_sample	random.c	/^eval_gauss_sample (long *seed, double mean, double variance)$/;"	f
+FALSE	main.h	15;"	d
+_FAULT_	fault.h	2;"	d
+FIELD_DIS_CAP	matrix.h	/^FIELD_DIS_CAP;$/;"	t
+_field_dis_cap	matrix.h	/^typedef struct _field_dis_cap$/;"	s
+find_all_sh_path	routing.c	/^find_all_sh_path (FILE * fp, PGRAPH g, ITEM_HEAP * pr_queue)$/;"	f
+find_item	graph.c	/^PITEM find_item (PGRAPH g, PLINK p, NODEID from, NODEID to)$/;"	f
+find_link	graph.c	/^PLINK find_link (PGRAPH g, PLINK link, NODEID from, NODEID to)$/;"	f
+find_linklist	graph.c	/^PLINKLIST find_linklist (PGRAPH g, PLINK p_link)$/;"	f
+first_linklist_in	graph.h	/^  PLINKLIST first_linklist_in;$/;"	m	struct:_node
+first_link_out	graph.h	164;"	d
+first_link_out	graph.h	/^  PLINK first_link_out;		\/* Lista degli archi uscenti dal nodo *\/$/;"	m	struct:_node
+first_path_item	graph.h	85;"	d
+flow_aggr_broken	graph.h	/^  TRAFFIC flow_aggr_broken;	\/* Traffico sul link in caso di rottura di un$/;"	m	struct:_link
+flow_aggr	graph.h	/^  TRAFFIC flow_aggr;		\/* Quantità di traffico totale sul link *\/$/;"	m	struct:_link
+flow_item	graph.h	33;"	d
+flow_item	graph.h	/^  TRAFFIC flow_item;$/;"	m	struct:_path_item
+free_linklist	graph.c	/^free_linklist (PLINKLIST p)	\/* Inserisce l'elemento p nella lista free *\/$/;"	f
+free_LinksOut	graph.c	/^free_LinksOut (PLINK p)		\/* Inserisce l'elemento p nella lista free *\/$/;"	f
+FREE_NODE	graph.h	4;"	d
+free_PATH_ITEM	graph.c	/^free_PATH_ITEM (PITEM p)	\/* Inserisce nella lista$/;"	f
+geometric0	random.c	/^geometric0 (double mean, long *seed)$/;"	f
+geometric1	random.c	/^geometric1 (double mean, long *seed)$/;"	f
+geometric_trunc1	random.c	/^geometric_trunc1 (double mean, int max_len, long *seed)$/;"	f
+get_cost_sh_path_from_to	routing.c	/^COST get_cost_sh_path_from_to (FILE * fp, PGRAPH g, PLINK ** mp, NODEID to)$/;"	f
+get_link_in	graph.h	116;"	d
+get_linklist	graph.h	165;"	d
+g	main.h	/^GRAPH g;$/;"	v
+_GRAPH_	graph.h	2;"	d
+GRAPH	graph.h	/^GRAPH;$/;"	t
+_graph	graph.h	/^typedef struct _graph$/;"	s
+heap_extract_min	routing.c	/^heap_extract_min (ITEM_HEAP * pr_queue, int heap_size)$/;"	f
+heapify	routing.c	/^heapify (ITEM_HEAP * pr_queue, int start_node, int heap_size)$/;"	f
+IMP	graph.h	6;"	d
+increase_num_links	graph.h	198;"	d
+increase_num_nodes	graph.h	196;"	d
+incr_matrix_path	graph.h	/^  PLINK **incr_matrix_path;	\/* Matrice dinamica <dest>*<shpath> di puntatori $/;"	m	struct:_node
+ingoing_link_to_node	graph.h	167;"	d
+init_graph	graph.c	/^init_graph (PGRAPH g1, int num_nodes)$/;"	f
+init_PR_QUEUE	routing.c	/^init_PR_QUEUE (PGRAPH g, NODEID source, ITEM_HEAP * pr_queue)$/;"	f
+insert_conn_on_link	routing.c	/^insert_conn_on_link (PGRAPH g, NODEID source, BOOL bool)$/;"	f
+insert_sh_path_in_matrix	routing.c	/^BOOL insert_sh_path_in_matrix (PGRAPH g, NODEID source, PLINK ** mp)$/;"	f
+ipererl	random.c	/^ipererl (double alpha, double m_1, double a_1, double m_2, double a_2,$/;"	f
+iperexp	random.c	/^iperexp (double alpha, double mu_1, double mu_2, long *seed)$/;"	f
+item_from	graph.h	29;"	d
+ITEM_HEAP	routing.h	/^ITEM_HEAP;$/;"	t
+_item_heap	routing.h	/^typedef struct _item_heap$/;"	s
+item_to	graph.h	30;"	d
+LASTXN	random.c	10;"	d	file:
+link_broken_capacity	graph.h	84;"	d
+link_broken_flow	graph.h	80;"	d
+link_broken_max_flow	graph.h	81;"	d
+link_capacity	graph.h	83;"	d
+link_flow	graph.h	79;"	d
+link_from	graph.h	71;"	d
+LINK	graph.h	/^LINK;$/;"	t
+_link	graph.h	/^typedef struct _link$/;"	s
+LINKLIST	graph.h	/^LINKLIST;$/;"	t
+_link_list	graph.h	/^typedef struct _link_list$/;"	s
+linklist_next	graph.h	114;"	d
+linklist_next	graph.h	/^  struct _link_list *linklist_next;	\/*puntatore al prossimo in lista *\/$/;"	m	struct:_link_list
+linklist_pred	graph.h	115;"	d
+linklist_pred	graph.h	/^  struct _link_list *linklist_pred;	\/*puntatore al precedente in lista *\/$/;"	m	struct:_link_list
+link_next	graph.h	/^  struct _link *link_next;	\/* Puntatore al link successivo in links_out *\/$/;"	m	struct:_link
+link_pred	graph.h	/^  struct _link *link_pred;	\/* Puntatore al link precedente in links_out *\/$/;"	m	struct:_link
+link_state	graph.h	77;"	d
+link_state	graph.h	/^  BOOL link_state;		\/* link abilitato\/rotto (no\/si guasti sul link) *\/$/;"	m	struct:_link
+link_to	graph.h	72;"	d
+link_visited	graph.h	/^  BOOL link_visited;		\/* link visitato\/no visitato dallo shpath *\/$/;"	m	struct:_link
+MAIN_C	main.c	6;"	d	file:
+main	main.c	/^main (int argc, char *argv[])$/;"	f
+make_empty_graph	graph.c	/^make_empty_graph (PGRAPH g)$/;"	f
+make_empty_linklist	graph.c	/^make_empty_linklist (PGRAPH g, NODEID i)$/;"	f
+make_empty_Links	graph.c	/^make_empty_Links (PGRAPH g, NODEID i)$/;"	f
+make_empty_PATH_ITEM	graph.c	/^make_empty_PATH_ITEM (PLINK plink)$/;"	f
+malloc_linklist	graph.c	/^PLINKLIST malloc_linklist (void)	\/* Crea nuovo elemento\/Prende elemento$/;"	f
+malloc_LinksOut	graph.c	/^PLINK malloc_LinksOut (void)	\/* Crea nuovo elemento\/Prende elemento$/;"	f
+malloc_PATH_ITEM	graph.c	/^PITEM malloc_PATH_ITEM (void)	\/* Crea nuovo elemento\/Prende elemento$/;"	f
+_MATRIX_	matrix.h	4;"	d
+MATRIX	matrix.h	/^typedef double **MATRIX;$/;"	t
+matrix_path	graph.h	/^  PLINK **matrix_path;		\/* Matrice dinamica <dest>*<shpath> di puntatori $/;"	m	struct:_node
+MAX_COST	main.h	33;"	d
+MAXDELAY	matrix.h	1;"	d
+MAX_DOUBLE	routing.h	7;"	d
+max_flow_on_link	graph.h	/^  TRAFFIC max_flow_on_link;	\/* Massimo traffico che passa sul link$/;"	m	struct:_link
+MAX_INT	misc.h	4;"	d
+MAX_INT	routing.h	6;"	d
+max_num_links_graph	graph.h	192;"	d
+max_num_links	graph.h	/^  int max_num_links;		\/* Numero massimo di link nel grafo *\/$/;"	m	struct:_graph
+max_num_nodes_graph	graph.h	191;"	d
+MAX_NUM_NODES	graph.h	7;"	d
+max_num_nodes	graph.h	/^  int max_num_nodes;		\/* Numero massimo di nodi nel grafo *\/$/;"	m	struct:_graph
+_MISC_	misc.h	2;"	d
+MMmalloc	misc.c	/^MMmalloc (size_t size, const char *f_name)$/;"	f
+MODULE	random.c	8;"	d	file:
+MP	graph.h	5;"	d
+negexp	random.c	/^negexp (double mean, long *seed)$/;"	f
+NEIGH_MOVE	main.h	24;"	d
+next_item	graph.h	31;"	d
+next_item	graph.h	/^  struct _path_item *next_item;	\/* lista bilincata *\/$/;"	m	struct:_path_item
+next_link	graph.h	69;"	d
+node_from	graph.h	/^  NODEID node_from;		\/* Identificativo numerico del nodo sorgente *\/$/;"	m	struct:_link
+node_from	graph.h	/^  NODEID node_from;$/;"	m	struct:_path_item
+node_graph	graph.h	195;"	d
+NODE	graph.h	/^NODE;$/;"	t
+_node	graph.h	/^typedef struct _node$/;"	s
+node_id	graph.h	160;"	d
+node_id	graph.h	/^  NODEID node_id;		\/* Identificativo numerico del nodo *\/$/;"	m	struct:_node
+NODEID	main.h	/^typedef int NODEID;$/;"	t
+node_id	routing.h	/^  NODEID node_id;		\/* identificativo del nodo      *\/$/;"	m	struct:_item_heap
+node_path_weight	graph.h	162;"	d
+node_set	graph.h	/^  NODE *node_set;		\/* Vettore dinamico di strutture NODE *\/$/;"	m	struct:_graph
+node_state	graph.h	161;"	d
+node_state	graph.h	/^  BOOL node_state;		\/* nodo abilitato\/rotto (no\/si guasti sui nodi) *\/$/;"	m	struct:_node
+node_to	graph.h	/^  NODEID node_to;		\/* Identificativo numerico del nodo destinazione *\/$/;"	m	struct:_link
+node_to	graph.h	/^  NODEID node_to;$/;"	m	struct:_path_item
+NO_MOVE	main.h	23;"	d
+NULL_GRAPH	graph.h	201;"	d
+NullGraph	graph.h	/^GRAPH NullGraph = NULL_GRAPH;$/;"	v
+NULL_ITEM	graph.h	36;"	d
+NullItem	graph.h	/^PATH_ITEM NullItem = NULL_ITEM;$/;"	v
+NULL_LINK	graph.h	88;"	d
+NullLink	graph.h	/^LINK NullLink = NULL_LINK;$/;"	v
+NULL_LINKLIST	graph.h	118;"	d
+NullLinkList	graph.h	/^LINKLIST NullLinkList = NULL_LINKLIST;$/;"	v
+num_links_graph	graph.h	190;"	d
+num_links	graph.h	/^  int num_links;		\/* Numero corrente di link nel grafo *\/$/;"	m	struct:_graph
+num_links_out	graph.h	163;"	d
+num_links_out	graph.h	/^  int num_links_out;		\/* Numero di links uscenti dal nodo *\/$/;"	m	struct:_node
+num_nodes_graph	graph.h	189;"	d
+num_nodes	graph.h	/^  int num_nodes;		\/* Numero corrente di nodi nel grafo *\/$/;"	m	struct:_graph
+pareto	random.c	/^pareto (double a, long *seed)$/;"	f
+path_cost	routing.h	/^  COST path_cost;		\/* costo del minimo cammino temporaneo fino al nodo     *\/$/;"	m	struct:_item_heap
+path_from_to	graph.h	168;"	d
+PATH_ITEM	graph.h	/^PATH_ITEM;			\/* identifica gli end-points di un path $/;"	t
+_path_item	graph.h	/^typedef struct _path_item$/;"	s
+path_link	graph.h	/^  PLINK path_link;		\/* Puntatore al link con cui arrivo al nodo $/;"	m	struct:_node
+path_weight	graph.h	/^  COST path_weight;		\/* Usato dall'algoritmo di shortest path: $/;"	m	struct:_node
+PGRAPH	graph.h	/^typedef struct _graph *PGRAPH;	\/* puntatore alla struttura _graph *\/$/;"	t
+PITEM	graph.h	/^typedef struct _path_item *PITEM;	\/* puntatore alla struttura PATH_ITEM *\/$/;"	t
+p_LINK_free	main.h	/^PLINK p_LINK_free;$/;"	v
+plink	graph.h	/^  PLINK plink;			\/* puntatore al link entrante *\/$/;"	m	struct:_link_list
+PLINK	graph.h	/^typedef struct _link *PLINK;	\/* puntatore alla struttura _list *\/$/;"	t
+p_LINKLIST_free	main.h	/^PLINKLIST p_LINKLIST_free;$/;"	v
+PLINKLIST	graph.h	/^typedef LINKLIST *PLINKLIST;$/;"	t
+PNODE	graph.h	/^typedef struct _node *PNODE;	\/* puntatore alla struttura _node *\/$/;"	t
+poisson	random.c	/^poisson (double alpha, long *seed)$/;"	f
+p_path	graph.h	/^  PATH_ITEM *p_path;		\/* Lista dei paths che si appoggiano sul link *\/$/;"	m	struct:_link
+p_PATH_ITEM_free	main.h	/^PITEM p_PATH_ITEM_free;$/;"	v
+pred_item	graph.h	32;"	d
+pred_item	graph.h	/^  struct _path_item *pred_item;$/;"	m	struct:_path_item
+pred_link	graph.h	70;"	d
+print_all_sh_path_from	routing.c	/^print_all_sh_path_from (FILE * fp, PGRAPH g, PLINK ** mp, NODEID from)$/;"	f
+print_graph	print_structures.c	/^print_graph (PGRAPH g, FILE * fp)$/;"	f
+print_list_link	print_structures.c	/^print_list_link (int num_nodes, FILE * fp, PLINK p)	\/* p:puntatore di testa della lista *\/$/;"	f
+print_matrix	matrix.c	/^print_matrix (MATRIX matrix, int n, FILE * fp_result)$/;"	f
+print_path_item	print_structures.c	/^print_path_item (FILE * fp, PLINK p)$/;"	f
+print_sh_path_from_to	routing.c	/^print_sh_path_from_to (FILE * fp, PGRAPH g, PLINK ** mp, NODEID to)$/;"	f
+_PRINT_STRUCTURES_	print_structures.h	2;"	d
+print_test_graph	print_structures.c	/^print_test_graph (PGRAPH g)$/;"	f
+pr_queue	routing.h	/^ITEM_HEAP *pr_queue;		\/* vettore dinamico utilizzato per la gestione dell'heap$/;"	v
+randint	random.c	/^randint (int min, int max, long *seed)$/;"	f
+_RANDOM_	random.h	2;"	d
+RATIO	random.c	12;"	d	file:
+read_graph	print_structures.c	/^read_graph (FILE * fl, PGRAPH g)$/;"	f
+read_input_matrix	matrix.c	/^read_input_matrix (int num_nodes, FILE * fp_trf,$/;"	f
+remove_item	graph.c	/^remove_item (PGRAPH g, PLINK p, PITEM p_item)$/;"	f
+remove_link	graph.c	/^remove_link (PGRAPH g, NODEID node, PLINK p_link)$/;"	f
+remove_linklist	graph.c	/^remove_linklist (PGRAPH g, PLINK p_link)$/;"	f
+reset_all_sh_path	routing.c	/^reset_all_sh_path (PGRAPH g, BOOL bool)$/;"	f
+reset_broken_flow	routing.c	/^reset_broken_flow (PGRAPH g)$/;"	f
+reset_fields_sh_path	routing.c	/^reset_fields_sh_path (PGRAPH g)$/;"	f
+reset_flow	routing.c	/^reset_flow (PGRAPH g)$/;"	f
+reset_max_flow_field	routing.c	/^reset_max_flow_field (PGRAPH g)$/;"	f
+reset_sh_path_from_to	routing.c	/^reset_sh_path_from_to (PGRAPH g, NODEID from, NODEID to, PLINK ** mp)$/;"	f
+rnd32	random.c	/^rnd32 (long seed)$/;"	f
+route_cost_link	graph.h	73;"	d
+route_cost_node	graph.h	166;"	d
+routing_cost	graph.h	/^  COST routing_cost;		\/* Costo associato al routing *\/$/;"	m	struct:_link
+routing_incrementale	routing.c	/^routing_incrementale (FILE * fp, PGRAPH g, ITEM_HEAP * pr_queue)$/;"	f
+_ROUTING_	routing.h	2;"	d
+seed	main.h	/^long int seed;$/;"	v
+swap	routing.c	/^swap (ITEM_HEAP * pr_queue, int a, int b)$/;"	f
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/darren@hiebert.com/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://darren.hiebert.com/ctags/	/official site/
+!_TAG_PROGRAM_VERSION	3.2	/with C, C++, Eiffel, Fortran, and Java  support/
+total_route_flow	routing.c	/^total_route_flow (PGRAPH g, ITEM_HEAP * pr_queue, BOOL fault, NODEID node,$/;"	f
+TRAFFIC	main.h	/^typedef double TRAFFIC;$/;"	t
+trf_m	main.h	/^MATRIX trf_m, weight_route;$/;"	v
+TRUE	main.h	14;"	d
+trunc_exp	random.c	/^trunc_exp (double mean, long length, long *seed)$/;"	f
+uniform	random.c	/^uniform (double a, double b, long *seed)$/;"	f
+update_cost	routing.c	/^update_cost (PGRAPH g, ITEM_HEAP * pr_queue, int heap_size)$/;"	f
+update_flow	routing.c	/^update_flow (PGRAPH g, BOOL flag_mp, MATRIX trf_m, BOOL fault)$/;"	f
+UPTOMOD	random.c	11;"	d	file:
+visited_link	graph.h	76;"	d
+weibull	random.c	/^weibull (double a, double b, long *seed)$/;"	f
+weight_route	main.h	/^MATRIX trf_m, weight_route;$/;"	v

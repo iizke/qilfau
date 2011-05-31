@@ -30,4 +30,5 @@ typedef struct network {
 #define NETWORK_SP_BELLFORD           2
 
 void* network_find_shortest_path (NETWORK *, int, int, int);
+
 #endif /* NETWORK_H_ */
