@@ -39,6 +39,8 @@ typedef double COST;
 #include "routing.h"
 #include "matrix.h"
 #include "polirand/random.h"
+#include "error.h"
+#include "def.h"
 
 										/* variabili globali */
 
@@ -106,7 +108,7 @@ int read_input_matrix (int num_nodes, FILE * fp_trf, FILE * fp_weight_route);
 void print_matrix (MATRIX matrix, int n, FILE * fp_result);
 void print_discrete_cap_matrix (DISCRETE_CAP_MATRIX dis_cap_matrix,
 				FILE * fp_result, int num_cap, int n);
-
+int build_random_traffic_matrix0(int num_nodes, double lb, double ub);
 
 /* Prototipi per routing.c        */
 
@@ -147,12 +149,6 @@ void enable_in_out_link (PGRAPH g, NODEID node);
 void disable_in_out_link (PGRAPH g, NODEID node);
 void broken_node (PGRAPH g, NODEID node);
 void broken_link (PGRAPH g, PLINK link);
-
-
-/* Prototipi per misc.c   */
-void error (char *msg, FILE * fp);
-void botch (char *expr, char *fname, int line, FILE * fp);
-void *MMmalloc (size_t size, const char *f_name);
 
 int main_graph (int argc, char *argv[]);
 

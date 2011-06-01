@@ -18,5 +18,6 @@ typedef union time {
   float real;
 } TIME;
 
+#define MAX_INT INT_MAX
 
 #endif /* DEF_H_ */

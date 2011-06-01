@@ -9,6 +9,8 @@
 #ifndef ERROR_H_
 #define ERROR_H_
 
+#include <stdio.h>
+
 /// Turn on Debug mode
 #define DEBUG
 /// Print out all error-labeled messages
@@ -70,4 +72,10 @@ extern long debug;
 #define ERR_PACKET_STATE_WRONG      (-20)
 /// Error while inconsistent happen in simulating CSMA
 #define ERR_CSMA_INCONSISTENT       (-30)
+
+static void error (char *msg, FILE * fp) {
+  fprintf (fp, "ERROR: %s\n", msg);
+  exit (1);
+}
+
 #endif /* ERROR_H_ */
