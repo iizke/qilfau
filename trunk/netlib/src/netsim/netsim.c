@@ -115,7 +115,7 @@ static void netsim_print_result(CONFIG *conf) {
     case PROTOCOL_ONE_QUEUE:
       sys_state = get_sys_state_from_ops(((SYS_STATE_OPS*)conf->runtime_state));
       print_measurement(&sys_state->measurement);
-      print_measurement(&((FIFO_QINFO*)(sys_state->queues.curr_queue->info))->measurement);
+      //print_measurement(&((FIFO_QINFO*)(sys_state->queues.curr_queue->info))->measurement);
       break;
     case PROTOCOL_CSMA:
       csma_state = get_csma_state_from_ops(((SYS_STATE_OPS*)conf->runtime_state));
