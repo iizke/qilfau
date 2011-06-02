@@ -100,7 +100,7 @@ double _composition_gen_rnd (int n, RANDOM_DIST *rnd, double *probs) {
  */
 double _inverse_exp (double p, void *params) {
   double *lambda = params;
-  return (-log(p)/(*lambda));
+  return (-log(1-p)/(*lambda));
 }
 
 /**

@@ -74,7 +74,6 @@ EVENT* _generate_arrival (CONFIG *conf, SYS_STATE *state) {
     return NULL;
   }
   event_list_insert_event(&state->future_events, e);
-
   return e;
 }
 
@@ -193,7 +192,7 @@ int _process_arrival (EVENT *e, CONFIG *conf, SYS_STATE *state) {
 
   _generate_arrival(conf, state);
 
-  if (qt->is_idle(qt))
+  if ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) >= 1))
     _process_packet(conf, state);
 
   return SUCCESS;
@@ -210,6 +209,7 @@ int _process_end_service (EVENT *e, CONFIG *conf, SYS_STATE *state) {
   PACKET *packet = e->info.packet;
   QUEUE_TYPE *qt = state->queues.curr_queue;
 
+  try ( update_time(e, state) );
   _packet_from_event(e, packet);
   qt->finish_packet(qt, packet);
   measurement_collect_data(&state->measurement, packet, state->curr_time);
