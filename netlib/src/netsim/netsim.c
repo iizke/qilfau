@@ -89,6 +89,7 @@ int pisas_sched (CONFIG *conf, SYS_STATE_OPS *sys_ops) {
     if (!e) {
       // There is no event, we need one
       sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
+      //sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
       continue;
     }
 
@@ -142,6 +143,20 @@ static void netsim_sig_handler(int n, siginfo_t *info, void *data) {
   exit(1);
 }
 
+static void netsim_print_theoritical_mm1 (double arrival, double service) {
+  double ro = arrival/service;
+  /// Number of customers in system (in queue + in service)
+  double slen = ro/(1-ro);
+  double var_slen = ro/((1-ro)*(1-ro));
+  double qlen = ro*slen;
+  double var_qlen = slen*(slen + ro*ro);
+  printf("In theory, M/M/1 has: \n");
+  printf("%20s : mean %4.5f, var %4.5f\n", "#customers in sys", slen, sqrtf(var_slen));
+  printf("%20s : mean %4.5f, var %4.5f\n", "#customers in queue", qlen, sqrtf(var_qlen));
+  printf("%20s : mean %4.5f\n", "System response time", slen/arrival );
+  printf("%20s : mean %4.5f\n", "Queue response time", qlen/arrival );
+}
+
 /**
  * Main program. Do parse user configuration file, and run a chosen simulation
  * @param nargs : number of parameters
@@ -178,5 +193,6 @@ int netsim_start (char *conf_file) {
   pisas_sched(&conf, ops);
 
   netsim_print_result(&conf);
+  netsim_print_theoritical_mm1(conf.arrival_conf.lambda, conf.service_conf.lambda);
   return SUCCESS;
 }

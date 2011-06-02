@@ -243,6 +243,7 @@ static int csma_process_a_packet (QUEUE_TYPE *qt, CONFIG *conf, CSMA_STATE *stat
  * @return Error code (see more in def.h and libs/error.h)
  */
 int csma_process_access_event(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
+  try ( csma_update_time(e, state) );
   if (state->channel_state == CHANNEL_BUSY)
     csma_generate_access(e->info.packet, conf, state);
   else {
@@ -323,6 +324,8 @@ int csma_process_collision(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
   int persistent_count = 0;
   PACKET *packet = NULL;
 
+  try ( csma_update_time(e, state) );
+
   state->channel_state = CHANNEL_FREE;
   persistent_count = csma_count_persistent_queue(conf, state, &qt);
     // if the station still has waiting packets, then ...
@@ -361,6 +364,7 @@ int csma_process_end_service(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
   PACKET *packet = e->info.packet;
   QUEUE_TYPE *qt = packet->info.queue;
 
+  try ( csma_update_time(e, state) );
   state->channel_state = CHANNEL_FREE;
   qt->finish_packet(qt, packet);
   measurement_collect_data(&state->measurement, packet, state->curr_time);

@@ -67,13 +67,12 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
   switch (p->info.state) {
   case PACKET_STATE_PROCESSING:
     stat_num_new_sample(&m->waittime, p->info.stime.real - p->info.atime.real);
-    stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt), curr_time.real);
+    stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) + 1, curr_time.real);
     break;
   case PACKET_STATE_WAITING:
-    stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt), curr_time.real);
+    stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) - 1, curr_time.real);
     break;
   case PACKET_STATE_DROPPED:
-    //stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt), p->info.atime.real);
     m->total_dropped++;
     break;
   case PACKET_STATE_IN:
@@ -84,7 +83,8 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
   case PACKET_STATE_OUT:
     m->total_departures++;
     stat_num_new_sample(&m->servtime, p->info.etime.real - p->info.stime.real);
-    //stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt), p->info.atime.real);
+    //stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) + 1, curr_time.real);
+    //stat_num_new_sample(&m->waittime, curr_time.real - p->info.atime.real);
     break;
   default:
     iprintf(LEVEL_WARNING, "Packet state is not support\n");
