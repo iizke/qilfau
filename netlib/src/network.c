@@ -1,5 +1,7 @@
 /**
  * @file network.c
+ * Networking problem of operation research: For example Shortest path,
+ * Min Cost Flow, ...
  *
  * @date Created on: May 25, 2011
  * @author iizke

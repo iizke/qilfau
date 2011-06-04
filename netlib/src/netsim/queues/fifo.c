@@ -60,7 +60,7 @@ static int ff_push_packet (QUEUE_TYPE *q, PACKET *p) {
   if ((fq->max_waiting <= curr_qlen) && (fq->max_waiting >= 0)) {
     try ( packet_list_insert_packet(&fq->dropped_packets, p) );
     p->info.state = PACKET_STATE_DROPPED;
-    iprintf(LEVEL_INFO, "Packet is dropped \n");
+    iprint(LEVEL_INFO, "Packet is dropped \n");
   } else {
     try ( packet_list_insert_packet(&fq->waiting_packets, p) );
     p->info.state = PACKET_STATE_WAITING;

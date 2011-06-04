@@ -50,7 +50,7 @@ int linked_list_get_first(LINKED_LIST *l, LINKED_LIST **e) {
   // not check validity
   check_null_pointer(l);
   if (linked_list_is_empty(l)){
-    iprintf(LEVEL_WARNING, "No element in list\n");
+    iprint(LEVEL_WARNING, "No element in list\n");
     *e = NULL;
   } else
     *e = l->next;
@@ -62,7 +62,7 @@ int print_list (LINKED_LIST *l) {
   while (! linked_list_is_empty(l)) {
     LINKED_LIST *e = NULL;
     linked_list_get_first(l, &e);
-    iprintf(LEVEL_INFO, "Get one element\n");
+    iprint(LEVEL_INFO, "Get one element\n");
     linked_list_remove(e);
     //free(e);
   }
@@ -148,7 +148,7 @@ int linked_list_man_alloc (LINKED_LIST_MAN *lm, LINKED_LIST **e, int size) {
     // allocate new memory
     *e = (LINKED_LIST*) malloc(size);
     if (! *e) {
-      iprintf(LEVEL_WARNING, "Cannot allocate new memory\n");
+      iprint(LEVEL_WARNING, "Cannot allocate new memory\n");
       return ERR_LL_MAN_ALLOC;
     }
   }

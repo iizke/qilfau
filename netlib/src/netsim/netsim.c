@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
+#include <math.h>
 #include "error.h"
 #include "queues/fifo.h"
 #include "conf/parser.h"
@@ -39,13 +40,13 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
   case RANDOM_FILE:
     fscanf(fc->from_file, "%f %d %f", &time, &type, &etime);
     e->info.time.real = time;
-    iprintf(LEVEL_INFO, "Get time from file, value %f \n", e->info.time.real);
+    iprint(LEVEL_INFO, "Get time from file, value %f \n", e->info.time.real);
     break;
   case RANDOM_UNIFORM:
     e->info.time.real = curr_time.real + gen_uniform(fc->from, fc->to);
     break;
   default:
-    iprintf(LEVEL_WARNING, "Flow type is not supported \n");
+    iprint(LEVEL_WARNING, "Flow type is not supported \n");
     return ERR_RANDOM_TYPE_FAIL;
     break;
   }
@@ -93,7 +94,7 @@ int pisas_sched (CONFIG *conf, SYS_STATE_OPS *sys_ops) {
       continue;
     }
 
-    iprintf (LEVEL_INFO, "Get event type %d at %f \n", e->info.type, e->info.time.real);
+    iprint (LEVEL_INFO, "Get event type %d at %f \n", e->info.type, e->info.time.real);
     sys_ops->process_event(e, conf, sys_ops);
     _save_event(e,conf);
     //event_list_remove_event(&future_events, e);
@@ -186,7 +187,7 @@ int netsim_start (char *conf_file) {
     ops = &sys_state.ops;
     break;
   default:
-    iprintf(LEVEL_WARNING, "This protocol is not supported right now \n");
+    iprint(LEVEL_WARNING, "This protocol is not supported right now \n");
     return SUCCESS;
   }
   conf.runtime_state = ops;

@@ -136,7 +136,7 @@ int test_packet_list_new_packet () {
   packet_list_init(&pl, -1);
   packet_list_new_packet(&pl, &p);
   if (p != NULL)
-    iprintf(LEVEL_WARNING, "test_packet_list_new_packet: successful \n");
+    iprint(LEVEL_WARNING, "test_packet_list_new_packet: successful \n");
   return SUCCESS;
 }
 
@@ -172,7 +172,7 @@ int measurement_self_collect_data (PACKET *p) {
     curr_time.real = p->info.etime.real;
     break;
   default:
-    iprintf(LEVEL_WARNING, "Packet state is not support\n");
+    iprint(LEVEL_WARNING, "Packet state is not support\n");
     return ERR_PACKET_STATE_WRONG;
     break;
   }

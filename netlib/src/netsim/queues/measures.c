@@ -87,7 +87,7 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
     //stat_num_new_sample(&m->waittime, curr_time.real - p->info.atime.real);
     break;
   default:
-    iprintf(LEVEL_WARNING, "Packet state is not support\n");
+    iprint(LEVEL_WARNING, "Packet state is not support\n");
     return ERR_PACKET_STATE_WRONG;
     break;
   }
