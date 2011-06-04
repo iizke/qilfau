@@ -8,7 +8,7 @@
 #define NETSIM_H_
 
 #include "event.h"
-#include "../queues/measures.h"
+#include "queues/measures.h"
 #include "conf/config.h"
 
 /// Functions of a simulated system

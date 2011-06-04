@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "config.h"
-#include "../../error.h"
-#include "../../queues/queue_man.h"
+#include "error.h"
+#include "../queues/queue_man.h"
 long debug = 0;
 CONFIG conf;
 %}

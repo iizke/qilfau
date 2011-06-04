@@ -10,7 +10,7 @@
 #define EVENT_H_
 
 #include <stdio.h>
-#include "../queues/packet.h"
+#include "queues/packet.h"
 
 /**
  * Information in an event

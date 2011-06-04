@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../error.h"
-#include "../queues/fifo.h"
+#include "error.h"
+#include "queues/fifo.h"
 #include "sys_aqueue.h"
 
 /**

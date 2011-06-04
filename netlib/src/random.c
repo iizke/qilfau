@@ -31,10 +31,12 @@ int random_init () {
  * @return a real number in range
  */
 float gen_uniform(float from, float to) {
-  //extern CONFIG conf;
+  extern long seed;
   switch (librand) {
   case LIB_RANDOM_IRAND:
     return (float)irand_gen_uniform((double)from, (double)to);
+  case LIB_RANDOM_POLIRAND:
+    return polirand_uniform(from, to, &seed);
   case LIB_RANDOM_RANDLIB:
   default:
     return genunf(from, to);
@@ -47,11 +49,12 @@ float gen_uniform(float from, float to) {
  * @return an integer number in range
  */
 long gen_int_uniform(long from, long to) {
-  //extern CONFIG conf;
-  //switch (conf.random_lib) {
+  extern long seed;
   switch (librand) {
   case LIB_RANDOM_IRAND:
     return irand_gen_int_uniform(from, to);
+  case LIB_RANDOM_POLIRAND:
+    return polirand_randint(from, to, &seed);
   case LIB_RANDOM_RANDLIB:
   default:
     return ignuin(from, to);
@@ -65,11 +68,12 @@ long gen_int_uniform(long from, long to) {
  */
 float gen_exponential(float lambda){
   // rate ~ lambda
-  //extern CONFIG conf;
-  //switch (conf.random_lib) {
+  extern long seed;
   switch (librand) {
   case LIB_RANDOM_IRAND:
     return (float)irand_gen_exp((double)lambda);
+  case LIB_RANDOM_POLIRAND:
+    return polirand_negexp(1/lambda, &seed);
   case LIB_RANDOM_RANDLIB:
   default:
     return genexp(1/lambda);
@@ -92,7 +96,17 @@ float gen_normal(float mean, float sd) {
  * @return an integer number
  */
 long gen_poisson(float lambda){
-  return ignpoi(lambda);
+  /// seed used in polirand-functions
+  extern long seed;
+  switch (librand) {
+  case LIB_RANDOM_POLIRAND:
+    return polirand_poisson(lambda, &seed);
+  case LIB_RANDOM_IRAND:
+  case LIB_RANDOM_RANDLIB:
+  default:
+    return ignpoi(lambda);
+  }
+  return 0;
 }
 
 /**
@@ -101,18 +115,16 @@ long gen_poisson(float lambda){
  * @return 0 or 1
  */
 int gen_bernoulli(double p) {
-  //extern CONFIG conf;
   float _p;
-  //switch (conf.random_lib) {
   switch (librand) {
   case LIB_RANDOM_IRAND:
     return irand_gen_bernoulli(p);
+  case LIB_RANDOM_POLIRAND:
   case LIB_RANDOM_RANDLIB:
   default:
     _p = (float)p;
     return (int)ignbin(1, _p);
   }
-
 }
 
 /**

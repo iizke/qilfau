@@ -1,0 +1,50 @@
+#!/bin/bash
+DONE=(
+"[${txtgrn}  OK  ${txtrst}]"		#English 
+"[${txtgrn}  OK  ${txtrst}]"		#Vietnamese
+)
+
+FAILED=(
+"[${txtred}Failed${txtrst}]"
+" ${txtred}Thatbai${txtrst}"
+)
+
+CLEANING=(
+"Cleaning temporary files ..."
+"Dang xoa file tam ..."
+)
+
+CHECKING=(
+"Checking"
+"Kiem tra"
+)
+
+INSTALLING=(
+"Installing"
+"Dang cai dat"
+)
+
+SETUP=(
+"Setup"
+"Thiet lap"
+)
+
+CONFIGURE=(
+"Configure"
+"Cau hinh"
+)
+
+ERR_NOT_ROOT=(
+"FAILED: You are not in ROOT account"
+"Ket thuc: Ban can trong tai khoan ROOT moi co the tiep tuc"
+)
+
+ERR_NO_SUDOERS=(
+"ERROR: /etc/sudoers is not existed"
+"LOI: File /etc/sudoers khong ton tai"
+)
+
+GET_CERT=(
+"Get certificate: "
+"Lay chung thuc (certificate): "
+)

@@ -8,9 +8,9 @@
 
 #include <stdlib.h>
 #include "conf/config.h"
-#include "../error.h"
-#include "../queues/fifo.h"
-#include "../random.h"
+#include "error.h"
+#include "queues/fifo.h"
+#include "random.h"
 #include "csma.h"
 
 #define queue_state(qm) (((FIFO_QINFO*)(qm->curr_queue->info))->state)

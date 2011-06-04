@@ -10,7 +10,7 @@
 #define CSMA_H_
 
 #include "event.h"
-#include "../queues/measures.h"
+#include "queues/measures.h"
 #include "netsim.h"
 
 typedef struct csma_state {
