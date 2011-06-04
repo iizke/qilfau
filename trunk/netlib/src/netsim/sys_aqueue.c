@@ -51,7 +51,7 @@ static int update_time (EVENT *e, SYS_STATE *state) {
   if (state->curr_time.real <= e->info.time.real)
     state->curr_time.real = e->info.time.real;
   else {
-    iprintf(LEVEL_WARNING, "Event is late, may be FES is not sorted \n");
+    iprint(LEVEL_WARNING, "Event is late, may be FES is not sorted \n");
     return ERR_EVENT_TIME_WRONG;
   }
   return SUCCESS;
@@ -139,7 +139,7 @@ static int _process_packet (CONFIG *conf, SYS_STATE *state) {
   measurement_collect_data(&state->measurement, p, state->curr_time);
   e = _generate_end_service (p, conf, state);
   if (!e) {
-    iprintf(LEVEL_WARNING, "Cannot generate end service event \n");
+    iprint(LEVEL_WARNING, "Cannot generate end service event \n");
     return ERR_POINTER_NULL;
   }
   return SUCCESS;
@@ -163,7 +163,7 @@ int _packet_from_event (EVENT *e, PACKET *p) {
     p->info.state = PACKET_STATE_OUT;
     break;
   default:
-    iprintf(LEVEL_WARNING, "Event Type not supported \n");
+    iprint(LEVEL_WARNING, "Event Type not supported \n");
     return ERR_EVENT_TYPE_FAIL;
     break;
   }
@@ -268,7 +268,7 @@ EVENT * _generate_event(int type, PACKET *p, CONFIG *conf, SYS_STATE_OPS *ops) {
     e = _generate_end_service(p, conf, state);
     break;
   default:
-    iprintf(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", type);
+    iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", type);
     break;
   }
   return e;
@@ -291,7 +291,7 @@ int _process_event (EVENT *e, CONFIG *conf, SYS_STATE_OPS *ops) {
     _process_end_service(e, conf, state);
     break;
   default:
-    iprintf(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", e->info.type);
+    iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", e->info.type);
     break;
   }
   return SUCCESS;

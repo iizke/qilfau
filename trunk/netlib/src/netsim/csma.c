@@ -39,7 +39,7 @@ static int csma_update_time (EVENT *e, CSMA_STATE *state) {
   if (state->curr_time.real <= e->info.time.real)
     state->curr_time.real = e->info.time.real;
   else {
-    iprintf(LEVEL_ERROR, "Event is late, may be FES is not sorted \n");
+    iprint(LEVEL_ERROR, "Event is late, may be FES is not sorted \n");
     return ERR_EVENT_TIME_WRONG;
   }
   return SUCCESS;
@@ -80,7 +80,7 @@ EVENT* csma_generate_arrival(CONFIG *conf, CSMA_STATE *state) {
   PACKET *packet = NULL;
   int error_code = SUCCESS;
 
-  //iprintf(LEVEL_ERROR, "Gen Arrival Event\n");
+  //iprint(LEVEL_ERROR, "Gen Arrival Event\n");
 
   if (event_list_new_event(&state->future_events, &e) < 0)
     return NULL;
@@ -93,7 +93,7 @@ EVENT* csma_generate_arrival(CONFIG *conf, CSMA_STATE *state) {
   csma_new_packet(state, &packet);
   if (!packet) {
     csma_remove_event(&state->ops, e);
-    iprintf(LEVEL_WARNING, "Cannot allocate new packet \n");
+    iprint(LEVEL_WARNING, "Cannot allocate new packet \n");
     return NULL;
   }
   e->info.packet = packet;
@@ -115,7 +115,7 @@ EVENT * csma_generate_end_service(PACKET *p, CONFIG *conf, CSMA_STATE *state) {
   EVENT *e = NULL;
 
   if (!p) {
-    iprintf(LEVEL_ERROR, "BUG! Cannot generate end-service event because packet is null \n");
+    iprint(LEVEL_ERROR, "BUG! Cannot generate end-service event because packet is null \n");
     return NULL;
   }
   if (event_list_new_event(&state->future_events, &e) < 0)
@@ -142,7 +142,7 @@ static EVENT * csma_generate_access_nopersistent (PACKET *p, double collision_ti
   EVENT *e = NULL;
   int backoff = 0;
   if (!p) {
-    iprintf(LEVEL_ERROR, "BUG! Queue is persistent but no waiting packet !\n");
+    iprint(LEVEL_ERROR, "BUG! Queue is persistent but no waiting packet !\n");
     //exit(1);
   }
   if (event_list_new_event(&state->future_events, &e) < 0)
@@ -177,7 +177,7 @@ EVENT * csma_generate_access(PACKET *p, CONFIG *conf, CSMA_STATE *state) {
   else {
     QUEUE_TYPE *qt = p->info.queue;
     if (qt->get_waiting_length(qt) == 0) {
-      iprintf(LEVEL_ERROR, "BUG! Generate access with persistent but no waiting packet \n");
+      iprint(LEVEL_ERROR, "BUG! Generate access with persistent but no waiting packet \n");
     } else {
       ((FIFO_QINFO*)(p->info.queue->info))->state = QUEUE_STATE_PERSISTENT;
       if (p->info.ctime.real == 0)
@@ -218,7 +218,7 @@ static int csma_process_a_packet (QUEUE_TYPE *qt, CONFIG *conf, CSMA_STATE *stat
   PACKET *p = NULL;
   qt->select_waiting_packet(qt, &p);
   if (p == NULL) {
-    iprintf(LEVEL_ERROR, "BUG! There is no waiting packet but still have to process it\n");
+    iprint(LEVEL_ERROR, "BUG! There is no waiting packet but still have to process it\n");
     return ERR_POINTER_NULL;
   }
 
@@ -229,7 +229,7 @@ static int csma_process_a_packet (QUEUE_TYPE *qt, CONFIG *conf, CSMA_STATE *stat
   measurement_collect_data(&state->measurement, p, state->curr_time);
   e = csma_generate_end_service (p, conf, state);
   if (!e) {
-    iprintf(LEVEL_WARNING, "Cannot generate end service event \n");
+    iprint(LEVEL_WARNING, "Cannot generate end service event \n");
     return ERR_POINTER_NULL;
   }
   return SUCCESS;
@@ -299,7 +299,7 @@ static int csma_count_persistent_queue(CONFIG *conf, CSMA_STATE *state, QUEUE_TY
     QUEUE_TYPE *qt = state->queues[i].curr_queue;
     if (((FIFO_QINFO*)qt->info)->state == QUEUE_STATE_PERSISTENT) {
       if (qt->get_waiting_length(qt) <= 0) {
-        iprintf(LEVEL_ERROR, "BUG! Queue in state Persistent while no waiting packet \n");
+        iprint(LEVEL_ERROR, "BUG! Queue in state Persistent while no waiting packet \n");
         ((FIFO_QINFO*)qt->info)->state = QUEUE_STATE_NOPERSISTENT;
         continue;
         //exit(1);
@@ -402,7 +402,7 @@ EVENT * csma_generate_event(int type, PACKET *p, CONFIG *conf, SYS_STATE_OPS *op
     e = csma_generate_collision(p, conf, state);
     break;
   default:
-    iprintf(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", type);
+    iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", type);
     break;
   }
   return e;
@@ -431,7 +431,7 @@ int csma_process_event (EVENT *e, CONFIG *conf, SYS_STATE_OPS *ops) {
     csma_process_collision(e, conf, state);
     break;
   default:
-    iprintf(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", e->info.type);
+    iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", e->info.type);
     break;
   }
   return SUCCESS;

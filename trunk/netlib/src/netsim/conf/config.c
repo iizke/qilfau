@@ -35,7 +35,7 @@ int config_random_conf (RANDOM_CONF *rc) {
     random_dist_init_bernoulli0(&rc->distribution, &rc->prob);
     break;
   default:
-    iprintf(LEVEL_ERROR, "This type (%d) of random type is not supported\n", rc->type);
+    iprint(LEVEL_ERROR, "This type (%d) of random type is not supported\n", rc->type);
     return ERR_RANDOM_TYPE_FAIL;
   }
   return SUCCESS;

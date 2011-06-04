@@ -174,7 +174,7 @@ unsigned long irand_gen_srandom (int type, unsigned long seed) {
     break;
   case RND_TYPE_TAUSWORTHE:
   default:
-    iprintf(LEVEL_WARNING, "Not support this type (%d) to generate random number\n", type);
+    iprint(LEVEL_WARNING, "Not support this type (%d) to generate random number\n", type);
     return 0;
   }
   return 0;
@@ -196,7 +196,7 @@ double irand_gen_srandom_real (int type, unsigned long seed) {
     break;
   case RND_TYPE_TAUSWORTHE:
   default:
-    iprintf(LEVEL_WARNING, "Not support this type (%d) to generate random number\n", type);
+    iprint(LEVEL_WARNING, "Not support this type (%d) to generate random number\n", type);
     return 0;
   }
   return 0;
@@ -205,7 +205,7 @@ double irand_gen_srandom_real (int type, unsigned long seed) {
 unsigned long irand_gen_range_random (int type, unsigned long from, unsigned long to) {
   unsigned long value = irand_gen_random(type);
   if (to <= from) {
-    iprintf(LEVEL_WARNING, "irand failed to generate Random number: Range is not correct \n");
+    iprint(LEVEL_WARNING, "irand failed to generate Random number: Range is not correct \n");
     return 0;
   }
   return (value % (to - from) + from);
@@ -228,7 +228,7 @@ int irand_init () {
  */
 int irand_new_seed (unsigned long seed) {
   if (seed == 0) {
-    iprintf(LEVEL_WARNING, "Seed should not be 0. \n");
+    iprint(LEVEL_WARNING, "Seed should not be 0. \n");
     return 0;
   }
   linear_rnd_gen.seed = seed;

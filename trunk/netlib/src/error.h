@@ -13,6 +13,7 @@
 
 /// Turn on Debug mode
 #define DEBUG
+
 /// Print out all error-labeled messages
 #define LEVEL_ERROR     0b00000001
 /// Print out all warning-labeled messages
@@ -28,7 +29,8 @@
 
 #ifdef DEBUG
 extern long debug;
-#define iprintf(level, fmt, args...)                  \
+
+#define iprint(level, fmt, args...)                  \
   {                                                       \
     if (level & debug) {                                 \
       printf("File %s, line %d: \n", __FILE__, __LINE__); \
@@ -36,7 +38,7 @@ extern long debug;
     }                                                     \
   }
 #else
-#define iprintf(level, fmt, args...)
+#define iprint(level, fmt, args...)
 #endif
 
 #define try(stm)                                          \
@@ -49,7 +51,7 @@ extern long debug;
 #define check_null_pointer(_p)                            \
   {                                                       \
     if (!_p) {                                            \
-      iprintf(LEVEL_WARNING, "NULL pointer\n");             \
+      iprint(LEVEL_WARNING, "NULL pointer\n");             \
       return ERR_POINTER_NULL;                            \
     }                                                     \
   }
