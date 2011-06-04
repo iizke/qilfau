@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
-#include "../error.h"
-#include "../queues/fifo.h"
+#include "error.h"
+#include "queues/fifo.h"
 #include "conf/parser.h"
 #include "conf/config.h"
 #include "sys_aqueue.h"

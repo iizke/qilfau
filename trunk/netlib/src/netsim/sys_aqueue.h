@@ -9,9 +9,9 @@
 #ifndef SYS_AQUEUE_H_
 #define SYS_AQUEUE_H_
 
-#include "../queues/measures.h"
+#include "queues/measures.h"
+#include "queues/queue_man.h"
 #include "event.h"
-#include "../queues/queue_man.h"
 #include "netsim.h"
 
 /**

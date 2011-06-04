@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "irand/irand.h"
 #include "ranlib/ranlib.h"
+#include "polirand/random.h"
 
 /// Random library implemented by iizke
 #define LIB_RANDOM_IRAND                  0
