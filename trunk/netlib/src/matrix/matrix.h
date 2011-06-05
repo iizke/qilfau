@@ -10,26 +10,43 @@
 #define MATRIX_H_
 #include <stdio.h>
 
-typedef struct edge {
-  int source;
-  int dest;
-  void *data;
-} EDGE;
+typedef struct column {
+  int id;
+  float data;
+} COLUMN;
 
 typedef struct row {
-  int nlinks;
-  EDGE *links;
+  int id;
+  int ncols;
+  COLUMN *cols;
 } ROW;
 
+typedef struct sparse_matrix {
+  int nrows;
+  ROW *rows;
+} SPARSE_MATRIX;
+
+typedef struct dense_matrix {
+  float** vals;
+}DENSE_MATRIX;
+
 typedef struct matrix {
-  int nnodes;
-  ROW *links;
+  int type;
+  int nrows;
+  int ncols;
+  union {
+    DENSE_MATRIX *_dense;
+    SPARSE_MATRIX *_sparse;
+  } data;
 } MATRIX;
 
+#define MATRIX_TYPE_DENSE           1
+#define MATRIX_TYPE_SPARSE          2
+
 int matrix_get_row (MATRIX *, int row, ROW **);
-int matrix_init (MATRIX **);
-int matrix_setup (FILE *);
+int matrix_init (MATRIX **, int);
+int matrix_setup (MATRIX *, FILE*);
 int matrix_build_index(MATRIX *, int);
-void* matrix_get_value (MATRIX *, int, int);
+float matrix_get_value (MATRIX *, int, int);
 
 #endif /* MATRIX_H_ */

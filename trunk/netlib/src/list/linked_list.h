@@ -44,7 +44,7 @@ typedef struct linked_list_manager {
 #define ERR_LL_CONF_WRONG           (-3)
 
 /// Check linked list empty (return 1) or not (return 0)
-#define linked_list_is_empty(_l)   (_l->next == _l)
+#define linked_list_is_empty(_l)   ((_l)->next == (_l))
 
 /// Return the pointer of struct TYPE having a member name MEMBER with pointer ptr
 #define container_of(ptr, type, member) ({                      \

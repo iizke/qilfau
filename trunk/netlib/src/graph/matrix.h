@@ -3,7 +3,7 @@
 #ifndef _MATRIX_
 #define _MATRIX_
 
-typedef double **MATRIX;
+typedef double **_MATRIX;
 #define entry(pm,r,c)	(pm[r][c])
 
 #endif

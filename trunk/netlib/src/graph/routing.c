@@ -424,7 +424,7 @@ reset_max_flow_field (PGRAPH g)
 	memorizzati nella matrice opportuna	*/
 
 void
-update_flow (PGRAPH g, BOOL flag_mp, MATRIX trf_m, BOOL fault)
+update_flow (PGRAPH g, BOOL flag_mp, _MATRIX trf_m, BOOL fault)
 {
 
   int s, d, k, num_nodes = num_nodes_graph (g);

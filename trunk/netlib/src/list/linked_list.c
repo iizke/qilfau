@@ -11,6 +11,11 @@
 #include "linked_list.h"
 #include "../error.h"
 
+/**
+ * Initialize linked list structure
+ * @param l : Linked list
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_init (LINKED_LIST *l) {
   check_null_pointer(l);
   l->next = l;
@@ -18,6 +23,12 @@ int linked_list_init (LINKED_LIST *l) {
   return SUCCESS;
 }
 
+/**
+ * Insert new element into a linked list. Element can be seen as a linked list
+ * @param l : Linked list
+ * @param e : New element
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_insert (LINKED_LIST *l, LINKED_LIST *e) {
   LINKED_LIST *last = NULL;
   check_null_pointer(l);
@@ -31,6 +42,11 @@ int linked_list_insert (LINKED_LIST *l, LINKED_LIST *e) {
   return SUCCESS;
 }
 
+/**
+ * Remove an element out of linked list
+ * @param e : Removed element
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_remove (LINKED_LIST *e) {
   LINKED_LIST *next = NULL;
   LINKED_LIST *prev = NULL;
@@ -46,6 +62,12 @@ int linked_list_remove (LINKED_LIST *e) {
   return SUCCESS;
 }
 
+/**
+ * Return the first element in a linked list
+ * @param l : Linked list
+ * @param e : returned the first element in list
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_get_first(LINKED_LIST *l, LINKED_LIST **e) {
   // not check validity
   check_null_pointer(l);
@@ -57,6 +79,11 @@ int linked_list_get_first(LINKED_LIST *l, LINKED_LIST **e) {
   return SUCCESS;
 }
 
+/**
+ * Print out all elements of a linked list. Normally used in testing
+ * @param l : Linked list
+ * @return Error code (see more in def.h and error.h)
+ */
 int print_list (LINKED_LIST *l) {
   check_null_pointer(l);
   while (! linked_list_is_empty(l)) {
@@ -90,6 +117,11 @@ int test_linked_list () {
   return SUCCESS;
 }
 
+/**
+ * Initialize a manager of linked-list
+ * @param lm : linked list manager
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_man_init (LINKED_LIST_MAN *lm) {
   check_null_pointer(lm);
   try ( linked_list_init(&(lm->entries)) );
@@ -98,12 +130,24 @@ int linked_list_man_init (LINKED_LIST_MAN *lm) {
   return SUCCESS;
 }
 
+/**
+ * Initialize linked list manager with configuration
+ * @param lm : Linked list manager
+ * @param conf : Configuration. It can be LL_CONF_STORE_FREE or LL_CONF_STORE_ENTRY (or both)
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_man_init_conf (LINKED_LIST_MAN *lm, int conf) {
   try (linked_list_man_init(lm));
   lm->conf = conf;
   return SUCCESS;
 }
 
+/**
+ * Insert new element in a Linked list controlled by a manager
+ * @param lm : Linked list manager
+ * @param e : new element
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_man_insert (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
   check_null_pointer(lm);
   check_null_pointer(e);
@@ -114,6 +158,12 @@ int linked_list_man_insert (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
   return SUCCESS;
 }
 
+/**
+ * Remove an element out of linked list controlled by a manager
+ * @param lm : Linked List manager
+ * @param e : Removed element. This element is not freed but reused in the next allocation
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_man_remove (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
   check_null_pointer(lm);
   check_null_pointer(e);
@@ -124,12 +174,24 @@ int linked_list_man_remove (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
   return SUCCESS;
 }
 
+/**
+ * Get the first element in linked list controlled by a manager
+ * @param lm : Linked list manager
+ * @param e : linked list element
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_man_get_first(LINKED_LIST_MAN *lm, LINKED_LIST **e) {
   check_null_pointer(lm);
   linked_list_get_first(&lm->entries, e);
   return SUCCESS;
 }
 
+/**
+ * Get an element which is freed before
+ * @param lm : Linked list manager
+ * @param e : free element
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_man_get_free_entry (LINKED_LIST_MAN *lm, LINKED_LIST **e) {
   check_null_pointer(lm);
   if (! linked_list_is_empty( (&lm->free_entries) ) ) {
@@ -141,6 +203,17 @@ int linked_list_man_get_free_entry (LINKED_LIST_MAN *lm, LINKED_LIST **e) {
   return SUCCESS;
 }
 
+/**
+ * Allocate a new linked list structure but controlled by a manager. The manager
+ * can reused the free memory (last allocation) for this allocation (no need to
+ * do malloc).
+ * @param lm : Linked list manager
+ * @param e : new element
+ * @param size : size of new element. This parameter is only used when do malloc.
+ * So please take care of using this function: all new structures of linked list
+ * have the same size in your program.
+ * @return Error code (see more in def.h and error.h)
+ */
 int linked_list_man_alloc (LINKED_LIST_MAN *lm, LINKED_LIST **e, int size) {
   check_null_pointer(lm);
   try (linked_list_man_get_free_entry(lm, e));

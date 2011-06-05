@@ -10,6 +10,7 @@
 #define ERROR_H_
 
 #include <stdio.h>
+#include "list/linked_list.h"
 
 /// Turn on Debug mode
 #define DEBUG
@@ -50,7 +51,7 @@ extern long debug;
 
 #define check_null_pointer(_p)                            \
   {                                                       \
-    if (!_p) {                                            \
+    if (!(_p)) {                                            \
       iprint(LEVEL_WARNING, "NULL pointer\n");             \
       return ERR_POINTER_NULL;                            \
     }                                                     \
@@ -75,9 +76,22 @@ extern long debug;
 /// Error while inconsistent happen in simulating CSMA
 #define ERR_CSMA_INCONSISTENT       (-30)
 
-static void error (char *msg, FILE * fp) {
-  fprintf (fp, "ERROR: %s\n", msg);
-  exit (1);
-}
+typedef struct trash {
+  LINKED_LIST garbage_list;
+} TRASH;
+
+typedef struct garbage {
+  LINKED_LIST list_node;
+  void *link;
+} GARBAGE;
+
+void * gc_malloc(int size);
+void error (char *msg, FILE * fp);
+int trash_collect_garbage(GARBAGE *g);
+int trash_clean ();
+int trash_init ();
+
+#define imalloc(size)     gc_malloc(size)
+#define malloc_gc(size)   gc_malloc(size)
 
 #endif /* ERROR_H_ */
