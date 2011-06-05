@@ -5,7 +5,7 @@
 
 /* Allocazione ed inizializzazione matrice di traffico  */
 
-MATRIX alloc_matrix(MATRIX matrix, int n) {
+_MATRIX alloc_matrix(_MATRIX matrix, int n) {
   int i, j;
 
   if ((matrix = (double **) malloc(sizeof(double *) * n)) == NULL)
@@ -104,7 +104,7 @@ int read_input_matrix(int num_nodes, FILE * fp_trf, FILE * fp_weight_route) {
     return (TRUE);
   }
 
-  void print_matrix(MATRIX matrix, int n, FILE * fp_result) {
+  void print_matrix(_MATRIX matrix, int n, FILE * fp_result) {
     int i, j;
     TRAFFIC tot_traffic = 0.0;
 

@@ -49,14 +49,14 @@ PITEM p_PATH_ITEM_free;
 PLINK p_LINK_free;
 PLINKLIST p_LINKLIST_free;
 GRAPH g;
-MATRIX trf_m, weight_route;
+_MATRIX trf_m, weight_route;
 long int seed;
 #else
 extern PITEM p_PATH_ITEM_free;
 extern PLINK p_LINK_free;
 extern PLINKLIST p_LINKLIST_free;
 extern GRAPH g;
-extern MATRIX trf_m, dist_m, weight_route;
+extern _MATRIX trf_m, dist_m, weight_route;
 extern long int seed;
 extern int length_pck;
 #endif
@@ -100,12 +100,12 @@ void read_graph (FILE * fl, PGRAPH g);
 
 /* Prototipi per matrix.c */
 
-MATRIX alloc_matrix (MATRIX matrix, int n);
+_MATRIX alloc_matrix (_MATRIX matrix, int n);
 DISCRETE_CAP_MATRIX alloc_discrete_cap_matrix (DISCRETE_CAP_MATRIX
 					       dis_cap_matrix, int n,
 					       int num_cap);
 int read_input_matrix (int num_nodes, FILE * fp_trf, FILE * fp_weight_route);
-void print_matrix (MATRIX matrix, int n, FILE * fp_result);
+void print_matrix (_MATRIX matrix, int n, FILE * fp_result);
 void print_discrete_cap_matrix (DISCRETE_CAP_MATRIX dis_cap_matrix,
 				FILE * fp_result, int num_cap, int n);
 int build_random_traffic_matrix0(int num_nodes, double lb, double ub);
@@ -132,7 +132,7 @@ void find_all_sh_path (FILE * fp, PGRAPH g, ITEM_HEAP * pr_queue);
 void reset_flow (PGRAPH g);
 void reset_broken_flow (PGRAPH g);
 void reset_max_flow_field (PGRAPH g);
-void update_flow (PGRAPH g, BOOL flag_mp, MATRIX trf_m, BOOL fault);
+void update_flow (PGRAPH g, BOOL flag_mp, _MATRIX trf_m, BOOL fault);
 BOOL total_route_flow (PGRAPH g, ITEM_HEAP * pr_queue, BOOL fault,
 		       NODEID node, BOOL option_move);
 
