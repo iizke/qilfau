@@ -133,14 +133,8 @@ static void netsim_print_result(CONFIG *conf) {
  * Signal handler (SIGINT and SIGTERM) used whenever main process is stopped by
  * user (normally with Ctrl+C).
  * @param n : interrupt number (no use)
- * @param info : signal information (no use)
- * @param data : context data (no use)
  */
-#ifdef __linux__
-static void netsim_sig_handler(int n, siginfo_t *info, void *data) {
-#else
 static void netsim_sig_handler(int n) {
-#endif
   netsim_print_result(&conf);
   printf("Cleaning system ...\n");
   ((SYS_STATE_OPS*)conf.runtime_state)->clean(&conf, conf.runtime_state);
@@ -173,16 +167,8 @@ int netsim_start (char *conf_file) {
   CSMA_STATE csma_state;
   SYS_STATE_OPS *ops = NULL;
 
-#ifdef __linux__
-  struct sigaction ac;
-  ac.sa_sigaction = netsim_sig_handler;
-  ac.sa_flags = SA_SIGINFO;
-  sigaction(SIGINT, &ac, NULL);
-  sigaction(SIGTERM, &ac, NULL);
-#else
   signal(SIGINT, netsim_sig_handler);
   signal(SIGTERM, netsim_sig_handler);
-#endif
 
   random_init();
   try( config_parse_file (conf_file) );
