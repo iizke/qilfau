@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "error.h"
 #include "fifo.h"
 
@@ -175,6 +176,7 @@ int fifo_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
     if (! *q_fifo)
       return ERR_MALLOC_FAIL;
   }
+  memset(*q_fifo, 0, sizeof(QUEUE_TYPE));
   fifo_setup(*q_fifo, max_executing, max_waiting);
   return SUCCESS;
 }

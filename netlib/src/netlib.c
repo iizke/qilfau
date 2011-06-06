@@ -32,10 +32,10 @@ int check_matrix () {
 }
 
 int main (int nargs, char** args) {
-  trash_init();
-  //check_netsim();
+  //trash_init();
+  check_netsim();
   //main_graph(nargs, args);
-  check_matrix();
-  trash_clean();
+  //check_matrix();
+  //trash_clean();
   return SUCCESS;
 }
