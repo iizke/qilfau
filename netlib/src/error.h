@@ -44,15 +44,15 @@ extern long debug;
 
 #define try(stm)                                          \
   {                                                       \
-    int _err_ = stm;                                      \
+    int _err_ = (stm);                                    \
     if (_err_ < 0)                                        \
       return _err_;                                       \
   }
 
 #define check_null_pointer(_p)                            \
   {                                                       \
-    if (!(_p)) {                                            \
-      iprint(LEVEL_WARNING, "NULL pointer\n");             \
+    if (!(_p)) {                                          \
+      iprint(LEVEL_WARNING, "NULL pointer\n");            \
       return ERR_POINTER_NULL;                            \
     }                                                     \
   }
