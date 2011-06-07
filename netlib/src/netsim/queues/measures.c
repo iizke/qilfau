@@ -39,14 +39,17 @@ int measures_init (MEASURES *m) {
  */
 int print_measurement (MEASURES *m) {
   check_null_pointer(m);
-  print_statistical_value("queue length", &m->queue_len, 0.9);
-  print_statistical_value("waiting time", &m->waittime, 0.9);
+  print_statistical_value("#customers in queue", &m->queue_len, 0.9);
+  print_statistical_value("Queue response time", &m->waittime, 0.9);
   print_statistical_value("service time", &m->servtime, 0.9);
   print_statistical_value("inter-arrival time", &m->interarrival_time, 0.9);
   printf("%20s : %d \n", "total arrival",(int)m->total_arrivals);
   printf("%20s : %d \n","total departure", (int)m->total_departures);
   printf("%20s : %d \n", "total dropped", (int)m->total_dropped);
   printf("%20s : %.3f \n", "total time", m->total_time);
+  printf("%20s : %4.5f \n","throughput", m->total_departures/m->total_time);
+  printf("%20s : %4.5f \n","utilization", (m->total_departures * m->servtime.avg / m->total_time));
+  printf("%20s : %4.5f \n","drop probability", (float)m->total_dropped/(float)m->total_arrivals);
 
   return SUCCESS;
 }

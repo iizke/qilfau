@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "queues/packet.h"
+#include "conf/config.h"
 
 /**
  * Information in an event
@@ -73,6 +74,7 @@ typedef struct event_list {
 
 int event_init (EVENT *e);
 int event_save (EVENT *e, FILE *file);
+int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time);
 
 int event_list_init (EVENT_LIST *el);
 int event_list_new_event (EVENT_LIST *el, EVENT **e);

@@ -153,6 +153,39 @@ int event_save (EVENT *e, FILE *f) {
 }
 
 /**
+ * Setup time of event based on its statistical characteristics.
+ * @param e : Event
+ * @param fc : random configuration
+ * @param curr_time : Current time
+ * @return Error code (see more in def.h and error.h)
+ */
+int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
+  float time;
+  int type;
+  float etime;
+  switch (fc->type) {
+  case RANDOM_MARKOVIAN:
+    e->info.time.real = curr_time.real + gen_exponential(fc->lambda);
+    break;
+  case RANDOM_FILE:
+    fscanf(fc->from_file, "%f %d %f", &time, &type, &etime);
+    e->info.time.real = time;
+    iprint(LEVEL_INFO, "Get time from file, value %f \n", e->info.time.real);
+    break;
+  case RANDOM_UNIFORM:
+    e->info.time.real = curr_time.real + gen_uniform(fc->from, fc->to);
+    break;
+  default:
+    iprint(LEVEL_WARNING, "Flow type is not supported \n");
+    return ERR_RANDOM_TYPE_FAIL;
+    break;
+  }
+  return SUCCESS;
+}
+
+
+
+/**
  * Unit test of function event_list_insert
  * @return Error-code (defined in def.h and libs/error.h)
  */
