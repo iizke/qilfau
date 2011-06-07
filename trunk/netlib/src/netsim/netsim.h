@@ -29,6 +29,5 @@ struct system_state_operations {
   int (*clean) (CONFIG*, SYS_STATE_OPS*);
 };
 
-int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time);
 int netsim_start (char *conf_file);
 #endif /* CONFIG_H_ */
