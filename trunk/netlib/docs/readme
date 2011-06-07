@@ -1,15 +1,18 @@
 README:
 
 This library is first used for course of Network modelling and Operation research.
-It includes some important data structures and algorithms such as: linked list, heap, shortest path algorithms, discrete event scheduling framework, etc. 
+It includes some important data structures and algorithms such as: linked list, heap, 
+shortest path algorithms, discrete event scheduling framework, etc. 
 
 1. Discrete Event Scheduling (DES) Simulation
-The framework of DES is in netsim/netsim.{h,c}. This framework helps you to simulate a system without writing it from scratch. To write a new DES system, you have just considered:
+The framework of DES is in netsim/netsim.{h,c}. This framework helps you to simulate 
+a system without writing it from scratch. To write a new DES system, you have just considered:
   - How to generate an event by implement the pointer function generate_event()
   - How to process an event by implement the pointer function process_event()
   - What is the condition of stopping simulation with pointer function allow_continue()
   - How to get next event with pointer function get_next_event()
-When you finish all of these functions, your simulation is nearly ready to work before calling function pisas_sched(). This function will start to emulate your system.
+When you finish all of these functions, your simulation is nearly ready to work before 
+calling function pisas_sched(). This function will start to emulate your system.
 
 2. Operation research
 In progressing of modifying source code.
