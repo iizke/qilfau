@@ -87,7 +87,7 @@ EVENT* csma_generate_arrival(CONFIG *conf, CSMA_STATE *state) {
   e->info.type = EVENT_ARRIVAL;
   error_code = event_setup(e, &conf->arrival_conf, state->curr_time);
   if (error_code < 0) {
-    free (e);
+    free_gc (e);
     return NULL;
   }
   csma_new_packet(state, &packet);
@@ -492,17 +492,18 @@ static int csma_system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
   if (conf->arrival_conf.to_file)
     fclose(conf->arrival_conf.to_file);
   if (conf->queue_conf.out_file)
-      fclose(conf->queue_conf.out_file);
+    fclose(conf->queue_conf.out_file);
 
-  while (state->free_packets.size > 0) {
-    PACKET *p = NULL;
-    packet_list_get_first(&state->free_packets, &p);
-    linked_list_remove(&p->list_node);
-    free(p);
-  }
-
-  free(state->queues[0].curr_queue);
-  free(state->queues);
+  //This part of code is supported by Garbage collector -> comment these codes
+//  while (state->free_packets.size > 0) {
+//    PACKET *p = NULL;
+//    packet_list_get_first(&state->free_packets, &p);
+//    linked_list_remove(&p->list_node);
+//    free(p);
+//  }
+//
+//  free(state->queues[0].curr_queue);
+//  free(state->queues);
   return SUCCESS;
 }
 
@@ -523,12 +524,12 @@ int csma_state_init (CSMA_STATE *state, CONFIG *conf) {
   event_list_init(&state->future_events);
   measures_init (&state->measurement);
 
-  state->queues = malloc(sizeof(QUEUE_MAN) * conf->csma_conf.nstations);
+  state->queues = malloc_gc(sizeof(QUEUE_MAN) * conf->csma_conf.nstations);
   state->nqueues = conf->csma_conf.nstations;
   if (!state->queues)
     return ERR_MALLOC_FAIL;
 
-  ffq = malloc (sizeof(QUEUE_TYPE) * state->nqueues);
+  ffq = malloc_gc (sizeof(QUEUE_TYPE) * state->nqueues);
   if (!ffq)
     return ERR_MALLOC_FAIL;
 

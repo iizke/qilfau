@@ -309,8 +309,10 @@ int netsim_start_thread (char *conf_file) {
   try( config_parse_file (conf_file) );
   threads = malloc_gc(sizeof(pthread_t)*conf.nthreads);
   check_null_pointer(threads);
+
   signal(SIGINT, netsim_sig_handler);
   signal(SIGTERM, netsim_sig_handler);
+
   random_init();
   for (i = 0; i < conf.nthreads; i++)
     pthread_create(&threads[i], NULL, netsim_thread, &conf);

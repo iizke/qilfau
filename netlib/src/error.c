@@ -52,6 +52,10 @@ void * gc_malloc(int size) {
   return g->link;
 }
 
+void gc_free (void *p) {
+  return;
+}
+
 /**
  * Empty trash
  * @return Error code

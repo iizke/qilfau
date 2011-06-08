@@ -55,7 +55,7 @@ int packet_list_new_packet (PACKET_LIST *pf, PACKET **p){
   if (l)
     *p = container_of(l, PACKET, list_node);
   else
-    *p = malloc (sizeof(PACKET));
+    *p = malloc_gc (sizeof(PACKET));
   if (! *p)
     return ERR_MALLOC_FAIL;
   packet_init(*p);

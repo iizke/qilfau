@@ -70,7 +70,7 @@ EVENT* _generate_arrival (CONFIG *conf, SYS_STATE *state) {
   e->info.type = EVENT_ARRIVAL;
   error_code = event_setup(e, &conf->arrival_conf, state->curr_time);
   if (error_code < 0) {
-    free (e);
+    free_gc (e);
     return NULL;
   }
   event_list_insert_event(&state->future_events, e);
@@ -237,14 +237,15 @@ static int _system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
   if (conf->queue_conf.out_file)
       fclose(conf->queue_conf.out_file);
 
-  while (state->free_packets.size > 0) {
-    // free packet
-    PACKET *p = NULL;
-    packet_list_get_first(&state->free_packets, &p);
-    linked_list_remove(&p->list_node);
-    free(p);
-  }
-  free(state->queues.curr_queue);
+  //This part of code is supported by Garbage collector -> comment these codes
+//  while (state->free_packets.size > 0) {
+//    // free packet
+//    PACKET *p = NULL;
+//    packet_list_get_first(&state->free_packets, &p);
+//    linked_list_remove(&p->list_node);
+//    free(p);
+//  }
+//  free(state->queues.curr_queue);
   return SUCCESS;
 }
 

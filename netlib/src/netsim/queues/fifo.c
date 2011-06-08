@@ -172,7 +172,7 @@ static int ff_get_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
 int fifo_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
 
   if (! *q_fifo) {
-    *q_fifo = malloc(sizeof(QUEUE_TYPE));
+    *q_fifo = malloc_gc(sizeof(QUEUE_TYPE));
     if (! *q_fifo)
       return ERR_MALLOC_FAIL;
   }
@@ -193,7 +193,7 @@ int fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   check_null_pointer(q_fifo);
 
   if (!q_fifo->info) {
-    ff_queue_info = malloc(sizeof(FIFO_QINFO));
+    ff_queue_info = malloc_gc(sizeof(FIFO_QINFO));
     if (!ff_queue_info)
       return ERR_MALLOC_FAIL;
     q_fifo->info = ff_queue_info;

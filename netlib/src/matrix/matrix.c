@@ -18,7 +18,7 @@
  * @return Error code (see in def.h and error.h)
  */
 int matrix_init (MATRIX **m, int type) {
-  *m = (MATRIX*)malloc (sizeof(MATRIX));
+  *m = (MATRIX*)malloc_gc (sizeof(MATRIX));
   check_null_pointer(*m);
   (*m)->type = type;
   return SUCCESS;

@@ -35,7 +35,7 @@ int event_list_new_event (EVENT_LIST *el, EVENT **e){
   if (l)
     *e = container_of(l, EVENT, list_node);
   else
-    *e = malloc(sizeof(EVENT));
+    *e = malloc_gc(sizeof(EVENT));
   if(! *e)
     return ERR_MALLOC_FAIL;
 

@@ -219,7 +219,7 @@ int linked_list_man_alloc (LINKED_LIST_MAN *lm, LINKED_LIST **e, int size) {
   try (linked_list_man_get_free_entry(lm, e));
   if (! *e) {
     // allocate new memory
-    *e = (LINKED_LIST*) malloc(size);
+    *e = (LINKED_LIST*) malloc_gc(size);
     if (! *e) {
       iprint(LEVEL_WARNING, "Cannot allocate new memory\n");
       return ERR_LL_MAN_ALLOC;
