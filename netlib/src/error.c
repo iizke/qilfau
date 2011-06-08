@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "error.h"
 #include "list/linked_list.h"
 
