@@ -11,6 +11,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <math.h>
+#include <time.h>
 #include "error.h"
 #include "math_util.h"
 #include "queues/fifo.h"
@@ -226,6 +227,7 @@ static void* netsim_thread (CONFIG *conf) {
   MEASURES *m = NULL;
   CONFIG local_conf;
   SYS_STATE_OPS *ops = NULL;
+  time_t start = time(NULL);
 
   //signal(SIGINT, netsim_sig_handler);
   //signal(SIGTERM, netsim_sig_handler);
@@ -253,6 +255,7 @@ static void* netsim_thread (CONFIG *conf) {
   pisas_sched(&local_conf, ops);
   printf("Thread info: \n");
   netsim_print_result(&local_conf);
+  printf("Thread run time: %d (seconds) \n", time(NULL) - start);
   //netsim_print_theorical_result(&conf);
   return m;
 }
@@ -300,6 +303,9 @@ int netsim_start_thread (char *conf_file) {
   MEASURES m;
   MEASURES *lm; // local measurement
   int i;
+  time_t start;
+
+  start = time(NULL);
   try( config_parse_file (conf_file) );
   threads = malloc_gc(sizeof(pthread_t)*conf.nthreads);
   check_null_pointer(threads);
@@ -314,9 +320,10 @@ int netsim_start_thread (char *conf_file) {
     pthread_join(threads[i], &lm);
     measurement_merge(&m, lm);
   }
-  printf("MERGING RESULT: \n");
+  printf("MERGING RESULT:\n");
   print_measurement(&m);
   //netsim_print_result(&conf);
-  //netsim_print_theorical_result(&conf);
+  netsim_print_theorical_result(&conf);
+  printf("Time of simulation: %d (seconds) \n", time(NULL)-start);
   return SUCCESS;
 }

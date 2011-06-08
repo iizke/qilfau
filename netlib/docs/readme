@@ -16,5 +16,16 @@ When you finish all these functions, your simulation is nearly ready to work
 before calling function pisas_sched(). This function will start to emulate your 
 system.
 
+1.1 Using netsim to simulate queueing system (short user guide)
+First, take a look at file netlib.c to modify the path of configuration file. To
+be sure, you can fix this as absolute path in function check_netsim(). You can do
+another way more advance, it is except to you. 
+Second, modify the configuration file. If you do not change anything in netlib.c
+(but need to be sure that main function call check_netsim()), you need to see the 
+configuration file: netsim/conf/test.conf. In this file, there are some comments
+that may help you in tuning or modifying the characteristics of simulated system.
+Finally, compile and run this program (execution file name is netlib). 
+Enjoy the results!
+
 2. Operation research
 In progressing of modifying source code.
