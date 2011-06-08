@@ -51,6 +51,7 @@ int config_init (CONFIG *conf) {
   memset(conf, 0, sizeof(CONFIG));
   conf->random_lib = LIB_RANDOM_IRAND;
   conf->stop_conf.queue_zero = STOP_QUEUE_ZERO;
+  conf->nthreads = 2;
   return SUCCESS;
 }
 

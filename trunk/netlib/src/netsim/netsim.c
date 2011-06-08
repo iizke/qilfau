@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
+#include <pthread.h>
 #include <math.h>
 #include "error.h"
 #include "math_util.h"
@@ -219,6 +220,43 @@ static void netsim_sig_handler(int n) {
   exit(1);
 }
 
+static void* netsim_thread (CONFIG *conf) {
+  SYS_STATE* sys_state;
+  CSMA_STATE* csma_state;
+  MEASURES *m = NULL;
+  CONFIG local_conf;
+  SYS_STATE_OPS *ops = NULL;
+
+  //signal(SIGINT, netsim_sig_handler);
+  //signal(SIGTERM, netsim_sig_handler);
+  memcpy(&local_conf, conf, sizeof(CONFIG));
+  local_conf.stop_conf.max_time /= local_conf.nthreads;
+  local_conf.stop_conf.max_arrival /= local_conf.nthreads;
+  switch (local_conf.protocol) {
+  case PROTOCOL_CSMA:
+    csma_state = malloc_gc(sizeof(CSMA_STATE));
+    csma_state_init (csma_state, &local_conf);
+    ops = &csma_state->ops;
+    m = &csma_state->measurement;
+    break;
+  case PROTOCOL_ONE_QUEUE:
+    sys_state = malloc_gc(sizeof(SYS_STATE));
+    sys_state_init (sys_state, &local_conf);
+    ops = &sys_state->ops;
+    m = &sys_state->measurement;
+    break;
+  default:
+    iprint(LEVEL_WARNING, "This protocol is not supported right now \n");
+    return NULL;
+  }
+  local_conf.runtime_state = ops;
+  pisas_sched(&local_conf, ops);
+  printf("Thread info: \n");
+  netsim_print_result(&local_conf);
+  //netsim_print_theorical_result(&conf);
+  return m;
+}
+
 /**
  * Main program. Do parse user configuration file, and run a chosen simulation
  * @param nargs : number of parameters
@@ -254,5 +292,31 @@ int netsim_start (char *conf_file) {
 
   netsim_print_result(&conf);
   netsim_print_theorical_result(&conf);
+  return SUCCESS;
+}
+
+int netsim_start_thread (char *conf_file) {
+  pthread_t *threads;
+  MEASURES m;
+  MEASURES *lm; // local measurement
+  int i;
+  try( config_parse_file (conf_file) );
+  threads = malloc_gc(sizeof(pthread_t)*conf.nthreads);
+  check_null_pointer(threads);
+  signal(SIGINT, netsim_sig_handler);
+  signal(SIGTERM, netsim_sig_handler);
+  random_init();
+  for (i = 0; i < conf.nthreads; i++)
+    pthread_create(&threads[i], NULL, netsim_thread, &conf);
+
+  measures_init(&m);
+  for (i = 0; i < conf.nthreads; i++) {
+    pthread_join(threads[i], &lm);
+    measurement_merge(&m, lm);
+  }
+  printf("MERGING RESULT: \n");
+  print_measurement(&m);
+  //netsim_print_result(&conf);
+  //netsim_print_theorical_result(&conf);
   return SUCCESS;
 }

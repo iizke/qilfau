@@ -13,7 +13,7 @@
 #include "matrix/matrix.h"
 
 int check_netsim () {
-  netsim_start("src/netsim/conf/test.conf");
+  netsim_start_thread("src/netsim/conf/test.conf");
   return 0;
 }
 
@@ -32,10 +32,10 @@ int check_matrix () {
 }
 
 int main (int nargs, char** args) {
-  //trash_init();
+  trash_init();
   check_netsim();
   //main_graph(nargs, args);
   //check_matrix();
-  //trash_clean();
+  trash_clean();
   return SUCCESS;
 }

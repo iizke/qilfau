@@ -39,4 +39,5 @@ typedef struct measures {
 int measures_init (MEASURES *m);
 int print_measurement (MEASURES *m);
 int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time);
+int measurement_merge (MEASURES *m1, MEASURES *m2);
 #endif /* MEASURES_H_ */

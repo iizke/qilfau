@@ -109,6 +109,8 @@ typedef struct config {
   CSMA_CONF csma_conf;
   /// protocol: ONE_QUEUE or CSMA
   int protocol;
+  /// number of threads
+  int nthreads;
   /**
    * Current simulation: used for handling signal SIGINT (we dont want to wait
    * to long time, but also want to see the itermediate result
