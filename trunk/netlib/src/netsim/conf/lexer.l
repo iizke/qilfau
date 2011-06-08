@@ -53,6 +53,8 @@ protocol					return PROTOCOL;
 ONE_QUEUE					return PROTO_ONE_QUEUE;
 CSMA						return PROTO_CSMA;
 
+nthreads					return NTHREADS;
+
 debug.error					return DEBUG_ERROR;
 debug.warning				return DEBUG_WARNING;
 debug.info					return DEBUG_INFO;

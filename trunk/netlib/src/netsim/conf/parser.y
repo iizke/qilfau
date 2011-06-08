@@ -39,6 +39,8 @@ CONFIG conf;
 %token STOP_MAXARRIVAL;
 %token STOP_QUEUEZERO;
 
+%token NTHREADS;
+
 %token CSMA_NSTATIONS;
 %token CSMA_PROB;
 %token CSMA_MAXBACKOFF;
@@ -130,6 +132,8 @@ exp:      ARRIVAL_TYPE EQ INTNUM { conf.arrival_conf.type = $3; }
 
 		| PROTOCOL EQ PROTO_CSMA {conf.protocol = PROTOCOL_CSMA; }
 		| PROTOCOL EQ PROTO_ONE_QUEUE {conf.protocol = PROTOCOL_ONE_QUEUE;}
+		
+		| NTHREADS EQ INTNUM { conf.nthreads = $3; }
 ;
 %%
 
