@@ -86,12 +86,15 @@ typedef struct garbage {
 } GARBAGE;
 
 void * gc_malloc(int size);
+void gc_free (void *);
 void error (char *msg, FILE * fp);
 int trash_collect_garbage(GARBAGE *g);
 int trash_clean ();
 int trash_init ();
 
-#define imalloc(size)     gc_malloc(size)
-#define malloc_gc(size)   gc_malloc(size)
+#define imalloc(_size)    gc_malloc(_size)
+#define malloc_gc(_size)  gc_malloc(_size)
+#define ifree(_p)         gc_free(_p)
+#define free_gc(_p)       gc_free(_p)
 
 #endif /* ERROR_H_ */

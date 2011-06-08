@@ -162,7 +162,7 @@ double random_dist_cdf_uniform (RANDOM_DIST *rd, double x) {
 int random_dist_init_uniform1 (RANDOM_DIST *rd, double from, double to) {
   struct uniform_params *up = NULL;
   check_null_pointer(rd);
-  up = malloc (sizeof(struct uniform_params));
+  up = malloc_gc (sizeof(struct uniform_params));
   check_null_pointer(up);
   up->from = from;
   up->to = to;
@@ -237,7 +237,7 @@ int random_dist_init_exp1(RANDOM_DIST *rd, double lambda) {
   check_null_pointer(rd);
   rd->gen = random_dist_gen_exp;
   rd->cdf = random_dist_cdf_exp;
-  l = malloc (sizeof(double));
+  l = malloc_gc (sizeof(double));
   *l = lambda;
   rd->params = l;
   return SUCCESS;
@@ -325,7 +325,7 @@ int random_dist_init_bernoulli1(RANDOM_DIST *rd, double prob) {
   check_null_pointer(rd);
   rd->gen = random_dist_gen_bernoulli;
   rd->cdf = random_dist_cdf_bernoulli;
-  l = malloc (sizeof(double));
+  l = malloc_gc (sizeof(double));
   *l = prob;
   rd->params = l;
   return SUCCESS;

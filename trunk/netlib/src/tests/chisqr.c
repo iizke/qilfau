@@ -30,9 +30,9 @@ int test_chisqr (TEST_PARAMS *tp) {
   int * intervals = NULL;
 
   check_null_pointer(tp);
-  samples = malloc (sizeof(double) * tp->nsamples);
+  samples = malloc_gc (sizeof(double) * tp->nsamples);
   check_null_pointer(samples);
-  intervals = malloc (sizeof(int) * tp->nintervals);
+  intervals = malloc_gc (sizeof(int) * tp->nintervals);
   check_null_pointer(intervals);
   memset(intervals, 0, sizeof(int)*tp->nintervals);
   /// Generate pseudo random samples and count them in intervals
@@ -50,8 +50,8 @@ int test_chisqr (TEST_PARAMS *tp) {
     delta = (intervals[i] - e);
     x += delta*delta/e;
   }
-  free (intervals);
-  free (samples);
+  free_gc (intervals);
+  free_gc (samples);
   if (x > get_chisqr_pvalue(tp->nintervals-1, tp->p_value))
     return FALSE;
 
