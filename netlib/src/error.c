@@ -44,6 +44,7 @@ void * gc_malloc(int size) {
     iprint(LEVEL_WARNING, "Cannot allocate new memory \n");
     return NULL;
   }
+  memset(g, 0,sizeof(GARBAGE) + size);
   linked_list_init(&g->list_node);
   g->link = (char*)g + sizeof(GARBAGE);
   trash_collect_garbage(g);

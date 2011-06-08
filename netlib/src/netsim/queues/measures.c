@@ -97,3 +97,17 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
   m->total_time = curr_time.real;
   return SUCCESS;
 }
+
+int measurement_merge (MEASURES *m1, MEASURES *m2) {
+  check_null_pointer(m1);
+  check_null_pointer(m2);
+  stat_num_merge(&m1->interarrival_time, &m2->interarrival_time);
+  stat_num_merge(&m1->queue_len, &m2->queue_len);
+  stat_num_merge(&m1->servtime, &m2->servtime);
+  stat_num_merge(&m1->waittime, &m2->waittime);
+  m1->total_arrivals += m2->total_arrivals;
+  m1->total_departures += m2->total_departures;
+  m1->total_dropped += m2->total_dropped;
+  m1->total_time += m2->total_time;
+  return SUCCESS;
+}

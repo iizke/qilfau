@@ -68,6 +68,24 @@ double stat_num_calc_confidence_interval (STAT_NUM *sn, double confidence) {
   return c*sn->var/sqrt(sn->num_samples);
 }
 
+int stat_num_merge(STAT_NUM *n1, STAT_NUM *n2) {
+ n1->all_time += n2->all_time;
+ n1->tmpsum += n2->tmpsum;
+ n1->tmpsumsqr += n2->tmpsumsqr;
+ n1->num_samples += n2->num_samples;
+ if (n1->all_time <= 0) {
+   n1->avg = n1->tmpsum / n1->num_samples;
+   if (n1->num_samples > 1)
+     n1->var = sqrtf((n1->tmpsumsqr - n1->tmpsum * n1->avg) / (n1->num_samples - 1));
+ } else {
+   n1->avg = n1->tmpsum / n1->all_time;
+   n1->var = sqrtf((n1->tmpsumsqr - n1->tmpsum * n1->avg) / (n1->all_time));
+ }
+
+ n1->min = min(n1->min, n2->min);
+ n1->max = max(n1->max, n2->max);
+ return SUCCESS;
+}
 /**
  * Initialization of STAT_NUM structure (statistical information)
  * @param m : STAT_NUM
