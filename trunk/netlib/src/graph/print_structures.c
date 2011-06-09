@@ -47,6 +47,7 @@ print_graph (PGRAPH g, FILE * fp)
   double d, db;
   double tot_weighted_d = 0.0, tot_weighted_db = 0.0, tot_flow = 0.0;
   double tot_d = 0.0, tot_db = 0.0, tot_link = 0.0;
+  double max_flow = 0;
 
   fprintf (fp,
 	   "\n\nNumero nodi=%d\t Cost Graph=%g\t Cost Broken Graph=%g \n\n",
@@ -88,6 +89,7 @@ print_graph (PGRAPH g, FILE * fp)
 	  tot_weighted_d += d * link_flow (p_link);
 	  tot_weighted_db += db * link_flow (p_link);
 	  tot_flow += link_flow (p_link);
+	  max_flow = (max_flow < link_flow(p_link))?(link_flow(p_link)) : max_flow;
 	  tot_db += db;
 	  tot_link++;
 	  //              print_path_item(fp, p_link);                                      

@@ -1,4 +1,5 @@
 #include "main_graph.h"
+#include "random.h"
 
 /* Allocazione delle tre matrici: traffico, costo_setup e costo per unit� di
  banda. */
@@ -30,7 +31,8 @@ int build_random_traffic_matrix0(int num_nodes, double lb, double ub) {
 
   for (i = 0; i < num_nodes; i++)
   for (j = 0; j < num_nodes; j++) {
-    entry (trf_m, i, j) = polirand_uniform(lb,ub,&seed);
+    //entry (trf_m, i, j) = polirand_uniform(lb,ub,&seed);
+    entry (trf_m, i, j) = gen_uniform(lb,ub);
   }
   return 0;
 }
@@ -61,14 +63,16 @@ int read_input_matrix(int num_nodes, FILE * fp_trf, FILE * fp_weight_route) {
           entry (trf_m, i, j) = temp;
         }
     } else {
-      for (i = 0; i < num_nodes; i++) {
-        for (j = 0; j < num_nodes; j++) {
-          if (i != j)
-            (entry (trf_m, i, j)) = 1.0;
-          else
-            (entry (trf_m, i, j)) = 0;
-        }
-      }
+      build_random_traffic_matrix0(num_nodes, 0.5, 1.5);
+
+//      for (i = 0; i < num_nodes; i++) {
+//        for (j = 0; j < num_nodes; j++) {
+//          if (i != j)
+//            (entry (trf_m, i, j)) = 1.0;
+//          else
+//            (entry (trf_m, i, j)) = 0;
+//        }
+//      }
     }
 
     /*      *************************************************       */
