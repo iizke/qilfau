@@ -135,7 +135,7 @@ int main_graph(int argc, char *argv[]) {
   }
 
   if (strlen(out_result) != 0) {
-    fp_result = fopen(out_result, "a");
+    fp_result = fopen(out_result, "a+");
     if (fp_result == NULL) {
       error("Impossibile aprire file di output dei risultati", stderr);
       exit(1);
