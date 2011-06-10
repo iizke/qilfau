@@ -242,7 +242,7 @@ int irand_new_seed (unsigned long seed) {
  * @return integer pseudo random value
  */
 int irand_random_seed() {
-  unsigned long seed = time(0) % 2009;
+  unsigned long seed = clock() % 2009; //time(0) % 2009;
   irand_new_seed(seed);
   return SUCCESS;
 }

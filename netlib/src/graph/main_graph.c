@@ -9,13 +9,42 @@
 #include "main_graph.h"
 #include "topo.h"
 
+static int _run (int num_nodes, int delta, FILE *fp_result) {
+  clock_t start_time;
+  int i;
+
+  init_graph(&g, num_nodes);
+  alloc_PR_QUEUE(max_num_nodes_graph (&g));
+  start_time = clock();
+  //build_initial_solution(&g, prob, 1);
+  topo_build_ring2(&g, delta);
+  //topo_build_ring1(&g);
+
+  for (i = 0; i < num_nodes; i++) {
+    dijkstra_heap(&g, i, pr_queue);
+    if (insert_sh_path_in_matrix(&g, i, g.node_set[i].matrix_path)
+        == DISCONNECTED)
+      printf("Disconnected topology\n");
+    //print_all_sh_path_from(fp_result, &g, g.node_set[i].matrix_path, i);
+  }
+  update_flow(&g, MP, trf_m, 0);
+  start_time = clock() - start_time;
+  //print_graph(&g, fp_result);
+  fprintf(fp_result, "fmax = %f delta = %d num_nodes = %d\n", topo_print_maxflow (&g), delta, g.num_nodes);
+  //fprintf(fp_result, "\nElapsed_time = %f\n", (double) start_time / CLOCKS_PER_SEC);
+
+  fclose(fp_result);
+  //sleep(1000);
+  return (0);
+}
+
 /*  main() */
 int main_graph(int argc, char *argv[]) {
   FILE *fp_trf = NULL; /* puntatore al file contenente la matrice di traffico nodo-nodo [Pck/s]       */
   FILE *fp_result = NULL; /* puntatore al file di output                                                                                                                          */
   FILE *fp_weight_route = NULL; /* puntatore al file di lettura dei pesi associati ad ogni linf (from -> to) */
   /* se il puntatore al file � NULL i pesi vengono posti ad 1.0 di default        */
-  int i;
+  //int i;
 
   double prob = 0.6;
 
@@ -24,7 +53,7 @@ int main_graph(int argc, char *argv[]) {
   char in_trf[200] = "";//"src/graph/trf_Mbps.dat";
   char in_weight_route[200] = ""; /* file contenente i pesi di ogni link utilizzati per il routing        */
   char out_result[200] = "or.log";
-  clock_t start_time;
+  //clock_t start_time;
 
   int delta = 1;
   int num_nodes = 8;
@@ -150,30 +179,7 @@ int main_graph(int argc, char *argv[]) {
   if (read_input_matrix(num_nodes, fp_trf, fp_weight_route) == FALSE)
     exit(1);
 
-//  print_matrix(trf_m, num_nodes, fp_result);
-//  print_matrix(weight_route, num_nodes, fp_result);
-
-  init_graph(&g, num_nodes);
-  alloc_PR_QUEUE(max_num_nodes_graph (&g));
-  start_time = clock();
-  //build_initial_solution(&g, prob, 1);
-  build_ring_topology2(&g, 1);
-  //build_ring_topology1(&g);
-
-  for (i = 0; i < num_nodes; i++) {
-    dijkstra_heap(&g, i, pr_queue);
-    if (insert_sh_path_in_matrix(&g, i, g.node_set[i].matrix_path)
-        == DISCONNECTED)
-      printf("Disconnected topology\n");
-    //print_all_sh_path_from(fp_result, &g, g.node_set[i].matrix_path, i);
-  }
-  update_flow(&g, MP, trf_m, 0);
-  start_time = clock() - start_time;
-  //print_graph(&g, fp_result);
-  fprintf(fp_result, "fmax = %f, delta = %d, num_nodes = %d\n", print_maxflow (&g), delta, g.num_nodes);
-  //fprintf(fp_result, "\nElapsed_time = %f\n", (double) start_time / CLOCKS_PER_SEC);
-
-  fclose(fp_result);
-  //sleep(1000);
+  _run(num_nodes, delta, fp_result);
+  //do_experiment(20, fp_result);
   return (1);
 }

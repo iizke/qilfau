@@ -721,3 +721,27 @@ find_file_in_dirset () {
   done
 }
 
+calc_mean_variance_confidence () {
+  local SEQ=$@
+  #echo $SEQ
+  local NUMS=`echo $SEQ | awk '{print NF}'`
+  local SUM=0
+  local SQR=0
+  local CI=1.725 # confidence interval for 1.725 (95%) NUMS = 20
+  local AVG=0
+  local VAR=0
+
+  for (( i=1;i <=$NUMS;i++ )); do
+    local VAL=`echo $SEQ $i | awk '{print $$NF}'`
+    SUM=`echo $SUM $VAL | awk '{printf("%.7f",$1 + $2)}'`
+    SQR=`echo $SQR $VAL | awk '{printf("%.7f", $1 + $2 * $2)}'`
+  done
+  #echo sum = $SUM
+  #echo sqr = $SQR
+  AVG=`echo $SUM $NUMS | awk '{printf("%.5f", $1 / $2)}'` 
+  #echo avg = $AVG
+  VAR=`echo $SQR $SUM $NUMS $AVG |awk '{printf("%.5f", sqrt(($1 - $2 * $4)/($3 - 1)))}'` 
+  CI=`echo $CI $VAR $NUMS |awk '{printf("%.5f", $1 * $2 / sqrt($3))}'`
+  echo $AVG $VAR $CI
+}
+
