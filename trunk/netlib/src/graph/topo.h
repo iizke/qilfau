@@ -10,8 +10,8 @@
 
 #include "graph.h"
 
-int build_ring_topology1(PGRAPH g);
-int build_ring_topology2(PGRAPH g, int num_tx);
-double print_maxflow (PGRAPH g);
+int topo_build_ring1(PGRAPH g);
+int topo_build_ring2(PGRAPH g, int num_tx);
+double topo_print_maxflow (PGRAPH g);
 
 #endif /* TOPO_H_ */

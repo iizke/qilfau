@@ -40,9 +40,50 @@ option_config_add "-i" \
 
 option_parse "$@"
 
+#Default value
+if [ "$OUTPUT" == "" ]; then
+OUTPUT=or.log
+fi
+if [ "$ITERATION" == "" ]; then
+ITERATION=20
+fi
+if [ "$DELTA" == "" ]; then
+DELTA=2
+fi
+if [ "$NNODES" == "" ]; then
+NNODES=10
+fi
+
 PROG="$LABHOME/../Debug/netlib"
+MAX_N=100
+MAX_D=10
+
 for ((j=0;j<${ITERATION};j+=1)); do
-	$PROG -n=$NNODES -d=$DELTA -out_result="$OUTPUT"
+for ((delta=1;delta<$MAX_D;delta++)); do
+for ((nodes=10;nodes<$MAX_N;nodes+=4)); do
+	$PROG -n=$nodes -d=$delta -out_result="$OUTPUT"
 	sync
-	sleep 1
+	#sleep 1
 done
+done
+done
+
+echo Compressing data ...
+rm -f $OUTPUT.analysis
+for ((delta=1;delta<$MAX_D;delta++)); do
+for ((nodes=10;nodes<$MAX_N;nodes+=4)); do
+  fmax_seq=`cat $OUTPUT | grep "delta = $delta num_nodes = $nodes" | awk '{print $3}'`
+  echo $delta $nodes `calc_mean_variance_confidence $fmax_seq` >> $OUTPUT.analysis
+done
+done
+
+#drawing
+cat $OUTPUT.analysis |grep "^1" > $OUTPUT.analysis.1
+cat $OUTPUT.analysis |grep "^2" > $OUTPUT.analysis.2
+cat $OUTPUT.analysis |grep "^3" > $OUTPUT.analysis.3
+cat $OUTPUT.analysis |grep "^4" > $OUTPUT.analysis.4
+cat $OUTPUT.analysis |grep "^5" > $OUTPUT.analysis.5
+
+DATA=$OUTPUT.analysis.1:$OUTPUT.analysis.2:$OUTPUT.analysis.3:$OUTPUT.analysis.4:$OUTPUT.analysis.5
+./draw-graph.sh --xcol 2 --ycol 3 --plot-type RATE --data $DATA -o plot.png
+
