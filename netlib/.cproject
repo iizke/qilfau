@@ -57,7 +57,6 @@
 </storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
-			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 				<buildTargets>
 					<target name="netlib" path="src" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
@@ -401,6 +400,11 @@
 </scannerInfoProvider>
 </profile>
 </scannerConfigBuildInfo>
+</storageModule>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings">
+<doc-comment-owner id="org.eclipse.cdt.ui.doxygen">
+<path value=""/>
+</doc-comment-owner>
 </storageModule>
 </cconfiguration>
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.release.1655047846">
@@ -457,7 +461,6 @@
 </storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
-			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 				<buildTargets>
 					<target name="netlib" path="src" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
@@ -801,6 +804,11 @@
 </scannerInfoProvider>
 </profile>
 </scannerConfigBuildInfo>
+</storageModule>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings">
+<doc-comment-owner id="org.eclipse.cdt.ui.doxygen">
+<path value=""/>
+</doc-comment-owner>
 </storageModule>
 </cconfiguration>
 	</storageModule>
