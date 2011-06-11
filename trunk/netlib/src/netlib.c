@@ -8,8 +8,7 @@
 #include <stdio.h>
 #include "error.h"
 #include "netsim/netsim.h"
-#include "graph/main_graph.h"
-#include "graph/main_rwa.h"
+#include "poligraph/main_graph.h"
 #include "matrix/matrix.h"
 
 int check_netsim () {
