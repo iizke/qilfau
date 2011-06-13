@@ -50,7 +50,7 @@ static int _save_event (EVENT *e, CONFIG *conf) {
  * @param sys_ops : Operations of System state.
  * @return Error code (defined in libs/error.h and def.h)
  */
-int pisas_sched (CONFIG *conf, SYS_STATE_OPS *sys_ops) {
+int pisas_sched (void *conf, SYS_STATE_OPS *sys_ops) {
   check_null_pointer(conf);
   check_null_pointer(sys_ops);
 
@@ -81,7 +81,7 @@ int pisas_sched (CONFIG *conf, SYS_STATE_OPS *sys_ops) {
  * @param conf : User configuration
  */
 static void netsim_print_result(CONFIG *conf) {
-  SYS_STATE *sys_state;
+  ONEQ_STATE *sys_state;
   CSMA_STATE *csma_state;
   int i = 0;
   switch (conf->protocol) {
@@ -215,22 +215,18 @@ static void netsim_print_theorical_result (CONFIG *conf) {
 static void netsim_sig_handler(int n) {
   netsim_print_result(&conf);
   netsim_print_theorical_result(&conf);
-  //printf("Cleaning system ...\n");
   ((SYS_STATE_OPS*)conf.runtime_state)->clean(&conf, conf.runtime_state);
-  //printf("Stopping program ... Done\n");
   exit(1);
 }
 
 static void* netsim_thread (CONFIG *conf) {
-  SYS_STATE* sys_state;
+  ONEQ_STATE* sys_state;
   CSMA_STATE* csma_state;
   MEASURES *m = NULL;
   CONFIG local_conf;
   SYS_STATE_OPS *ops = NULL;
   time_t start = time(NULL);
 
-  //signal(SIGINT, netsim_sig_handler);
-  //signal(SIGTERM, netsim_sig_handler);
   memcpy(&local_conf, conf, sizeof(CONFIG));
   local_conf.stop_conf.max_time /= local_conf.nthreads;
   local_conf.stop_conf.max_arrival /= local_conf.nthreads;
@@ -242,7 +238,7 @@ static void* netsim_thread (CONFIG *conf) {
     m = &csma_state->measurement;
     break;
   case PROTOCOL_ONE_QUEUE:
-    sys_state = malloc_gc(sizeof(SYS_STATE));
+    sys_state = malloc_gc(sizeof(ONEQ_STATE));
     sys_state_init (sys_state, &local_conf);
     ops = &sys_state->ops;
     m = &sys_state->measurement;
@@ -267,7 +263,7 @@ static void* netsim_thread (CONFIG *conf) {
  * @return Error code (see more in def.h and error.h)
  */
 int netsim_start (char *conf_file) {
-  SYS_STATE sys_state;
+  ONEQ_STATE sys_state;
   CSMA_STATE csma_state;
   SYS_STATE_OPS *ops = NULL;
 
@@ -298,6 +294,12 @@ int netsim_start (char *conf_file) {
   return SUCCESS;
 }
 
+/**
+ * Start network simulation with multiple threads.
+ * The simulation is parallel based on time partition method.
+ * @param conf_file : Configuration file
+ * @return Error code (see def.h and error.h)
+ */
 int netsim_start_thread (char *conf_file) {
   pthread_t *threads;
   MEASURES m;

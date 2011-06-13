@@ -189,7 +189,7 @@ typedef struct _graph
   COST cost_broken_graph;	/* Costo associato al grafo considerato con guasti */
   NODE *node_set;		/* Vettore dinamico di strutture NODE */
 }
-GRAPH;
+POLIGRAPH;
 
 #define num_nodes_graph(g) (g->num_nodes)
 #define num_links_graph(g) (g->num_links)
@@ -206,9 +206,9 @@ GRAPH;
 #define NULL_GRAPH {0,0,0,0,0.0,0.0,NULL}
 
 #ifdef MAIN_C
-GRAPH NullGraph = NULL_GRAPH;
+POLIGRAPH NullGraph = NULL_GRAPH;
 #else
-extern GRAPH NullGraph;
+extern POLIGRAPH NullGraph;
 #endif
 
 #endif

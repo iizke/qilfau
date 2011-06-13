@@ -18,6 +18,9 @@
  * @return Error code (see in def.h and error.h)
  */
 int matrix_init (MATRIX **m, int type) {
+  if (*m != NULL)
+    iprint(LEVEL_WARNING, "matrix initted is not NULL. Take care of it.\n");
+
   *m = (MATRIX*)malloc_gc (sizeof(MATRIX));
   check_null_pointer(*m);
   (*m)->type = type;
@@ -32,9 +35,11 @@ int matrix_init (MATRIX **m, int type) {
  * @param f : File
  * @return Error code (see more in def.h and error.h)
  */
-int dense_matrix_init(DENSE_MATRIX **m, int nr, int nc, FILE *f) {
+int dense_matrix_init(DENSE_MATRIX **m, int nr, int nc) {
   DENSE_MATRIX * mx = NULL;
-  int i = 0, j = 0;
+  int i = 0;
+  if (*m != NULL)
+    iprint(LEVEL_WARNING, "Dense matrix initted is not NULL.");
   //int nrows = 0, ncols = 0;
   mx = *m = malloc_gc (sizeof(DENSE_MATRIX));
   check_null_pointer(mx);
@@ -46,10 +51,18 @@ int dense_matrix_init(DENSE_MATRIX **m, int nr, int nc, FILE *f) {
     mx->vals[i] = malloc_gc(sizeof(float) * nc);
     check_null_pointer(mx->vals[i]);
   }
+  return SUCCESS;
+}
+
+int dense_matrix_setup_file(DENSE_MATRIX *m, int nr, int nc, FILE *f) {
+  int i = 0, j = 0;
+  check_null_pointer(m);
+  check_null_pointer(f);
+  //int nrows = 0, ncols = 0;
   for (i = 0; i < nr; i++)
     for (j = 0; j < nc; j++)
       /// No check wrong input here!
-      fscanf(f, "%f", &mx->vals[i][j]);
+      fscanf(f, "%f", &m->vals[i][j].value);
 
   return SUCCESS;
 }
@@ -62,11 +75,35 @@ int dense_matrix_init(DENSE_MATRIX **m, int nr, int nc, FILE *f) {
  * @param f : file containing matrix value
  * @return Error code (see more in def.h and error.h)
  */
-int matrix_setup (MATRIX *m, FILE* f) {
+int matrix_setup_file (MATRIX *m, FILE* f) {
   check_null_pointer(m);
   check_null_pointer(f);
   fscanf(f, "%d %d", &m->nrows, &m->ncols);
-  try ( dense_matrix_init(&m->data._dense, m->nrows, m->ncols, f) );
+  switch (m->type) {
+  case MATRIX_TYPE_DENSE:
+    try ( dense_matrix_init(&m->data._dense, m->nrows, m->ncols) );
+    dense_matrix_setup_file(m->data._dense, m->nrows, m->ncols, f);
+    break;
+  case MATRIX_TYPE_SPARSE:
+  default:
+    break;
+  }
+  return SUCCESS;
+}
+
+int matrix_setup (MATRIX *m, int nr, int nc) {
+  check_null_pointer(m);
+
+  m->nrows = nr;
+  m->ncols = nc;
+  switch (m->type) {
+  case MATRIX_TYPE_DENSE:
+    try ( dense_matrix_init(&m->data._dense, nr, nc) );
+    break;
+  case MATRIX_TYPE_SPARSE:
+  default:
+    break;
+  }
   return SUCCESS;
 }
 
@@ -77,23 +114,34 @@ int matrix_setup (MATRIX *m, FILE* f) {
  * @param col : column position
  * @return : cell value (real number)
  */
-float matrix_get_value (MATRIX *m, int row, int col) {
-  check_null_pointer(m);
+MATRIX_VAL matrix_get_value (MATRIX *m, int row, int col) {
+  MATRIX_VAL val;
+  val.value = 0;
+  val.pointer = NULL;
+
+  if (!m)
+    return val;
+
   switch (m->type) {
   case MATRIX_TYPE_DENSE:
     return m->data._dense->vals[row][col];
   case MATRIX_TYPE_SPARSE:
     return m->data._sparse->rows[row].cols[col].data;
   default:
-    return 0;
+    return val;
   }
-  return 0;
+  return val;
 }
 
-int matrix_build_index(MATRIX *m, int type) {
-  return SUCCESS;
-}
-
-int matrix_get_row (MATRIX *m, int row, ROW **r) {
-  return SUCCESS;
+void* matrix_get_row (MATRIX *m, int row) {
+  if (!m) return NULL;
+  switch (m->type) {
+  case MATRIX_TYPE_DENSE:
+    return m->data._dense->vals[row];
+  case MATRIX_TYPE_SPARSE:
+    return &m->data._sparse->rows[row];
+  default:
+    break;
+  }
+  return NULL;
 }

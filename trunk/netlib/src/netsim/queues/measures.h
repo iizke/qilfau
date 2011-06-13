@@ -11,6 +11,7 @@
 
 #include "def.h"
 #include "stat_num.h"
+#include "packet.h"
 
 /**
  * MEASURE structure used to store some results when simulating queue system

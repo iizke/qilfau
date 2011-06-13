@@ -107,6 +107,17 @@ int event_list_is_empty (EVENT_LIST *l) {
 }
 
 /**
+ * Do not allow to insert new event to list
+ * @param l : event list
+ * @return Error code (see more in def.h and error.h)
+ */
+int event_list_stop_growing (EVENT_LIST *l) {
+  check_null_pointer(l);
+  l->list.conf = 0;
+  return SUCCESS;
+}
+
+/**
  * Initialize parameters in Event structure
  * @param e : Event
  * @return Error-code (defined in def.h and libs/error.h)

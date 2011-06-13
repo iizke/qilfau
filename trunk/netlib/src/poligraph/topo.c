@@ -12,7 +12,7 @@
 
 /**
  * Build simple ring topology with 1 transmiter, 1 receiver
- * @param g : GRAPH
+ * @param g : POLIGRAPH
  * @param num_nodes
  * @return 0 (if success)
  */

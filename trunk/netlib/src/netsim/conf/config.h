@@ -10,7 +10,8 @@
 #define MYCONFIG_H_
 
 #include <stdio.h>
-#include "../../random.h"
+#include "random.h"
+#include "list/array.h"
 
 /*
  * Definition of some constants used in type of RANDOM_CONF
@@ -113,13 +114,23 @@ typedef struct config {
   int nthreads;
   /**
    * Current simulation: used for handling signal SIGINT (we dont want to wait
-   * to long time, but also want to see the itermediate result
+   * to long time, but also want to see the intermediate result
    */
   void *runtime_state;
 } CONFIG;
+
+typedef struct net_config {
+  ARRAY configs;
+  //int next_scan;
+} NET_CONFIG;
 
 int config_random_conf (RANDOM_CONF *rc);
 int config_init (CONFIG *conf);
 int config_setup (CONFIG *conf);
 int config_parse_file (char *file);
+
+CONFIG* netconfig_get_conf(NET_CONFIG *net, int cid);
+int netconfig_init (NET_CONFIG *netconf, int n);
+int netconfig_get_size(NET_CONFIG *net);
+int netconfig_traverse_arrival(NET_CONFIG *conf, int *qid);
 #endif /* MYCONFIG_H_ */

@@ -48,14 +48,14 @@ typedef double COST;
 PITEM p_PATH_ITEM_free;
 PLINK p_LINK_free;
 PLINKLIST p_LINKLIST_free;
-GRAPH g;
+POLIGRAPH g;
 _MATRIX trf_m, weight_route;
 long int seed;
 #else
 extern PITEM p_PATH_ITEM_free;
 extern PLINK p_LINK_free;
 extern PLINKLIST p_LINKLIST_free;
-extern GRAPH g;
+extern POLIGRAPH g;
 extern _MATRIX trf_m, dist_m, weight_route;
 extern long int seed;
 extern int length_pck;

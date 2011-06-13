@@ -17,7 +17,7 @@
 /**
  * Structure representing the system state in simulation.
  */
-typedef struct sys_state {
+typedef struct onequeue_state {
   /// Abstract operations of a simulated system
   SYS_STATE_OPS ops;
   /// Current time
@@ -30,10 +30,10 @@ typedef struct sys_state {
   MEASURES measurement;
   /// Free packet list (used to avoiding malloc operations
   PACKET_LIST free_packets;
-} SYS_STATE;
+} ONEQ_STATE;
 
-#define get_sys_state_from_ops(_ops) (container_of(_ops, SYS_STATE, ops))
+#define get_sys_state_from_ops(_ops) (container_of(_ops, ONEQ_STATE, ops))
 
-int sys_state_init (SYS_STATE *state, CONFIG *conf);
+int sys_state_init (ONEQ_STATE *state, CONFIG *conf);
 
 #endif /* SYS_AQUEUE_H_ */

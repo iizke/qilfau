@@ -15,12 +15,17 @@
 /// Queue type FIFO
 #define QUEUE_FIFO            1
 
+/// An alias of struct queue_type
+//typedef struct queue_type QUEUE_TYPE;
+
 /**
  * Structure of a queue type. Can be seen as an interface of a queue object
  */
 struct queue_type {
   /// This element is used to join to a queue-manager
   LINKED_LIST list_node;
+  /// Queue ID
+  int id;
   /// Type of queue. Now, only support QUEUE_FIFO
   int type;
   /// Initialize queue type, include info in this structure
