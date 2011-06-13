@@ -19,7 +19,7 @@
  * @param p : new packet
  * @return Error code (see more in def.h and error.h)
  */
-static int _new_packet (SYS_STATE *state, PACKET **p) {
+static int _new_packet (ONEQ_STATE *state, PACKET **p) {
   try ( packet_list_new_packet(&state->free_packets, p) );
   (*p)->info.queue = state->queues.curr_queue;
   return SUCCESS;
@@ -33,7 +33,7 @@ static int _new_packet (SYS_STATE *state, PACKET **p) {
  * @param p : packet
  * @return Error code (see more in def.h and error.h)
  */
-static int _free_packet (SYS_STATE *state, PACKET *p) {
+static int _free_packet (ONEQ_STATE *state, PACKET *p) {
   try (linked_list_remove(&p->list_node));
   packet_list_remove_packet(&state->free_packets, p);
   return SUCCESS;
@@ -45,7 +45,7 @@ static int _free_packet (SYS_STATE *state, PACKET *p) {
  * @param state : System state
  * @return Error code (see more in def.h and error.h)
  */
-static int update_time (EVENT *e, SYS_STATE *state) {
+static int update_time (EVENT *e, ONEQ_STATE *state) {
   check_null_pointer(e);
   check_null_pointer(state);
   if (state->curr_time.real <= e->info.time.real)
@@ -63,7 +63,7 @@ static int update_time (EVENT *e, SYS_STATE *state) {
  * @param state : system state
  * @return new event (already added in Event list)
  */
-EVENT* _generate_arrival (CONFIG *conf, SYS_STATE *state) {
+EVENT* _generate_arrival (CONFIG *conf, ONEQ_STATE *state) {
   EVENT *e = NULL;
   int error_code = SUCCESS;
   event_list_new_event(&state->future_events, &e);
@@ -84,7 +84,7 @@ EVENT* _generate_arrival (CONFIG *conf, SYS_STATE *state) {
  * @param state : System state
  * @return New event (already added in the event list)
  */
-EVENT* _generate_end_service (PACKET *p, CONFIG *conf, SYS_STATE *state) {
+EVENT* _generate_end_service (PACKET *p, CONFIG *conf, ONEQ_STATE *state) {
   EVENT *e = NULL;
   event_list_new_event(&state->future_events, &e);
   e->info.type = EVENT_END_SERVICE;
@@ -101,7 +101,7 @@ EVENT* _generate_end_service (PACKET *p, CONFIG *conf, SYS_STATE *state) {
  * @return 0 if system should be stopped, 1 otherwise.
  */
 int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
-  SYS_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_sys_state_from_ops(ops);
 
   STOP_CONF *stop_conf = &conf->stop_conf;
   if ((stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time) ||
@@ -128,7 +128,7 @@ int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
  * @param state : system state
  * @return Error code (see more in def.h and error.h)
  */
-static int _process_packet (CONFIG *conf, SYS_STATE *state) {
+static int _process_packet (CONFIG *conf, ONEQ_STATE *state) {
   QUEUE_TYPE *qt = state->queues.curr_queue;
   EVENT *e = NULL;
   PACKET *p = NULL;
@@ -177,7 +177,7 @@ int _packet_from_event (EVENT *e, PACKET *p) {
  * @param state : system state
  * @return Error code (see more in def.h and libs/error.h)
  */
-int _process_arrival (EVENT *e, CONFIG *conf, SYS_STATE *state) {
+int _process_arrival (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
   PACKET *packet = NULL;
   QUEUE_TYPE *qt = state->queues.curr_queue;
 
@@ -205,7 +205,7 @@ int _process_arrival (EVENT *e, CONFIG *conf, SYS_STATE *state) {
  * @param state : system state
  * @return Error code (see more in def.h and error.h)
  */
-int _process_end_service (EVENT *e, CONFIG *conf, SYS_STATE *state) {
+int _process_end_service (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
   PACKET *packet = e->info.packet;
   QUEUE_TYPE *qt = state->queues.curr_queue;
 
@@ -228,7 +228,7 @@ int _process_end_service (EVENT *e, CONFIG *conf, SYS_STATE *state) {
  * @return Error code (see more in def.h and error.h)
  */
 static int _system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
-  SYS_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_sys_state_from_ops(ops);
 
   if (conf->arrival_conf.to_file)
     fclose(conf->arrival_conf.to_file);
@@ -258,7 +258,7 @@ static int _system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
  * @return New event
  */
 EVENT * _generate_event(int type, PACKET *p, CONFIG *conf, SYS_STATE_OPS *ops) {
-  SYS_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_sys_state_from_ops(ops);
   EVENT *e = NULL;
 
   switch (type) {
@@ -283,7 +283,7 @@ EVENT * _generate_event(int type, PACKET *p, CONFIG *conf, SYS_STATE_OPS *ops) {
  * @return Error code (more in def.h and error.h)
  */
 int _process_event (EVENT *e, CONFIG *conf, SYS_STATE_OPS *ops) {
-  SYS_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_sys_state_from_ops(ops);
   switch (e->info.type) {
   case EVENT_ARRIVAL:
     _process_arrival(e, conf, state);
@@ -305,7 +305,7 @@ int _process_event (EVENT *e, CONFIG *conf, SYS_STATE_OPS *ops) {
  * @return Error code (more in def.h and error.h)
  */
 int _get_next_event (SYS_STATE_OPS *ops, EVENT **e) {
-  SYS_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_sys_state_from_ops(ops);
   event_list_get_first(&state->future_events, e);
   return SUCCESS;
 }
@@ -317,7 +317,7 @@ int _get_next_event (SYS_STATE_OPS *ops, EVENT **e) {
  * @return Error code (more in def.h and error.h)
  */
 int _remove_event (SYS_STATE_OPS *ops, EVENT *e) {
-  SYS_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_sys_state_from_ops(ops);
   try (event_list_remove_event(&state->future_events, e) );
   return SUCCESS;
 }
@@ -328,7 +328,7 @@ int _remove_event (SYS_STATE_OPS *ops, EVENT *e) {
  * @param conf : user configuration
  * @return Error code (more in def.h and error.h)
  */
-int sys_state_init (SYS_STATE *state, CONFIG *conf) {
+int sys_state_init (ONEQ_STATE *state, CONFIG *conf) {
   QUEUE_TYPE *fifo_queue = NULL;
   check_null_pointer(state);
 

@@ -65,6 +65,8 @@ extern long debug;
 #define ERR_POINTER_NULL            (-1)
 /// Error when not enough memory in system
 #define ERR_MALLOC_FAIL             (-2)
+/// Error because some input values are negative
+#define ERR_INVALID_VAL            (-3)
 /// Error when user does not provide a correct Flow Type ID
 #define ERR_RANDOM_TYPE_FAIL        (-17)
 /// Error when the time of event is not consistent, eg. it is late than the current time

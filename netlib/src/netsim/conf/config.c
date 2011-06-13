@@ -8,8 +8,8 @@
 
 #include <string.h>
 
-#include "../../error.h"
-#include "../../random.h"
+#include "error.h"
+#include "random.h"
 #include "parser.h"
 #include "config.h"
 
@@ -85,5 +85,37 @@ int config_parse_file(char * f) {
   yyparse();
   config_setup(&conf);
 
+  return SUCCESS;
+}
+
+CONFIG* netconfig_get_conf(NET_CONFIG *net, int cid) {
+  return array_get(&net->configs, cid);
+}
+
+int netconfig_get_size(NET_CONFIG *net) {
+  return net->configs.size;
+}
+
+int netconfig_traverse_arrival(NET_CONFIG *conf, int *qid) {
+  int i = 0;
+  for (i=(*qid); i<conf->configs.size; i++) {
+    CONFIG *c = netconfig_get_conf(conf, i);
+    if (c->arrival_conf.type != RANDOM_OTHER) {
+      *qid = i;
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+int netconfig_init (NET_CONFIG *netconf, int n) {
+  int i = 0;
+  check_null_pointer(netconf);
+  memset(netconf, 0, sizeof(CONFIG));
+  array_setup(&netconf->configs, sizeof(CONFIG), n);
+  for (i=0; i<n; i++) {
+    CONFIG *c = array_get(&netconf->configs, i);
+    config_init(c);
+  }
   return SUCCESS;
 }

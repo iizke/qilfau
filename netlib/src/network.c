@@ -123,7 +123,7 @@ SP_DISTANCE_LIST* _nw_shortest_path_dijkstra (NETWORK *net, int src) {
     sp_distance_list_insert(sol_list, sol);
     nw_get_neighbor(net, sol->end_node, &neighbor);
     while (nw_node_list_scan(&neighbor, &nodeid)) {
-      float new_distance = sol->distance + nw_get_cost(net, sol->end_node, nodeid);
+      float new_distance = sol->distance + nw_get_cost(net, sol->end_node, nodeid).value;
       float curr_distance = sp_distance_list_get_value(distances, nodeid);
       if (curr_distance > new_distance || curr_distance < 0 ) {
         // update new distance

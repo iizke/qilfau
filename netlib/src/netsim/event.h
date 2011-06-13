@@ -82,6 +82,7 @@ int event_list_insert_event (EVENT_LIST *el, EVENT *e);
 int event_list_remove_event (EVENT_LIST *el, EVENT *e);
 int event_list_get_first (EVENT_LIST *el, EVENT **e);
 int event_list_is_empty (EVENT_LIST *l);
+int event_list_stop_growing (EVENT_LIST *l);
 int test_event_list_insert ();
 
 #endif /* EVENT_H_ */
