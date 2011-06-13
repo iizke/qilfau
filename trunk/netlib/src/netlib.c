@@ -11,6 +11,8 @@
 #include "poligraph/main_graph.h"
 #include "matrix/matrix.h"
 #include "graph/graph.h"
+#include "netsim/conf/config.h"
+#include "netsim/conf/channelparser.h"
 
 int check_netsim () {
   netsim_start_thread("src/netsim/conf/test.conf");
@@ -33,10 +35,27 @@ int check_matrix () {
 
 int check_graph() {
   GRAPH g;
-  MATRIX_VAL val;
-
   graph_setup_matrix(&g, 5);
   return 0;
+}
+
+int check_channel_parser () {
+  extern FILE *nqin;
+  extern int nqlex();
+  extern int nqparse();
+  extern NET_CONFIG netconf;
+  LINKED_LIST *t = &netconf.channels;
+
+  netconfig_init(&netconf, 2);
+  nqin = fopen("src/netsim/conf/netconf.conf", "r");
+  nqparse();
+  while (&netconf.channels != t->next) {
+    CHANNEL_CONF *c = container_of(t->next, CHANNEL_CONF, list_node);
+    printf ("channel src %d dest %d delay %f \n", c->src, c->dest, c->delay.constval);
+    t = t->next;
+  }
+
+  return SUCCESS;
 }
 
 int main (int nargs, char** args) {
@@ -45,7 +64,9 @@ int main (int nargs, char** args) {
   //check_netsim();
   //main_graph(nargs, args);
   //check_matrix();
-  check_graph();
+  //check_graph();
+  check_channel_parser();
+
   trash_clean();
   return SUCCESS;
 }

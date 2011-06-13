@@ -14,7 +14,7 @@
 #include "config.h"
 
 extern CONFIG conf;
-
+extern NET_CONFIG netconf;
 /**
  * Configure random distribution from parameters in RANDOM_CONFIG
  * @param rc : Random configuration
@@ -113,9 +113,15 @@ int netconfig_init (NET_CONFIG *netconf, int n) {
   check_null_pointer(netconf);
   memset(netconf, 0, sizeof(CONFIG));
   array_setup(&netconf->configs, sizeof(CONFIG), n);
+  linked_list_init(&netconf->channels);
   for (i=0; i<n; i++) {
     CONFIG *c = array_get(&netconf->configs, i);
     config_init(c);
   }
   return SUCCESS;
 }
+
+int netconfig_parse_file(char * f) {
+  return SUCCESS;
+}
+

@@ -51,11 +51,6 @@ typedef struct netqueue_all_state {
   PACKET_LIST free_packets;
 } NETQ_ALL_STATE;
 
-//typedef struct netqueue_link {
-//  float proporgation_delay;
-//  int state;
-//} NETQ_LINK;
-
 #define get_netq_state_from_ops(_ops) (container_of(_ops, NETQ_STATE, ops))
 
 #endif /* NETQUEUE_H_ */
