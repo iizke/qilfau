@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "random.h"
 #include "list/array.h"
+#include "list/linked_list.h"
 
 /*
  * Definition of some constants used in type of RANDOM_CONF
@@ -21,6 +22,7 @@
 #define RANDOM_UNIFORM            3
 #define RANDOM_FILE               4
 #define RANDOM_BERNOULLI          5
+#define RANDOM_CONST              6
 
 #define PROTOCOL_CSMA             0
 #define PROTOCOL_ONE_QUEUE        1
@@ -43,6 +45,8 @@ typedef struct random_config {
   double to;
   /// used for FLOW_BERNOULLI
   double prob;
+  /// Constant value
+  double constval;
   /// file name that storing the this flow when it is generated
   FILE *to_file;
   /// used when type is RANDOM_FILE
@@ -122,7 +126,18 @@ typedef struct config {
 typedef struct net_config {
   ARRAY configs;
   //int next_scan;
+  /// Current number of nodes (active config)
+  int nnodes;
+  LINKED_LIST channels;
 } NET_CONFIG;
+
+typedef struct channel_config {
+  LINKED_LIST list_node;
+  int src;
+  int dest;
+  RANDOM_CONF delay;
+  int state;
+} CHANNEL_CONF;
 
 int config_random_conf (RANDOM_CONF *rc);
 int config_init (CONFIG *conf);

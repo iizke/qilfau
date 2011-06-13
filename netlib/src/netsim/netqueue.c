@@ -7,10 +7,11 @@
 
 #include "error.h"
 #include "netqueue.h"
+#include "queues/fifo.h"
 
-#define netq_get_neighbor_of(_nq,_id) (_nq->queuenet.edges.get_edge_from(&_nq->queuenet.edges,qid))
-#define netq_traverse_neighbor_from(_nq,_qid,_from) (graph_traverse_in_row(&_nq->queuenet, _qid, _from))
-#define netq_traverse_neighbor_to(_nq,_qid,_from) (graph_traverse_in_row(&_nq->queuenet, _qid, _from))
+//#define netq_get_neighbor_of(_nq,_id) (_nq->queuenet.edges.get_edge_from(&_nq->queuenet.edges,qid))
+#define netq_traverse_neighbor_from(_nq,_qid,_from) (graph_get_neighbor(&_nq->queuenet, _qid, _from))
+//#define netq_traverse_neighbor_to(_nq,_qid,_from) (graph_get_neighbor(&_nq->queuenet, _qid, _from))
 
 /**
  * Create new packet
@@ -76,45 +77,6 @@ static EVENT* nq_generate_arrival_from_packet (NET_CONFIG *netconf, NETQ_STATE *
   event_list_insert_event(&state->future_events, e);
   return NULL;
 }
-
-///**
-// * Generate arrival event
-// * @param netconf : user configuration
-// * @param state : system state
-// * @param qid : queue id
-// * @return new event (already added in Event list)
-// */
-//static EVENT* nq_generate_arrival (NET_CONFIG *netconf, NETQ_STATE *state, int qid) {
-//  /* TODO: Should traverse all sources of packet/event to generate events */
-//  CONFIG *conf = NULL;
-//  EVENT *e = NULL;
-//  PACKET *packet;
-//  int i=0;
-//  int nconfs = netconfig_get_size(netconf);
-//  int from = 0;
-//  QUEUE_TYPE *nqt = NULL;
-//  //int qid = 0;
-//
-//  if (qid < 0) {
-//    // generate all arrival event from source nodes
-//    qid = 0;
-//    while (netconfig_traverse_arrival(netconf, &qid)) {
-//      if (_new_packet(state, &packet) < 0)
-//        return NULL;
-//      nq_generate_arrival_from_packet(netconf, state, qid, packet);
-//      qid++;
-//    }
-//  } else {
-//    // only generate arrival event from neighbors connecting to this qid
-//    while ((nqt = netq_traverse_neighbor_to(state, qid, from))) {
-//      if (_new_packet(state, &packet) < 0)
-//        return NULL;
-//      nq_generate_arrival_from_packet(netconf, state, qid, packet);
-//      from = nqt->id + 1;
-//    }
-//  }
-//  return e;
-//}
 
 /**
  * Generate new end-service event.
@@ -255,7 +217,7 @@ int nq_process_end_service (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
  * @return Error code (see more in def.h and error.h)
  */
 static int nq_system_clean (NET_CONFIG *netconf, SYS_STATE_OPS *ops) {
-  NETQ_STATE *state = get_sys_state_from_ops(ops);
+//  NETQ_STATE *state = get_sys_state_from_ops(ops);
 
 //TODO: Traverse all configuration to close file
 //
@@ -348,21 +310,32 @@ int nq_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
  * @return Error code (more in def.h and error.h)
  */
 int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
+  int size = 0;
+  int i = 0;
+  CONFIG *conf = NULL;
+  QUEUE_TYPE *qt = NULL;
 //  QUEUE_TYPE *fifo_queue = NULL;
-//  check_null_pointer(state);
-//
-//  state->curr_time.real = 0;
-//  packet_list_init(&state->free_packets, LL_CONF_STORE_FREE);
-//  event_list_init(&state->future_events);
-//  measures_init (&state->measurement);
-//  queue_man_init(&state->queues);
-//
-//  fifo_init(&fifo_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
-//  queue_man_register_new_type(&state->queues, fifo_queue);
-//  state->queues.curr_queue = fifo_queue;
-//  //printf("Config to use queue %d \n", conf.queue_conf.type);
-//  queue_man_activate_type(&state->queues, conf->queue_conf.type);
-//
+  check_null_pointer(state);
+  check_null_pointer(netconf);
+  size = netconfig_get_size(netconf);
+
+  state->curr_time.real = 0;
+  packet_list_init(&state->free_packets, LL_CONF_STORE_FREE);
+  event_list_init(&state->future_events);
+  measures_init (&state->measurement);
+
+  array_setup(&state->queues, sizeof(QUEUE_TYPE), size);
+  for (i=0; i<size; i++) {
+    qt = array_get(&state->queues, i);
+    conf = netconfig_get_conf(netconf, i);
+    fifo_setup(qt, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
+  }
+
+  graph_setup_matrix(&state->queuenet, size);
+  /* TODO: Build topology */
+
+  /* TODO: Setup initial events */
+
   state->ops.allow_continue = nq_allow_continue;
   state->ops.clean = nq_system_clean;
   state->ops.generate_event = nq_generate_event;

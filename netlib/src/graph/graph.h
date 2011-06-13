@@ -34,5 +34,5 @@ typedef struct graph {
 
 int graph_setup (GRAPH*);
 int graph_setup_matrix (GRAPH* g, int n) ;
-void* graph_traverse_in_row(GRAPH*g, int r,int from_col);
+void* graph_get_neighbor(GRAPH*g, int r,int from_col);
 #endif /* GRAPH_H_ */
