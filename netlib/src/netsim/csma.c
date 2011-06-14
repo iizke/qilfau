@@ -487,7 +487,7 @@ int csma_allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
  * @return Error code (see more in def.h and error.h)
  */
 static int csma_system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
-  CSMA_STATE *state = get_csma_state_from_ops(ops);
+  //CSMA_STATE *state = get_csma_state_from_ops(ops);
 
   if (conf->arrival_conf.to_file)
     fclose(conf->arrival_conf.to_file);

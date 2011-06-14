@@ -26,8 +26,8 @@ typedef struct packet_info {
   QUEUE_TYPE *queue;
   /// State of packet: IN, WAITING, DROPPED, PROCESSING, OUT
   int state;
-  /// Service time of packet
-  float service_time;
+  // Service time of packet
+  //float service_time;
   /// Arrival time
   TIME atime;
   /// Collision time

@@ -43,5 +43,5 @@ int random_dist_init_exp1(RANDOM_DIST *rd, double lambda) ;
 int random_dist_init_file0(RANDOM_DIST *rd, FILE *f);
 int random_dist_init_bernoulli0(RANDOM_DIST *rd, double* prob);
 int random_dist_init_bernoulli1(RANDOM_DIST *rd, double prob);
-
+int random_dist_init_const (RANDOM_DIST *rd, double *val);
 #endif /* RANDOM_H_ */

@@ -131,10 +131,26 @@ static int nq_process_packet (NET_CONFIG *netconf, NETQ_STATE *state, int qid) {
   QUEUE_TYPE *qt = netq_get_queue(state, qid);
   EVENT *e = NULL;
   PACKET *p = NULL;
+  CONFIG *cnf = netconfig_get_conf(netconf, qid);
 
-  qt->select_waiting_packet(qt, &p);
-  p->info.stime.real = state->curr_time.real;
-  qt->process_packet(qt, p);
+  switch (cnf->nodetype) {
+  case NODE_SOURCE:
+    try (_new_packet(state, &p));
+    packet_init(p);
+    p->info.atime.real = state->curr_time.real;
+    p->info.stime.real = state->curr_time.real;
+    p->info.queue = qt;
+    p->info.state = PACKET_STATE_PROCESSING;
+    break;
+  case NODE_TRANSIT:
+    qt->select_waiting_packet(qt, &p);
+    p->info.stime.real = state->curr_time.real;
+    qt->process_packet(qt, p);
+    break;
+  case NODE_SINK:
+  default:
+    return ERR_INVALID_VAL;
+  }
   measurement_collect_data(&state->measurement, p, state->curr_time);
   e = nq_generate_end_service (p, netconf, state);
   if (!e) {
@@ -156,6 +172,7 @@ int nq_process_arrival (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
   QUEUE_TYPE *qt = NULL;
   int qid = e->info.packet->info.id;
   qt = netq_get_queue(state, qid);
+  //CONFIG *cnf = netconfig_get_conf(netconf, qid);
 
   try ( update_time(e, state) );
   measurement_collect_data(&state->measurement, packet, state->curr_time);
@@ -182,13 +199,15 @@ int nq_process_arrival (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
 int nq_process_end_service (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
   PACKET *packet = e->info.packet;
   QUEUE_TYPE *qt = packet->info.queue;
-  QUEUE_TYPE *nqt =  NULL;
   int qid = qt->id;
   int from = 0;
+  QUEUE_TYPE *nqt =  NULL;
+  CONFIG *cnf = netconfig_get_conf(netconf, qid);
 
   try ( update_time(e, state) );
   packet->info.etime.real = e->info.time.real;
-  qt->finish_packet(qt, packet);
+  if (cnf->nodetype != NODE_SOURCE)
+    qt->finish_packet(qt, packet);
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   //try ( _free_packet(state, packet) );
 
@@ -312,29 +331,48 @@ int nq_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
 int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
   int size = 0;
   int i = 0;
-  CONFIG *conf = NULL;
+  CONFIG *cnf = NULL;
   QUEUE_TYPE *qt = NULL;
+  LINKED_LIST *link = NULL;
+  PACKET *packet = NULL;
 //  QUEUE_TYPE *fifo_queue = NULL;
   check_null_pointer(state);
   check_null_pointer(netconf);
-  size = netconfig_get_size(netconf);
 
   state->curr_time.real = 0;
   packet_list_init(&state->free_packets, LL_CONF_STORE_FREE);
   event_list_init(&state->future_events);
   measures_init (&state->measurement);
 
-  array_setup(&state->queues, sizeof(QUEUE_TYPE), size);
-  for (i=0; i<size; i++) {
-    qt = array_get(&state->queues, i);
-    conf = netconfig_get_conf(netconf, i);
-    fifo_setup(qt, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
+  array_setup(&state->queues, sizeof(QUEUE_TYPE), netconf->nnodes);
+  graph_setup_matrix(&state->queuenet, netconf->nnodes);
+  /* TODO: Build topology */
+  link = netconf->channels.next;
+  while (&netconf->channels != link) {
+    CHANNEL_CONF *c = container_of(link, CHANNEL_CONF, list_node);
+    state->queuenet.edges.set_edge(&state->queuenet.edges, c->src, c->dest, c);
   }
 
-  graph_setup_matrix(&state->queuenet, size);
-  /* TODO: Build topology */
+  for (i=0; i<size; i++) {
+    qt = array_get(&state->queues, i);
+    cnf = netconfig_get_conf(netconf, i);
+    state->queuenet.nodes.set_node(&state->queuenet.nodes, i, qt);
 
-  /* TODO: Setup initial events */
+    /* TODO: Setup initial events */
+    if (cnf->nodetype == NODE_SOURCE) {
+      try (_new_packet(state, &packet));
+      packet_init(packet);
+      packet->info.atime.real = state->curr_time.real;
+      packet->info.stime.real = state->curr_time.real;
+      packet->info.queue = qt;
+      packet->info.state = PACKET_STATE_PROCESSING;
+      nq_generate_end_service(packet, &netconf, state);
+    } else if (cnf->nodetype == NODE_SINK) {
+      cnf->queue_conf.num_servers = 0;
+      cnf->queue_conf.max_waiters = 0;
+    }
+    fifo_setup(qt, cnf->queue_conf.num_servers, cnf->queue_conf.max_waiters);
+  }
 
   state->ops.allow_continue = nq_allow_continue;
   state->ops.clean = nq_system_clean;

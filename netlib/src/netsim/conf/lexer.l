@@ -15,6 +15,11 @@ FCHAR						({CHAR}|{POINT}|{DIGIT})
 %% 
 \/\/[^\n]*\n				; 
 
+nodetype					return NODETYPE;
+SOURCE						return SOURCE;
+SINK						return SINK;
+TRANSIT						return TRANSIT;
+
 RANDOM_MARKOV				return R_MARKOV;
 RANDOM_UNIFORM				return R_UNF;
 RANDOM_FILE					return R_FILE;
@@ -52,7 +57,7 @@ csma.maxbackoff				return CSMA_MAXBACKOFF;
 protocol					return PROTOCOL;
 ONE_QUEUE					return PROTO_ONE_QUEUE;
 CSMA						return PROTO_CSMA;
-
+NET_QUEUE					return PROTO_NET_QUEUE;
 nthreads					return NTHREADS;
 
 debug.error					return DEBUG_ERROR;

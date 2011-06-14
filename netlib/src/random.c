@@ -330,3 +330,18 @@ int random_dist_init_bernoulli1(RANDOM_DIST *rd, double prob) {
   rd->params = l;
   return SUCCESS;
 }
+
+double random_dist_gen_const (RANDOM_DIST *rd) {
+  double* val = NULL;
+  check_null_pointer(rd);
+  val = rd->params;
+  return (*val);
+}
+
+int random_dist_init_const (RANDOM_DIST *rd, double *val) {
+  check_null_pointer(rd);
+  rd->gen = random_dist_gen_const;
+  //rd->cdf = random_dist_cdf_const;
+  rd->params = val;
+  return SUCCESS;
+}

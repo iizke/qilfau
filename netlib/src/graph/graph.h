@@ -16,6 +16,7 @@ typedef struct node_list {
   int num_nodes;
   NODE_ID next_scan;
   void* (*get_node) (void*, NODE_ID);
+  int (*set_node) (void*, NODE_ID, void*);
 } NODE_LIST;
 
 typedef struct edge_list {

@@ -34,6 +34,9 @@ int config_random_conf (RANDOM_CONF *rc) {
   case RANDOM_BERNOULLI:
     random_dist_init_bernoulli0(&rc->distribution, &rc->prob);
     break;
+  case RANDOM_CONST:
+    random_dist_init_const(&rc->distribution, &rc->constval);
+    break;
   default:
     iprint(LEVEL_ERROR, "This type (%d) of random type is not supported\n", rc->type);
     return ERR_RANDOM_TYPE_FAIL;
@@ -84,7 +87,7 @@ int config_parse_file(char * f) {
   yyin = fopen(f, "r");
   yyparse();
   config_setup(&conf);
-
+  fclose(yyin);
   return SUCCESS;
 }
 
@@ -121,7 +124,40 @@ int netconfig_init (NET_CONFIG *netconf, int n) {
   return SUCCESS;
 }
 
-int netconfig_parse_file(char * f) {
+int netconfig_parse_nodes(char * f) {
+  extern FILE *yyin;
+  extern int yylex();
+  extern int yyparse();
+  extern NET_CONFIG netconf;
+  CONFIG *config = netconfig_get_conf(&netconf, netconf.nnodes);
+  if (!config)
+    return ERR_POINTER_NULL;
+  //This action should be done before calling parse_nodes
+  config_init(&conf);
+  //fclose(yyin);
+  yyin = fopen(f, "r");
+  yyparse();
+  memcpy(config, &conf, sizeof(CONFIG));
+  config_setup(config);
+  netconf.nnodes++;
+  fclose(yyin);
   return SUCCESS;
 }
 
+int netconfig_parse_channels(char * f) {
+  extern FILE *nqin;
+  extern int nqlex();
+  extern int nqparse();
+  extern NET_CONFIG netconf;
+  //LINKED_LIST *t = &netconf.channels;
+
+  nqin = fopen(f, "r");
+  nqparse();
+  fclose(nqin);
+//  while (&netconf.channels != t->next) {
+//    CHANNEL_CONF *c = container_of(t->next, CHANNEL_CONF, list_node);
+//    printf ("channel src %d dest %d delay %f \n", c->src, c->dest, c->delay.constval);
+//    t = t->next;
+//  }
+  return SUCCESS;
+}
