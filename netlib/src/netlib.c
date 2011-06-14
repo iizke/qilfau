@@ -16,7 +16,8 @@
 #include "netsim/netqueue.h"
 
 int check_netsim () {
-  netsim_start_thread("src/netsim/conf/test.conf");
+  //netsim_start_thread("src/netsim/conf/test.conf");
+  netsim_start("src/netsim/conf/test.conf");
   return 0;
 }
 

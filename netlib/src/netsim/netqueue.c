@@ -87,9 +87,14 @@ static EVENT* nq_generate_end_service (PACKET *p, NET_CONFIG *netconf, NETQ_STAT
   conf = netconfig_get_conf(netconf, qid);
   event_list_new_event(&state->future_events, &e);
   e->info.type = EVENT_END_SERVICE;
-  event_setup(e, &conf->service_conf, state->curr_time);
-  e->info.packet = p;
-  event_list_insert_event(&state->future_events, e);
+  if (event_setup(e, &conf->service_conf, state->curr_time) < 0) {
+    _free_packet(state, p);
+    event_list_remove_event(&state->future_events, e);
+    e = NULL;
+  } else {
+    e->info.packet = p;
+    event_list_insert_event(&state->future_events, e);
+  }
   return e;
 }
 
@@ -117,7 +122,7 @@ static int nq_allow_continue (NET_CONFIG *netconf, SYS_STATE_OPS *ops) {
     }
     // This setting is to deny any events after this time
     if (!event_list_is_empty(&state->future_events)) {
-      event_list_stop_growing (&state->future_events);
+      //event_list_stop_growing (&state->future_events);
       return 1;
     } else
       return 0;
@@ -211,9 +216,9 @@ int nq_process_end_service (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   //try ( _free_packet(state, packet) );
 
-  //TODO: Connect to other queue to generate arrival event
   while ((nqt = netq_traverse_neighbor_from(state, qid, from))) {
-    packet->info.atime.real = e->info.time.real;
+    CHANNEL_CONF *ch = state->queuenet.edges.get_edge(&state->queuenet.edges, qid, nqt->id);
+    packet->info.atime.real = e->info.time.real + ch->delay.distribution.gen(&ch->delay.distribution);
     packet->info.ctime.real = 0;
     packet->info.stime.real = 0;
     packet->info.etime.real = 0;
@@ -393,9 +398,10 @@ int netq_run(char *f) {
   NETQ_STATE state;
   SYS_STATE_OPS *ops = NULL;
 
-  netconfig_init(&netconf, 3);
+  netconfig_init(&netconf, 4);
   netconfig_parse_nodes("src/netsim/conf/source.conf");
   netconfig_parse_nodes("src/netsim/conf/node1.conf");
+  netconfig_parse_nodes("src/netsim/conf/node2.conf");
   netconfig_parse_nodes("src/netsim/conf/sink.conf");
   netconfig_parse_channels("src/netsim/conf/netconf.conf");
   netq_state_init(&state, &netconf);
@@ -408,6 +414,6 @@ int netq_run(char *f) {
     printf("Queue %d \n", i);
     print_measurement(&((FIFO_QINFO*)qt->info)->measurement);
   }
-  netsim_print_theorical_mm1 (90, 100);
+  netsim_print_theorical_mm1 (80, 100);
   return SUCCESS;
 }
