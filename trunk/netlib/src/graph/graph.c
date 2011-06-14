@@ -68,6 +68,15 @@ void* node_list_matrix_get_node (NODE_LIST* nl, NODE_ID id) {
   return val[id];
 }
 
+int node_list_matrix_set_node (NODE_LIST* nl, NODE_ID id, void* data) {
+  char **val = NULL;
+  if ((!nl) || (id >= nl->num_nodes) || (id < 0))
+    return NULL;
+  val = nl->node_data;
+  val[id] = data;
+  return SUCCESS;
+}
+
 int graph_setup_matrix (GRAPH* g, int n) {
   try ( graph_setup(g) );
   edge_list_setup_matrix(&g->edges, n);
@@ -79,6 +88,7 @@ int graph_setup_matrix (GRAPH* g, int n) {
   g->nodes.node_data = malloc_gc(sizeof(void*)*n);
   memset(g->nodes.node_data, 0, sizeof(void*)*n);
   g->nodes.get_node = node_list_matrix_get_node;
+  g->nodes.set_node = node_list_matrix_set_node;
   return SUCCESS;
 }
 

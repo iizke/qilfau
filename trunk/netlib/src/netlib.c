@@ -13,6 +13,7 @@
 #include "graph/graph.h"
 #include "netsim/conf/config.h"
 #include "netsim/conf/channelparser.h"
+#include "netsim/netqueue.h"
 
 int check_netsim () {
   netsim_start_thread("src/netsim/conf/test.conf");
@@ -39,21 +40,21 @@ int check_graph() {
   return 0;
 }
 
-int check_channel_parser () {
-  extern FILE *nqin;
-  extern int nqlex();
-  extern int nqparse();
+int check_net_queue() {
   extern NET_CONFIG netconf;
-  LINKED_LIST *t = &netconf.channels;
 
-  netconfig_init(&netconf, 2);
-  nqin = fopen("src/netsim/conf/netconf.conf", "r");
-  nqparse();
-  while (&netconf.channels != t->next) {
-    CHANNEL_CONF *c = container_of(t->next, CHANNEL_CONF, list_node);
-    printf ("channel src %d dest %d delay %f \n", c->src, c->dest, c->delay.constval);
-    t = t->next;
-  }
+  NETQ_STATE state;
+  SYS_STATE_OPS *ops = NULL;
+
+  netconfig_init(&netconf, 3);
+  netconfig_parse_nodes("src/netsim/conf/source.conf");
+  printf("source \n");
+  netconfig_parse_nodes("src/netsim/conf/node1.conf");
+  netconfig_parse_nodes("src/netsim/conf/sink.conf");
+  netconfig_parse_channels("src/netsim/conf/netconf.conf");
+  netq_state_init(&state, &netconf);
+  ops = &state.ops;
+  pisas_sched(&netconf, ops);
 
   return SUCCESS;
 }
@@ -65,8 +66,8 @@ int main (int nargs, char** args) {
   //main_graph(nargs, args);
   //check_matrix();
   //check_graph();
-  check_channel_parser();
-
+  //check_channel_parser();
+  check_net_queue();
   trash_clean();
   return SUCCESS;
 }

@@ -228,7 +228,7 @@ int _process_end_service (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
  * @return Error code (see more in def.h and error.h)
  */
 static int _system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
-  ONEQ_STATE *state = get_sys_state_from_ops(ops);
+  //ONEQ_STATE *state = get_sys_state_from_ops(ops);
 
   if (conf->arrival_conf.to_file)
     fclose(conf->arrival_conf.to_file);

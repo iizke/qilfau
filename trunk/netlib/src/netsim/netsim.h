@@ -31,4 +31,6 @@ struct system_state_operations {
 
 int netsim_start (char *conf_file);
 int netsim_start_thread (char *conf_file);
+int pisas_sched (void *conf, SYS_STATE_OPS *sys_ops);
+
 #endif /* CONFIG_H_ */

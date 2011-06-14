@@ -1482,7 +1482,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 62 "channelparser.y"
-    { channel->delay.type = RANDOM_CONST;}
+    { channel->delay.type = RANDOM_CONST; printf("const\n");}
     break;
 
   case 12:

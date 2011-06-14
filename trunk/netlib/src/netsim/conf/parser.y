@@ -40,6 +40,10 @@ CONFIG conf;
 %token STOP_QUEUEZERO;
 
 %token NTHREADS;
+%token NODETYPE;
+%token SOURCE;
+%token SINK;
+%token TRANSIT;
 
 %token CSMA_NSTATIONS;
 %token CSMA_PROB;
@@ -50,6 +54,7 @@ CONFIG conf;
 %token PROTOCOL;
 %token PROTO_CSMA;
 %token PROTO_ONE_QUEUE;
+%token PROTO_NET_QUEUE;
 
 %token LIBS_RANDOM;
 %token LIB_RAND_IRAND;
@@ -132,8 +137,12 @@ exp:      ARRIVAL_TYPE EQ INTNUM { conf.arrival_conf.type = $3; }
 
 		| PROTOCOL EQ PROTO_CSMA {conf.protocol = PROTOCOL_CSMA; }
 		| PROTOCOL EQ PROTO_ONE_QUEUE {conf.protocol = PROTOCOL_ONE_QUEUE;}
+		| PROTOCOL EQ PROTO_NET_QUEUE {conf.protocol = PROTOCOL_NET_QUEUE;}
 		
 		| NTHREADS EQ INTNUM { conf.nthreads = $3; }
+		| NODETYPE EQ SOURCE { conf.nodetype = NODE_SOURCE; }
+		| NODETYPE EQ SINK { conf.nodetype = NODE_SINK; }
+		| NODETYPE EQ TRANSIT { conf.nodetype = NODE_TRANSIT; }
 ;
 %%
 

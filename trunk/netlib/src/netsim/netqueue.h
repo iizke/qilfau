@@ -53,4 +53,6 @@ typedef struct netqueue_all_state {
 
 #define get_netq_state_from_ops(_ops) (container_of(_ops, NETQ_STATE, ops))
 
+int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf);
+
 #endif /* NETQUEUE_H_ */

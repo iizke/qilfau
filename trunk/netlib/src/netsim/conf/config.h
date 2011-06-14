@@ -26,9 +26,14 @@
 
 #define PROTOCOL_CSMA             0
 #define PROTOCOL_ONE_QUEUE        1
+#define PROTOCOL_NET_QUEUE        2
 
 #define STOP_QUEUE_ZERO           0
 #define STOP_QUEUE_NONZERO        1
+
+#define NODE_SOURCE               1
+#define NODE_TRANSIT              2
+#define NODE_SINK                 3
 
 /**
  * Flow configuration is used to characterize a flow: what is its
@@ -121,6 +126,7 @@ typedef struct config {
    * to long time, but also want to see the intermediate result
    */
   void *runtime_state;
+  int nodetype;
 } CONFIG;
 
 typedef struct net_config {
@@ -148,4 +154,7 @@ CONFIG* netconfig_get_conf(NET_CONFIG *net, int cid);
 int netconfig_init (NET_CONFIG *netconf, int n);
 int netconfig_get_size(NET_CONFIG *net);
 int netconfig_traverse_arrival(NET_CONFIG *conf, int *qid);
+int netconfig_parse_nodes(char * f);
+int netconfig_parse_channels(char * f);
+
 #endif /* MYCONFIG_H_ */
