@@ -150,15 +150,16 @@ int netconfig_parse_channels(char * f) {
   extern int nqlex();
   extern int nqparse();
   extern NET_CONFIG netconf;
-//  LINKED_LIST *t = &netconf.channels;
+  LINKED_LIST *t = &netconf.channels;
 
   nqin = fopen(f, "r");
   nqparse();
   fclose(nqin);
-//  while (&netconf.channels != t->next) {
-//    CHANNEL_CONF *c = container_of(t->next, CHANNEL_CONF, list_node);
-//    printf ("channel src %d dest %d delay %f \n", c->src, c->dest, c->delay.constval);
-//    t = t->next;
-//  }
+
+  while (&netconf.channels != t->next) {
+    CHANNEL_CONF *c = container_of(t->next, CHANNEL_CONF, list_node);
+    config_random_conf(&c->delay);
+    t = t->next;
+  }
   return SUCCESS;
 }
