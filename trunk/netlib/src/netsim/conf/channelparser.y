@@ -45,7 +45,7 @@ input:    /* empty */
         | input link
 ;
 
-link:	LINK_BEGIN {channel = malloc_gc(sizeof(CHANNEL_CONF));}
+link:	LINK_BEGIN {channel = malloc_gc(sizeof(CHANNEL_CONF)); linked_list_init(&channel->list_node);}
 		lines
 		LINK_END {linked_list_insert(&netconf.channels, &channel->list_node);}
 ;
@@ -59,7 +59,7 @@ line:	  exp ENDLINE
 
 exp:      LINK_DELAY_TYPE EQ INTNUM { channel->delay.type = $3; }
 		| LINK_DELAY_TYPE EQ R_MARKOV { channel->delay.type = RANDOM_MARKOVIAN; }
-		| LINK_DELAY_TYPE EQ R_CONST { channel->delay.type = RANDOM_CONST; printf("const\n");}
+		| LINK_DELAY_TYPE EQ R_CONST { channel->delay.type = RANDOM_CONST;}
 		| LINK_DELAY_TYPE EQ R_UNF { channel->delay.type = RANDOM_UNIFORM; }
 		| LINK_DELAY_TYPE EQ R_FILE { channel->delay.type = RANDOM_FILE; }
 		| LINK_DELAY_TYPE EQ R_OTHER { channel->delay.type = RANDOM_OTHER; }

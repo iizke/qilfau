@@ -121,7 +121,7 @@ static void netsim_print_result(CONFIG *conf) {
   ((_atype == RANDOM_MARKOVIAN) && (_stype == RANDOM_MARKOVIAN) && \
       (_nservers > 0) && (_qlen > 0))
 
-static void netsim_print_theorical_mm1 (double arrival, double service) {
+void netsim_print_theorical_mm1 (double arrival, double service) {
   double ro = arrival/service;
   // Number of customers in system (in queue + in service)
   double slen = ro/(1-ro);

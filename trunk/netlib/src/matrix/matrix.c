@@ -133,6 +133,24 @@ MATRIX_VAL matrix_get_value (MATRIX *m, int row, int col) {
   return val;
 }
 
+int matrix_set_value (MATRIX *m, int row, int col, MATRIX_VAL val) {
+  if (!m)
+    return ERR_POINTER_NULL;
+
+  switch (m->type) {
+  case MATRIX_TYPE_DENSE:
+    m->data._dense->vals[row][col] = val;
+    break;
+  case MATRIX_TYPE_SPARSE:
+    m->data._sparse->rows[row].cols[col].data = val;
+    break;
+  default:
+    iprint(LEVEL_ERROR, "No support this kind of matrix\n");
+    break;
+  }
+  return SUCCESS;
+}
+
 void* matrix_get_row (MATRIX *m, int row) {
   if (!m) return NULL;
   switch (m->type) {

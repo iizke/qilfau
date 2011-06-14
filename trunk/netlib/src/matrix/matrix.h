@@ -53,5 +53,5 @@ int matrix_setup (MATRIX *m, int nr, int nc);
 int matrix_setup_file (MATRIX *, FILE*);
 MATRIX_VAL matrix_get_value (MATRIX *, int, int);
 void* matrix_get_row (MATRIX *, int row);
-
+int matrix_set_value (MATRIX *m, int row, int col, MATRIX_VAL val);
 #endif /* MATRIX_H_ */

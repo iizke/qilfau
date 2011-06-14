@@ -1454,7 +1454,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 48 "channelparser.y"
-    {channel = malloc_gc(sizeof(CHANNEL_CONF));}
+    {channel = malloc_gc(sizeof(CHANNEL_CONF)); linked_list_init(&channel->list_node);}
     break;
 
   case 5:
@@ -1482,7 +1482,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 62 "channelparser.y"
-    { channel->delay.type = RANDOM_CONST; printf("const\n");}
+    { channel->delay.type = RANDOM_CONST;}
     break;
 
   case 12:
