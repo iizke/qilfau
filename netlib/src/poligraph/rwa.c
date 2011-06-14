@@ -62,7 +62,7 @@ void alloca_lambda(int ***W, int num_req)
    }   
 }
 
-void stampa_lambda(int **W, int num_req)
+void print_lambda(int **W, int num_req)
 {
    int arc, w;
    
@@ -111,7 +111,7 @@ void RWA_ssff(PGRAPH g, int **L, int **lambda, int num_req)
            }
        }while (ok==FALSE);    
         
-       /* qui w � la prima lambda libera su tutti gli archi*/
+       /* qui w e la prima lambda libera su tutti gli archi*/
         for (j = 0; mp[d][j] != NULL; j++)
         {
             arco = mp[d][j]->identif;

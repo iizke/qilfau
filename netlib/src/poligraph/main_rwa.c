@@ -207,7 +207,7 @@ main_rwa (int argc, char *argv[])
 
   /* initializza la matrice lambda */
   alloca_lambda(&lambda, num_req);
-  stampa_lambda(lambda, num_req);
+  print_lambda(lambda, num_req);
   
   for (i = 0; i < num_nodes; i++)
   {
@@ -218,10 +218,9 @@ main_rwa (int argc, char *argv[])
         print_all_sh_path_from(fp_result,&g,g.node_set[i].matrix_path,i);
   }
   RWA_ssff(&g, L, lambda, num_req);
-  stampa_lambda(lambda, num_req);
+  print_lambda(lambda, num_req);
   max_lambda(lambda, num_req);
- 
-  
+
   start_time = clock () - start_time;
   fprintf (fp_result, "\nElapsed_time = %f\n",
 	   (double) start_time / CLOCKS_PER_SEC);

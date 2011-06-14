@@ -41,21 +41,7 @@ int check_graph() {
 }
 
 int check_net_queue() {
-  extern NET_CONFIG netconf;
-
-  NETQ_STATE state;
-  SYS_STATE_OPS *ops = NULL;
-
-  netconfig_init(&netconf, 3);
-  netconfig_parse_nodes("src/netsim/conf/source.conf");
-  printf("source \n");
-  netconfig_parse_nodes("src/netsim/conf/node1.conf");
-  netconfig_parse_nodes("src/netsim/conf/sink.conf");
-  netconfig_parse_channels("src/netsim/conf/netconf.conf");
-  netq_state_init(&state, &netconf);
-  ops = &state.ops;
-  pisas_sched(&netconf, ops);
-
+  netq_run("");
   return SUCCESS;
 }
 
@@ -64,9 +50,9 @@ int main (int nargs, char** args) {
   random_init();
   //check_netsim();
   //main_graph(nargs, args);
+  //main_rwa(nargs, args);
   //check_matrix();
   //check_graph();
-  //check_channel_parser();
   check_net_queue();
   trash_clean();
   return SUCCESS;

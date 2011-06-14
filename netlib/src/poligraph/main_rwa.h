@@ -13,7 +13,7 @@ void crea_richieste(int **L, int num_req, int num_nodes);
 void stampa_richieste(int **L, int num_req);
 
 void alloca_lambda(int ***W, int num_req);
-void stampa_lambda(int **W, int num_req);
+void print_lambda(int **W, int num_req);
 void max_lambda(int **lambda, int num_req);
 
 

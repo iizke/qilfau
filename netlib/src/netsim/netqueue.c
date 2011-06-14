@@ -63,15 +63,10 @@ static QUEUE_TYPE * netq_get_queue (NETQ_STATE *nq, int qid) {
 
 static EVENT* nq_generate_arrival_from_packet (NET_CONFIG *netconf, NETQ_STATE *state, PACKET *packet) {
   EVENT *e = NULL;
-  int error_code = SUCCESS;
+
   event_list_new_event(&state->future_events, &e);
   e->info.type = EVENT_ARRIVAL;
   e->info.time.real = packet->info.atime.real;
-  if (error_code < 0) {
-    free_gc (e);
-    return NULL;
-  }
-
   packet->info.state = PACKET_STATE_IN;
   e->info.packet = packet;
   event_list_insert_event(&state->future_events, e);
@@ -88,7 +83,7 @@ static EVENT* nq_generate_arrival_from_packet (NET_CONFIG *netconf, NETQ_STATE *
 static EVENT* nq_generate_end_service (PACKET *p, NET_CONFIG *netconf, NETQ_STATE *state) {
   EVENT *e = NULL;
   CONFIG *conf = NULL;
-  int qid = p->info.id;
+  int qid = p->info.queue->id;
   conf = netconfig_get_conf(netconf, qid);
   event_list_new_event(&state->future_events, &e);
   e->info.type = EVENT_END_SERVICE;
@@ -108,10 +103,19 @@ static int nq_allow_continue (NET_CONFIG *netconf, SYS_STATE_OPS *ops) {
   NETQ_STATE *state = get_netq_state_from_ops(ops);
   CONFIG *conf = netconfig_get_conf(netconf, 0);
   STOP_CONF *stop_conf = &conf->stop_conf;
+  int i = 0;
+  int n = netconf->nnodes;
 
   if ((stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time) ||
       (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival)) {
-    conf->arrival_conf.type = RANDOM_OTHER;
+    // By doing this, source nodes will not generate more packet when the system need to finish
+    for (i=0; i<n; i++) {
+      conf = netconfig_get_conf(netconf, i);
+      if (conf->nodetype == NODE_SOURCE) {
+        conf->service_conf.type = RANDOM_OTHER;
+      }
+    }
+    // This setting is to deny any events after this time
     if (!event_list_is_empty(&state->future_events)) {
       event_list_stop_growing (&state->future_events);
       return 1;
@@ -127,11 +131,11 @@ static int nq_allow_continue (NET_CONFIG *netconf, SYS_STATE_OPS *ops) {
  * @param state : system state
  * @return Error code (see more in def.h and error.h)
  */
-static int nq_process_packet (NET_CONFIG *netconf, NETQ_STATE *state, int qid) {
-  QUEUE_TYPE *qt = netq_get_queue(state, qid);
+static int nq_process_packet (NET_CONFIG *netconf, NETQ_STATE *state, QUEUE_TYPE *qt) {
+  //QUEUE_TYPE *qt = netq_get_queue(state, qid);
   EVENT *e = NULL;
   PACKET *p = NULL;
-  CONFIG *cnf = netconfig_get_conf(netconf, qid);
+  CONFIG *cnf = netconfig_get_conf(netconf, qt->id);
 
   switch (cnf->nodetype) {
   case NODE_SOURCE:
@@ -168,11 +172,9 @@ static int nq_process_packet (NET_CONFIG *netconf, NETQ_STATE *state, int qid) {
  * @return Error code (see more in def.h and libs/error.h)
  */
 int nq_process_arrival (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
-  PACKET *packet = NULL;
-  QUEUE_TYPE *qt = NULL;
-  int qid = e->info.packet->info.id;
-  qt = netq_get_queue(state, qid);
-  //CONFIG *cnf = netconfig_get_conf(netconf, qid);
+  PACKET *packet = e->info.packet;
+  QUEUE_TYPE *qt = packet->info.queue;
+  int qid = qt->id;
 
   try ( update_time(e, state) );
   measurement_collect_data(&state->measurement, packet, state->curr_time);
@@ -181,10 +183,8 @@ int nq_process_arrival (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
   if (packet->info.state == PACKET_STATE_DROPPED)
     _free_packet(state, packet);
 
-  //nq_generate_arrival(netconf, state, qid);
-
   if ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) >= 1))
-    nq_process_packet(netconf, state, qid);
+    nq_process_packet(netconf, state, qt);
 
   return SUCCESS;
 }
@@ -223,8 +223,11 @@ int nq_process_end_service (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
     break;
   }
 
-  while (qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0))
-    nq_process_packet(netconf, state, qt->id);
+  if (cnf->nodetype == NODE_SOURCE)
+    nq_process_packet(netconf, state, qt);
+  else
+    while ((qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0)))
+      nq_process_packet(netconf, state, qt);
 
   return SUCCESS;
 }
@@ -329,7 +332,6 @@ int nq_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
  * @return Error code (more in def.h and error.h)
  */
 int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
-  int size = 0;
   int i = 0;
   CONFIG *cnf = NULL;
   QUEUE_TYPE *qt = NULL;
@@ -351,10 +353,12 @@ int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
   while (&netconf->channels != link) {
     CHANNEL_CONF *c = container_of(link, CHANNEL_CONF, list_node);
     state->queuenet.edges.set_edge(&state->queuenet.edges, c->src, c->dest, c);
+    link = link->next;
   }
 
-  for (i=0; i<size; i++) {
+  for (i=0; i< netconf->nnodes; i++) {
     qt = array_get(&state->queues, i);
+    qt->id = i;
     cnf = netconfig_get_conf(netconf, i);
     state->queuenet.nodes.set_node(&state->queuenet.nodes, i, qt);
 
@@ -366,7 +370,7 @@ int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
       packet->info.stime.real = state->curr_time.real;
       packet->info.queue = qt;
       packet->info.state = PACKET_STATE_PROCESSING;
-      nq_generate_end_service(packet, &netconf, state);
+      nq_generate_end_service(packet, netconf, state);
     } else if (cnf->nodetype == NODE_SINK) {
       cnf->queue_conf.num_servers = 0;
       cnf->queue_conf.max_waiters = 0;
@@ -380,5 +384,30 @@ int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
   state->ops.get_next_event = nq_get_next_event;
   state->ops.process_event = nq_process_event;
   state->ops.remove_event = nq_remove_event;
+  return SUCCESS;
+}
+
+int netq_run(char *f) {
+  extern NET_CONFIG netconf;
+  int i = 0;
+  NETQ_STATE state;
+  SYS_STATE_OPS *ops = NULL;
+
+  netconfig_init(&netconf, 3);
+  netconfig_parse_nodes("src/netsim/conf/source.conf");
+  netconfig_parse_nodes("src/netsim/conf/node1.conf");
+  netconfig_parse_nodes("src/netsim/conf/sink.conf");
+  netconfig_parse_channels("src/netsim/conf/netconf.conf");
+  netq_state_init(&state, &netconf);
+  ops = &state.ops;
+  pisas_sched(&netconf, ops);
+  printf("ALL SYSTEM\n");
+  print_measurement(&state.measurement);
+  for (i=0; i<netconf.nnodes; i++) {
+    QUEUE_TYPE *qt = netq_get_queue(&state, i);
+    printf("Queue %d \n", i);
+    print_measurement(&((FIFO_QINFO*)qt->info)->measurement);
+  }
+  netsim_print_theorical_mm1 (90, 100);
   return SUCCESS;
 }

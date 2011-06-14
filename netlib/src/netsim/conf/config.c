@@ -12,6 +12,7 @@
 #include "random.h"
 #include "parser.h"
 #include "config.h"
+#include "channelparser.h"
 
 extern CONFIG conf;
 extern NET_CONFIG netconf;
@@ -149,7 +150,7 @@ int netconfig_parse_channels(char * f) {
   extern int nqlex();
   extern int nqparse();
   extern NET_CONFIG netconf;
-  //LINKED_LIST *t = &netconf.channels;
+//  LINKED_LIST *t = &netconf.channels;
 
   nqin = fopen(f, "r");
   nqparse();
