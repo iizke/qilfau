@@ -18,6 +18,7 @@
 int event_list_init (EVENT_LIST *el) {
   check_null_pointer(el);
   try ( linked_list_man_init(&el->list) );
+  sem_init(&el->mutex, 0, 1);
   return SUCCESS;
 }
 
@@ -66,6 +67,13 @@ int event_list_insert_event (EVENT_LIST *el, EVENT *e) {
   return SUCCESS;
 }
 
+int event_list_insert_event_mutex (EVENT_LIST *el, EVENT *e) {
+  sem_wait(&el->mutex);
+  event_list_insert_event(el, e);
+  sem_post(&el->mutex);
+  return SUCCESS;
+}
+
 /**
  * Remove an event out of event list.
  * Note that, based on Linked-list-manager (LINKED_LIST_MAN), this event may not
@@ -78,6 +86,13 @@ int event_list_remove_event (EVENT_LIST *el, EVENT *e) {
   check_null_pointer(el);
   check_null_pointer(e);
   try ( linked_list_man_remove(&el->list, &e->list_node) );
+  return SUCCESS;
+}
+
+int event_list_remove_event_mutex (EVENT_LIST *el, EVENT *e) {
+  sem_wait(&el->mutex);
+  event_list_remove_event(el, e);
+  sem_post(&el->mutex);
   return SUCCESS;
 }
 
@@ -113,7 +128,9 @@ int event_list_is_empty (EVENT_LIST *l) {
  */
 int event_list_stop_growing (EVENT_LIST *l) {
   check_null_pointer(l);
+  sem_wait(&l->mutex);
   l->list.conf = 0;
+  sem_post(&l->mutex);
   return SUCCESS;
 }
 

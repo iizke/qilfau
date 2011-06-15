@@ -10,6 +10,7 @@
 #define EVENT_H_
 
 #include <stdio.h>
+#include <semaphore.h>
 #include "queues/packet.h"
 #include "conf/config.h"
 
@@ -42,6 +43,7 @@ typedef struct event {
 typedef struct event_list {
   /// Manager of double linked list of event
   LINKED_LIST_MAN list;
+  sem_t mutex;
   int (*gen) (void *,...);
 } EVENT_LIST;
 
@@ -80,6 +82,8 @@ int event_list_init (EVENT_LIST *el);
 int event_list_new_event (EVENT_LIST *el, EVENT **e);
 int event_list_insert_event (EVENT_LIST *el, EVENT *e);
 int event_list_remove_event (EVENT_LIST *el, EVENT *e);
+int event_list_insert_event_mutex (EVENT_LIST *el, EVENT *e);
+int event_list_remove_event_mutex (EVENT_LIST *el, EVENT *e);
 int event_list_get_first (EVENT_LIST *el, EVENT **e);
 int event_list_is_empty (EVENT_LIST *l);
 int event_list_stop_growing (EVENT_LIST *l);

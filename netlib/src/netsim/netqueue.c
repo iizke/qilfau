@@ -10,8 +10,8 @@
 #include "queues/fifo.h"
 
 //#define netq_get_neighbor_of(_nq,_id) (_nq->queuenet.edges.get_edge_from(&_nq->queuenet.edges,qid))
-#define netq_traverse_neighbor_from(_nq,_qid,_from) (graph_get_neighbor(&_nq->queuenet, _qid, _from))
-//#define netq_traverse_neighbor_to(_nq,_qid,_from) (graph_get_neighbor(&_nq->queuenet, _qid, _from))
+#define netq_traverse_neighbor_from(_nq,_qid,_from) (graph_get_end_neighbor(&_nq->queuenet, _qid, _from))
+//#define netq_traverse_neighbor_to(_nq,_qid,_from) (graph_get_end_neighbor(&_nq->queuenet, _qid, _from))
 
 /**
  * Create new packet
@@ -85,13 +85,16 @@ static EVENT* nq_generate_end_service (PACKET *p, NET_CONFIG *netconf, NETQ_STAT
   CONFIG *conf = NULL;
   int qid = p->info.queue->id;
   conf = netconfig_get_conf(netconf, qid);
-  event_list_new_event(&state->future_events, &e);
-  e->info.type = EVENT_END_SERVICE;
-  if (event_setup(e, &conf->service_conf, state->curr_time) < 0) {
+  if (event_list_new_event(&state->future_events, &e) < 0) {
+    _free_packet(state, p);
+    //event_list_remove_event(&state->future_events, e);
+    e = NULL;
+  } else if (event_setup(e, &conf->service_conf, state->curr_time) < 0) {
     _free_packet(state, p);
     event_list_remove_event(&state->future_events, e);
     e = NULL;
   } else {
+    e->info.type = EVENT_END_SERVICE;
     e->info.packet = p;
     event_list_insert_event(&state->future_events, e);
   }
@@ -225,6 +228,7 @@ int nq_process_end_service (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
     packet->info.queue = nqt;
     packet->info.state = PACKET_STATE_IN;
     nq_generate_arrival_from_packet(netconf, state, packet);
+    from = nqt->id + 1;
     break;
   }
 
