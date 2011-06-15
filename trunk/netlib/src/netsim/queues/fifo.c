@@ -147,6 +147,26 @@ static int ff_get_executing_packet (QUEUE_TYPE* q, PACKET ** p) {
   return SUCCESS;
 }
 
+static PACKET * ff_find_executing_packet_to(QUEUE_TYPE* q, int id) {
+  FIFO_QINFO *fq = NULL;
+  LINKED_LIST *lm = NULL, *l = NULL;
+
+  if (!q)
+    return NULL;
+
+  fq = (FIFO_QINFO*)q->info;
+  lm = &fq->executing_packets.list.entries;
+  l = lm->next;
+  while (lm != l) {
+    PACKET *p = container_of(l, PACKET, list_node);
+    if (p->info.next_queue == id)
+      return p;
+    l = l->next;
+  }
+
+  return NULL;
+}
+
 /**
  * Get the first packet in waiting list, this packet is still in this list
  * @param q : FIFO queue
@@ -210,7 +230,7 @@ int fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   q_fifo->select_waiting_packet = ff_select_waiting_packet;
   q_fifo->get_executing_packet = ff_get_executing_packet;
   q_fifo->get_waiting_packet = ff_get_waiting_packet;
-
+  q_fifo->find_executing_packet_to = ff_find_executing_packet_to;
   q_fifo->init(q_fifo);
   return SUCCESS;
 }

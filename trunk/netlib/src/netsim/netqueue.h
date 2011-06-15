@@ -9,6 +9,7 @@
 #ifndef NETQUEUE_H_
 #define NETQUEUE_H_
 
+#include <semaphore.h>
 #include "queues/measures.h"
 #include "queues/queue_man.h"
 #include "graph/graph.h"
@@ -33,25 +34,36 @@ typedef struct netqueue_state {
   GRAPH queuenet;
 } NETQ_STATE;
 
+#define NETQ_ONE_STATE_OFF        1
+#define NETQ_ONE_STATE_ON         2
+#define NETQ_ONE_STATE_RUNNING    3
+#define NETQ_ONE_STATE_WAITING    4
+
 typedef struct netqueue_one_state {
   /// Queue system state
-  ONEQ_STATE state;
+  ONEQ_STATE qstate;
   /// Network of queue: global view
   GRAPH *queuenet;
+  /// State: ON or OFF (based on exiting conditions) or RUNNING
+  int state;
 } NETQ_ONE_STATE;
 
 typedef struct netqueue_all_state {
   /// Current global time
   TIME curr_time;
-  /// Network of queue
+  /// Network of queue: queues and channels
   GRAPH queuenet;
-  /// Measurement information
+  /// Queue array (support a list of queues): structure of NETQ_ONE_STATE
+  ARRAY queues;
+  /// Measurement information : black box of all queue
   MEASURES measurement;
-  /// Free packet list (used to avoiding malloc operations
-  PACKET_LIST free_packets;
+//  /// Free packet list (used to avoiding malloc operations
+//  PACKET_LIST free_packets;
+//  sem_t mutex;
 } NETQ_ALL_STATE;
 
 #define get_netq_state_from_ops(_ops) (container_of(_ops, NETQ_STATE, ops))
+#define get_netq_one_state_from_ops(_ops) (container_of((get_sys_state_from_ops(_ops)), NETQ_ONE_STATE, qstate))
 
 int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf);
 

@@ -95,13 +95,26 @@ int graph_setup_matrix (GRAPH* g, int n) {
   return SUCCESS;
 }
 
-void* graph_get_neighbor(GRAPH*g, int r,int from_col) {
+void* graph_get_end_neighbor(GRAPH*g, int r,int from_col) {
   int i = 0;
   void *val = NULL;
   if (!g) return NULL;
 
   for (i=from_col; i<g->nodes.num_nodes; i++) {
     val = g->edges.get_edge(&g->edges, r, i);
+    if (val)
+      return g->nodes.get_node(&g->nodes, i);
+  }
+  return NULL;
+}
+
+void* graph_get_head_neighbor(GRAPH*g, int r, int from_col) {
+  int i = 0;
+  void *val = NULL;
+  if (!g) return NULL;
+
+  for (i=from_col; i<g->nodes.num_nodes; i++) {
+    val = g->edges.get_edge(&g->edges, i, r);
     if (val)
       return g->nodes.get_node(&g->nodes, i);
   }

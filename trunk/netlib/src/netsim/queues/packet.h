@@ -22,8 +22,10 @@ typedef struct queue_type QUEUE_TYPE;
 typedef struct packet_info {
   /// Packet ID (currently no used)
   long id;
-  /// Queue
+  /// Queue/Node that packet is stored
   QUEUE_TYPE *queue;
+  /// Next queue id
+  int next_queue;
   /// State of packet: IN, WAITING, DROPPED, PROCESSING, OUT
   int state;
   // Service time of packet

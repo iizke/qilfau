@@ -46,6 +46,7 @@ struct queue_type {
   int (*get_executing_packet) (QUEUE_TYPE*, PACKET**);
   /// Get a packet from waiting queue, but packet still in queue
   int (*get_waiting_packet) (QUEUE_TYPE*, PACKET **);
+  PACKET* (*find_executing_packet_to) (QUEUE_TYPE*, int);
 
   void *info;
 };
