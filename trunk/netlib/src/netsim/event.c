@@ -46,6 +46,14 @@ int event_list_new_event (EVENT_LIST *el, EVENT **e){
   return SUCCESS;
 }
 
+int event_list_new_event_mutex (EVENT_LIST *el, EVENT **e){
+  int err = SUCCESS;
+  sem_wait(&el->mutex);
+  err = event_list_new_event(el, e);
+  sem_post(&el->mutex);
+  return err;
+}
+
 /**
  * Insert an event into event-list
  * @param el : Event list
@@ -71,10 +79,11 @@ int event_list_insert_event (EVENT_LIST *el, EVENT *e) {
 }
 
 int event_list_insert_event_mutex (EVENT_LIST *el, EVENT *e) {
+  int err = SUCCESS;
   sem_wait(&el->mutex);
-  event_list_insert_event(el, e);
+  err = event_list_insert_event(el, e);
   sem_post(&el->mutex);
-  return SUCCESS;
+  return err;
 }
 
 /**
@@ -95,10 +104,11 @@ int event_list_remove_event (EVENT_LIST *el, EVENT *e) {
 }
 
 int event_list_remove_event_mutex (EVENT_LIST *el, EVENT *e) {
+  int err = SUCCESS;
   sem_wait(&el->mutex);
-  event_list_remove_event(el, e);
+  err = event_list_remove_event(el, e);
   sem_post(&el->mutex);
-  return SUCCESS;
+  return err;
 }
 
 /**
@@ -116,10 +126,11 @@ int event_list_get_first (EVENT_LIST *el, EVENT **e) {
 }
 
 int event_list_get_first_mutex (EVENT_LIST *el, EVENT **e) {
+  int err = SUCCESS;
   sem_wait(&el->mutex);
-  event_list_get_first(el, e);
+  err = event_list_get_first(el, e);
   sem_post(&el->mutex);
-  return SUCCESS;
+  return err;
 }
 
 /**

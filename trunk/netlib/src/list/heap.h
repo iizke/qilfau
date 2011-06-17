@@ -23,7 +23,9 @@ typedef struct _item_heap {
 
 int heap_init(HEAP **);
 int heap_setup(HEAP *, int);
-int heap_insert(HEAP *, void *, int);
-int heap_remove(HEAP *, void *, int);
-
+//int heap_insert(HEAP *, void *, int);
+//int heap_remove(HEAP *, void *, int);
+void heap_heapify(HEAP * h, int start);
+void heap_build(HEAP * h);
+void* heap_get_min(HEAP * h);
 #endif /* HEAP_H_ */

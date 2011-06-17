@@ -86,6 +86,7 @@ int event_list_new_event (EVENT_LIST *el, EVENT **e);
 int event_list_insert_event (EVENT_LIST *el, EVENT *e);
 int event_list_remove_event (EVENT_LIST *el, EVENT *e);
 int event_list_get_first (EVENT_LIST *el, EVENT **e);
+int event_list_new_event_mutex (EVENT_LIST *el, EVENT **e);
 int event_list_insert_event_mutex (EVENT_LIST *el, EVENT *e);
 int event_list_remove_event_mutex (EVENT_LIST *el, EVENT *e);
 int event_list_get_first_mutex (EVENT_LIST *el, EVENT **e);
