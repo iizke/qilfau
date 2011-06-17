@@ -146,7 +146,7 @@ static EVENT* nqthr_generate_arrival_from_packet (NETQ_ONE_STATE *state, PACKET 
     _free_packet(packet);
     return NULL;
   }
-  event_list_new_event(&state->qstate.future_events, &e);
+  event_list_new_event_mutex(&state->qstate.future_events, &e);
   e->info.type = EVENT_ARRIVAL;
   e->info.time.real = packet->info.atime.real;
   packet->info.state = PACKET_STATE_IN;
@@ -168,7 +168,7 @@ static EVENT* nqthr_generate_end_service (PACKET *p, CONFIG *conf, NETQ_ONE_STAT
     _free_packet(p);
     return NULL;
   }
-  if (event_list_new_event(&state->qstate.future_events, &e) < 0) {
+  if (event_list_new_event_mutex(&state->qstate.future_events, &e) < 0) {
     _free_packet(p);
     //event_list_remove_event(&state->qstate.future_events, e);
     e = NULL;
@@ -533,7 +533,7 @@ static int nqthr_node_init (NETQ_ONE_STATE *node, CONFIG *conf, NETQ_ALL_STATE *
   check_null_pointer(node);
   sys_state_init(&node->qstate, conf);
   node->state = NETQ_ONE_STATE_ON;
-  sem_init(&node->mutex, 0, 1);
+  sem_init(&node->mutex, 1, 1);
   node->waited_node = -1;
   node->queuenet = &state->queuenet;
   // Reconfigure the interface
@@ -606,7 +606,7 @@ int nqthr_state_init (NETQ_ALL_STATE *state, NET_CONFIG *netconf) {
   extern sem_t nq_mutex;
 
   packet_list_init(&free_packets, LL_CONF_STORE_FREE);
-  sem_init(&nq_mutex, 0, 1);
+  sem_init(&nq_mutex, 1, 1);
   // init netq_all_state and netq_one_state
   array_setup(&state->nodes, sizeof(NETQ_ONE_STATE), netconf->nnodes);
   graph_setup_matrix(&state->queuenet, netconf->nnodes);
@@ -624,21 +624,28 @@ static void* nqthr_thread_run (NETQ_ALL_STATE *state) {
    * Traverse over all nodes, if its state is RUNNING/OFF then skip it
    * if its state is ON thn simulate on it.
    */
-  int i = -1;
+  int i = -1, j = 0, k = 0;
   int off_nodes = 0;
   NETQ_ONE_STATE *node = NULL;
   SYS_STATE_OPS *ops = NULL;
   CONFIG *cnf = NULL;
-  int count = 0;
+  int *collisions;
   extern NET_CONFIG netconf;
+  collisions = malloc_gc(sizeof(int)*netconf.nnodes);
 
   while (off_nodes < netconf.nnodes) {
     i = (i+1) % netconf.nnodes;
+    k = (i + netconf.nnodes - 1) % netconf.nnodes;
+    j = (i+1) % netconf.nnodes;
+    if (collisions[i] > collisions[j])
+      i = j;
+    if (collisions[i] > collisions[k])
+      i = k;
     node = state->queuenet.nodes.get_node(&state->queuenet.nodes, i);
     ops = &node->qstate.ops;
     cnf = netconfig_get_conf(&netconf, i);
     if (sem_trywait(&node->mutex) < 0) {
-      count++;
+      collisions[i]++;
       continue;
     }
 
@@ -662,7 +669,10 @@ static void* nqthr_thread_run (NETQ_ALL_STATE *state) {
     // now we sure that only one thread can do the following simulation:
     pisas_sched(cnf, ops);
   }
-  printf("Number of collision %d \n",count);
+  printf("Number of collision: ");
+  for (i=0; i<netconf.nnodes; i++)
+    printf("%d, ", collisions[i]);
+  printf("\n");
   return NULL;
 }
 
@@ -676,10 +686,10 @@ int nqthr_start(char *f) {
   time_t start;
   start = time(NULL);
 
-  netconfig_init(&netconf, 3);
+  netconfig_init(&netconf, 4);
   netconfig_parse_nodes("src/netsim/conf/source.conf");
   netconfig_parse_nodes("src/netsim/conf/node1.conf");
-//  netconfig_parse_nodes("src/netsim/conf/node2.conf");
+  netconfig_parse_nodes("src/netsim/conf/node2.conf");
   netconfig_parse_nodes("src/netsim/conf/sink.conf");
   netconfig_parse_channels("src/netsim/conf/netconf.conf");
   nqthr_state_init(&state, &netconf);

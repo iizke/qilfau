@@ -404,10 +404,10 @@ int netq_run(char *f) {
 
   start = time(NULL);
 
-  netconfig_init(&netconf, 3);
+  netconfig_init(&netconf, 4);
   netconfig_parse_nodes("src/netsim/conf/source.conf");
   netconfig_parse_nodes("src/netsim/conf/node1.conf");
-  //netconfig_parse_nodes("src/netsim/conf/node2.conf");
+  netconfig_parse_nodes("src/netsim/conf/node2.conf");
   netconfig_parse_nodes("src/netsim/conf/sink.conf");
   netconfig_parse_channels("src/netsim/conf/netconf.conf");
   netq_state_init(&state, &netconf);
