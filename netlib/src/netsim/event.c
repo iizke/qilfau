@@ -7,7 +7,7 @@
  */
 
 #include <stdlib.h>
-#include "../error.h"
+#include "error.h"
 #include "event.h"
 
 /**
@@ -19,6 +19,8 @@ int event_list_init (EVENT_LIST *el) {
   check_null_pointer(el);
   try ( linked_list_man_init(&el->list) );
   sem_init(&el->mutex, 0, 1);
+  stat_num_init(&el->snum_events);
+  el->num_events = 0;
   return SUCCESS;
 }
 
@@ -63,7 +65,8 @@ int event_list_insert_event (EVENT_LIST *el, EVENT *e) {
       break;
     swap_prev_event(e);
   }
-
+  el->num_events++;
+  stat_num_new_sample(&el->snum_events, el->num_events);
   return SUCCESS;
 }
 
@@ -86,6 +89,8 @@ int event_list_remove_event (EVENT_LIST *el, EVENT *e) {
   check_null_pointer(el);
   check_null_pointer(e);
   try ( linked_list_man_remove(&el->list, &e->list_node) );
+  el->num_events--;
+  stat_num_new_sample(&el->snum_events, el->num_events);
   return SUCCESS;
 }
 
@@ -107,6 +112,13 @@ int event_list_get_first (EVENT_LIST *el, EVENT **e) {
   check_null_pointer(el);
   try ( linked_list_man_get_first(&el->list, &lle) );
   *e = container_of(lle, EVENT, list_node);
+  return SUCCESS;
+}
+
+int event_list_get_first_mutex (EVENT_LIST *el, EVENT **e) {
+  sem_wait(&el->mutex);
+  event_list_get_first(el, e);
+  sem_post(&el->mutex);
   return SUCCESS;
 }
 

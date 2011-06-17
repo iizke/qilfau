@@ -23,15 +23,6 @@ int measures_init (MEASURES *m) {
   return SUCCESS;
 }
 
-#define print_statistical_value(_var_name,_var, _conf) { \
-    printf("%20s : mean %4.5f, var %4.5f, min %4.3f, max %4.3f, confidency %4.3f\n", \
-      _var_name, \
-      (_var)->avg, \
-      (_var)->var, \
-      (_var)->min, \
-      (_var)->max, \
-      stat_num_calc_confidence_interval(_var, _conf)); }
-
 /**
  * Print out to screen measured information
  * @param m : pointer to a MEASURES structure.
