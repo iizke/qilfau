@@ -44,8 +44,11 @@ typedef struct netqueue_one_state {
   ONEQ_STATE qstate;
   /// Network of queue: global view
   GRAPH *queuenet;
+  /// Routing to find the next node
+  RANDOM_DIST * routing;
   /// State: ON or OFF (based on exiting conditions) or RUNNING
   int state;
+  sem_t mutex;
 } NETQ_ONE_STATE;
 
 typedef struct netqueue_all_state {
@@ -53,8 +56,8 @@ typedef struct netqueue_all_state {
   TIME curr_time;
   /// Network of queue: queues and channels
   GRAPH queuenet;
-  /// Queue array (support a list of queues): structure of NETQ_ONE_STATE
-  ARRAY queues;
+  /// Queue array (support a list of queueing nodes): structure of NETQ_ONE_STATE
+  ARRAY nodes;
   /// Measurement information : black box of all queue
   MEASURES measurement;
 //  /// Free packet list (used to avoiding malloc operations

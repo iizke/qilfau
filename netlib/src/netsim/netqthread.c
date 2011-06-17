@@ -59,6 +59,7 @@
  * @author iizke
  */
 
+#include <pthread.h>
 #include "error.h"
 #include "netqueue.h"
 #include "queues/fifo.h"
@@ -78,6 +79,14 @@
 /// Free packet list (used to avoiding malloc operations
 PACKET_LIST free_packets;
 sem_t nq_mutex;
+
+static int nqthr_node_set_state (NETQ_ONE_STATE *node, int state) {
+  //check_null_pointer(node);
+  //sem_wait(&node->mutex);
+  node->state = state;
+  //sem_post(&node->mutex);
+  return SUCCESS;
+}
 
 /**
  * Create new packet
@@ -129,6 +138,10 @@ static int _update_local_time (EVENT *e, NETQ_ONE_STATE *state) {
 static EVENT* nqthr_generate_arrival_from_packet (NETQ_ONE_STATE *state, PACKET *packet) {
   EVENT *e = NULL;
 
+  if (state->state == NETQ_ONE_STATE_OFF) {
+    _free_packet(packet);
+    return NULL;
+  }
   event_list_new_event(&state->qstate.future_events, &e);
   e->info.type = EVENT_ARRIVAL;
   e->info.time.real = packet->info.atime.real;
@@ -147,6 +160,10 @@ static EVENT* nqthr_generate_arrival_from_packet (NETQ_ONE_STATE *state, PACKET 
  */
 static EVENT* nqthr_generate_end_service (PACKET *p, CONFIG *conf, NETQ_ONE_STATE *state) {
   EVENT *e = NULL;
+  if (state->state == NETQ_ONE_STATE_OFF) {
+    _free_packet(p);
+    return NULL;
+  }
   if (event_list_new_event(&state->qstate.future_events, &e) < 0) {
     _free_packet(p);
     //event_list_remove_event(&state->qstate.future_events, e);
@@ -158,6 +175,7 @@ static EVENT* nqthr_generate_end_service (PACKET *p, CONFIG *conf, NETQ_ONE_STAT
   } else {
     e->info.type = EVENT_END_SERVICE;
     e->info.packet = p;
+    p->info.etime.real = e->info.time.real;
     event_list_insert_event_mutex(&state->qstate.future_events, e);
   }
   return e;
@@ -165,7 +183,7 @@ static EVENT* nqthr_generate_end_service (PACKET *p, CONFIG *conf, NETQ_ONE_STAT
 
 /**
  * Check whether system should be stopped or not.
- * @param conf : User configuration
+ * @param cnf : User configuration
  * @param ops : Abstract system operators
  * @return 0 if system should be stopped, 1 otherwise.
  */
@@ -181,24 +199,30 @@ static int nqthr_allow_continue (CONFIG *cnf, SYS_STATE_OPS *ops) {
   if (state->state == NETQ_ONE_STATE_OFF)
     return 0;
   if (state->state == NETQ_ONE_STATE_WAITING) {
-    state->state == NETQ_ONE_STATE_ON;
-      return 0;
+    nqthr_node_set_state(state, NETQ_ONE_STATE_ON);
+    //state->state = NETQ_ONE_STATE_ON;
+    return 0;
   }
 
   /*
-   * If not a source node, then turn off this node when all head neighbors are off
-   * and there is no packets in queue
+   * If it is transit node, then turn off this node when all head neighbors are off
+   * and there is no packets in queue.
    */
   if (cnf->nodetype != NODE_SOURCE) {
-    QUEUE_TYPE *qt = state->qstate.queues.curr_queue;
-    if ((qt->get_waiting_length(qt) > 0) || (!qt->is_idle(qt)))
+//    QUEUE_TYPE *qt = state->qstate.queues.curr_queue;
+//    if ((qt->get_waiting_length(qt) > 0) || (!qt->is_idle(qt)))
+//      return 1;
+    if (!event_list_is_empty(&state->qstate.future_events))
       return 1;
     while ((neighbor = nqthr_traverse_head_neighbor(state, qid, from))) {
-      if (neighbor->state != NETQ_ONE_STATE_OFF)
-        return 1;
+      if (neighbor->state != NETQ_ONE_STATE_OFF) {
+        nqthr_node_set_state(state, NETQ_ONE_STATE_ON);
+        return 0;
+      }
       from++;
     }
-    state->state = NETQ_ONE_STATE_OFF;
+    nqthr_node_set_state(state, NETQ_ONE_STATE_OFF);
+    //state->state = NETQ_ONE_STATE_OFF;
     return 0;
   }
 
@@ -209,10 +233,23 @@ static int nqthr_allow_continue (CONFIG *cnf, SYS_STATE_OPS *ops) {
       (stop_conf->max_arrival > 0 && state->qstate.measurement.total_arrivals > stop_conf->max_arrival)) {
     // By doing this, source nodes will not generate more packet when the system need to finish
     cnf->service_conf.type = RANDOM_OTHER;
-    state->state = NETQ_ONE_STATE_OFF;
+    nqthr_node_set_state(state, NETQ_ONE_STATE_OFF);
+    //state->state = NETQ_ONE_STATE_OFF;
     return 0;
   }
   return 1;
+}
+
+static int nqthr_routing_to_node (NETQ_ONE_STATE *state) {
+  // TODO: Routing here. But now we consider only one link/channel from node-node
+  int qid = state->qstate.queues.curr_queue->id;
+  NETQ_ONE_STATE *next = nqthr_traverse_end_neighbor(state, qid, 0);
+  if (!next) {
+    // There is no end neighbor -> cannot forward packet (only apply for transit/source node
+    state->state = NETQ_ONE_STATE_OFF;
+    return ERR_INVALID_VAL;
+  }
+  return next->qstate.queues.curr_queue->id;
 }
 
 /**
@@ -226,16 +263,20 @@ static int nqthr_process_packet (CONFIG *cnf, NETQ_ONE_STATE *state) {
   EVENT *e = NULL;
   PACKET *p = NULL;
   QUEUE_TYPE *qt = state->qstate.queues.curr_queue;
+  int to_node = 0;
 
   switch (cnf->nodetype) {
   case NODE_SOURCE:
+    to_node = nqthr_routing_to_node(state);
+    if (to_node < 0)
+      return ERR_INVALID_VAL;
     try (_new_packet(&p));
     packet_init(p);
     p->info.atime.real = state->qstate.curr_time.real;
-    p->info.stime.real = state->qstate.curr_time.real;
     p->info.queue = qt;
-    p->info.state = PACKET_STATE_PROCESSING;
-    break;
+    p->info.to_queue = to_node;
+    qt->push_packet(qt, p);
+    state->qstate.measurement.total_arrivals++;
   case NODE_TRANSIT:
     qt->select_waiting_packet(qt, &p);
     p->info.stime.real = state->qstate.curr_time.real;
@@ -247,10 +288,6 @@ static int nqthr_process_packet (CONFIG *cnf, NETQ_ONE_STATE *state) {
   }
   measurement_collect_data(&state->qstate.measurement, p, state->qstate.curr_time);
   e = nqthr_generate_end_service (p, cnf, state);
-  if (!e) {
-    iprint(LEVEL_WARNING, "Cannot generate end service event \n");
-    return ERR_POINTER_NULL;
-  }
   return SUCCESS;
 }
 
@@ -267,6 +304,13 @@ int nqthr_process_arrival (EVENT *e, CONFIG *conf, NETQ_ONE_STATE *state) {
 
   try ( _update_local_time(e, state) );
   measurement_collect_data(&state->qstate.measurement, packet, state->qstate.curr_time);
+
+  if (conf->nodetype != NODE_SINK)
+  if ((packet->info.to_queue = nqthr_routing_to_node(state)) < 0) {
+    _free_packet(packet);
+    return SUCCESS;
+  }
+
   qt->push_packet(qt, packet);
   measurement_collect_data(&state->qstate.measurement, packet, state->qstate.curr_time);
   if (packet->info.state == PACKET_STATE_DROPPED)
@@ -289,29 +333,26 @@ int nqthr_process_end_service (EVENT *e, CONFIG *cnf, NETQ_ONE_STATE *state) {
   PACKET *packet = e->info.packet;
   QUEUE_TYPE *qt = state->qstate.queues.curr_queue;
   int qid = qt->id;
-  int from = 0;
-  NETQ_ONE_STATE *neighbor =  NULL;
+  CHANNEL_CONF *ch = NULL;
+  NETQ_ONE_STATE *neighbor = NULL;
 
   try ( _update_local_time(e, state) );
   packet->info.etime.real = e->info.time.real;
-  if (cnf->nodetype != NODE_SOURCE)
-    qt->finish_packet(qt, packet);
+  //if (cnf->nodetype != NODE_SOURCE)
+  qt->finish_packet(qt, packet);
   measurement_collect_data(&state->qstate.measurement, packet, state->qstate.curr_time);
   //try ( _free_packet(state, packet) );
 
-  while ((neighbor = nqthr_traverse_end_neighbor(state, qid, from))) {
-    CHANNEL_CONF *ch = state->queuenet->edges.get_edge(&state->queuenet->edges,
-        qid, neighbor->qstate.queues.curr_queue->id);
-    packet->info.atime.real = e->info.time.real + ch->delay.distribution.gen(&ch->delay.distribution);
-    packet->info.ctime.real = 0;
-    packet->info.stime.real = 0;
-    packet->info.etime.real = 0;
-    packet->info.queue = neighbor->qstate.queues.curr_queue;
-    packet->info.state = PACKET_STATE_IN;
-    nqthr_generate_arrival_from_packet(neighbor, packet);
-    from = neighbor->qstate.queues.curr_queue->id + 1;
-    break;
-  }
+  // forwarding packet
+  neighbor = state->queuenet->nodes.get_node(&state->queuenet->nodes, packet->info.to_queue);
+  ch = state->queuenet->edges.get_edge(&state->queuenet->edges, qid, packet->info.to_queue);
+  packet->info.atime.real = e->info.time.real + ch->delay.distribution.gen(&ch->delay.distribution);
+  packet->info.ctime.real = 0;
+  packet->info.stime.real = 0;
+  packet->info.etime.real = 0;
+  packet->info.queue = neighbor->qstate.queues.curr_queue;
+  packet->info.state = PACKET_STATE_IN;
+  nqthr_generate_arrival_from_packet(neighbor, packet);
 
   if (cnf->nodetype == NODE_SOURCE)
     nqthr_process_packet(cnf, state);
@@ -328,13 +369,13 @@ int nqthr_process_end_service (EVENT *e, CONFIG *cnf, NETQ_ONE_STATE *state) {
  * @param ops  : Abstract system operations
  * @return Error code (see more in def.h and error.h)
  */
-static int nq_system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
+static int nqthr_system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
 //  NETQ_ONE_STATE *state = get_netq_one_state_from_ops(ops);
-
-  if (conf->arrival_conf.to_file)
-    fclose(conf->arrival_conf.to_file);
-  if (conf->queue_conf.out_file)
-      fclose(conf->queue_conf.out_file);
+//
+//  if (conf->arrival_conf.to_file)
+//    fclose(conf->arrival_conf.to_file);
+//  if (conf->queue_conf.out_file)
+//      fclose(conf->queue_conf.out_file);
 
   return SUCCESS;
 }
@@ -398,31 +439,41 @@ int nqthr_process_event (EVENT *e, CONFIG *conf, SYS_STATE_OPS *ops) {
 int nqthr_get_next_event (SYS_STATE_OPS *ops, EVENT **e) {
   NETQ_ONE_STATE *state = get_netq_one_state_from_ops(ops);
   NETQ_ONE_STATE *neighbor = NULL;
+  QUEUE_TYPE *nqt = NULL;
+  PACKET *p = NULL;
   int qid = state->qstate.queues.curr_queue->id;
   EVENT *ev = NULL;
   int from = 0;
   float min = 0;
 
-  event_list_get_first(&state->qstate.future_events, &ev);
+  try ( event_list_get_first(&state->qstate.future_events, &ev) );
   min = ev->info.time.real;
   while ((neighbor = (nqthr_traverse_head_neighbor(state, qid, from)))) {
     // find processing packet that come to this node (qid) from node neighbor
-    QUEUE_TYPE *nqt = neighbor->qstate.queues.curr_queue;
-    PACKET *p = nqt->find_executing_packet_to(nqt, qid);
-    CHANNEL_CONF *ch = state->queuenet->edges.get_edge(&state->queuenet->edges, nqt->id, qid);
-    if (p) {
-      float next_arrival = p->info.etime.real + 0; // TODO: 0 for delay
-
-      if (min > next_arrival)
-        min = next_arrival;
+    nqt = neighbor->qstate.queues.curr_queue;
+    if (neighbor->state != NETQ_ONE_STATE_OFF) {
+      p = nqt->find_executing_packet_to(nqt, qid);
+      //CHANNEL_CONF *ch = state->queuenet->edges.get_edge(&state->queuenet->edges, nqt->id, qid);
+      if (p) {
+        // TODO: 0 for delay
+        float next_arrival = p->info.etime.real + 0;
+        if (min > next_arrival)
+          min = next_arrival;
+      }
     }
     from = nqt->id + 1;
   }
+
+  if ((from == 0) && (neighbor == NULL))
+    // detect source node: only allow to generate 1 packet per time
+    nqthr_node_set_state(state, NETQ_ONE_STATE_WAITING);
+
   if (min >= ev->info.time.real)
     *e = ev;
   else {
     *e = NULL;
-    state->state = NETQ_ONE_STATE_WAITING;
+    nqthr_node_set_state(state, NETQ_ONE_STATE_WAITING);
+    //state->state = NETQ_ONE_STATE_WAITING;
   }
 
   return SUCCESS;
@@ -440,90 +491,184 @@ int nqthr_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
   return SUCCESS;
 }
 
-///**
-// * Initialize system state of one-queue system
-// * @param state : system state
-// * @param conf : user configuration
-// * @return Error code (more in def.h and error.h)
-// */
-//int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
-//  int i = 0;
-//  CONFIG *cnf = NULL;
-//  QUEUE_TYPE *qt = NULL;
-//  LINKED_LIST *link = NULL;
-//  PACKET *packet = NULL;
-////  QUEUE_TYPE *fifo_queue = NULL;
-//  check_null_pointer(state);
-//  check_null_pointer(netconf);
-//
-//  state->curr_time.real = 0;
-//  packet_list_init(&state->free_packets, LL_CONF_STORE_FREE);
-//  event_list_init(&state->future_events);
-//  measures_init (&state->measurement);
-//
-//  array_setup(&state->queues, sizeof(QUEUE_TYPE), netconf->nnodes);
-//  graph_setup_matrix(&state->queuenet, netconf->nnodes);
-//  /* TODO: Build topology */
-//  link = netconf->channels.next;
-//  while (&netconf->channels != link) {
-//    CHANNEL_CONF *c = container_of(link, CHANNEL_CONF, list_node);
-//    state->queuenet.edges.set_edge(&state->queuenet.edges, c->src, c->dest, c);
-//    link = link->next;
-//  }
-//
-//  for (i=0; i< netconf->nnodes; i++) {
-//    qt = array_get(&state->queues, i);
-//    qt->id = i;
-//    cnf = netconfig_get_conf(netconf, i);
-//    state->queuenet.nodes.set_node(&state->queuenet.nodes, i, qt);
-//
-//    /* TODO: Setup initial events */
-//    if (cnf->nodetype == NODE_SOURCE) {
-//      try (_new_packet(state, &packet));
-//      packet_init(packet);
-//      packet->info.atime.real = state->curr_time.real;
-//      packet->info.stime.real = state->curr_time.real;
-//      packet->info.queue = qt;
-//      packet->info.state = PACKET_STATE_PROCESSING;
-//      nq_generate_end_service(packet, netconf, state);
-//    } else if (cnf->nodetype == NODE_SINK) {
-//      cnf->queue_conf.num_servers = 0;
-//      cnf->queue_conf.max_waiters = 0;
-//    }
-//    fifo_setup(qt, cnf->queue_conf.num_servers, cnf->queue_conf.max_waiters);
-//  }
-//
-//  state->ops.allow_continue = nq_allow_continue;
-//  state->ops.clean = nq_system_clean;
-//  state->ops.generate_event = nq_generate_event;
-//  state->ops.get_next_event = nq_get_next_event;
-//  state->ops.process_event = nq_process_event;
-//  state->ops.remove_event = nq_remove_event;
-//  return SUCCESS;
-//}
-//
-//int netq_run(char *f) {
-//  extern NET_CONFIG netconf;
-//  int i = 0;
-//  NETQ_STATE state;
-//  SYS_STATE_OPS *ops = NULL;
-//
-//  netconfig_init(&netconf, 4);
-//  netconfig_parse_nodes("src/netsim/conf/source.conf");
-//  netconfig_parse_nodes("src/netsim/conf/node1.conf");
+static int nqthr_node_init (NETQ_ONE_STATE *node, CONFIG *conf, NETQ_ALL_STATE *state) {
+  check_null_pointer(node);
+  sys_state_init(&node->qstate, conf);
+  node->state = NETQ_ONE_STATE_ON;
+  sem_init(&node->mutex, 0, 1);
+  node->queuenet = &state->queuenet;
+  // Reconfigure the interface
+  node->qstate.ops.allow_continue = nqthr_allow_continue;
+  node->qstate.ops.clean = nqthr_system_clean;
+  node->qstate.ops.generate_event = nqthr_generate_event;
+  node->qstate.ops.get_next_event = nqthr_get_next_event;
+  node->qstate.ops.process_event = nqthr_process_event;
+  node->qstate.ops.remove_event = nqthr_remove_event;
+  return SUCCESS;
+}
+
+static int nqthr_build_topology (NETQ_ALL_STATE *state, NET_CONFIG *netconf) {
+  // Assume that state is ready (finishing allocation memory), just fill the data
+  LINKED_LIST *link = NULL;
+  NETQ_ONE_STATE *node = NULL;
+  CONFIG *cnf = NULL;
+  int i = 0;
+  // configure nodes
+  for (i=0; i < netconf->nnodes; i++) {
+    node = array_get(&state->nodes, i);
+    cnf = netconfig_get_conf(netconf, i);
+    // avoid to set up wrong parameter for sink-node
+    if (cnf->nodetype == NODE_SINK) {
+      cnf->queue_conf.num_servers = 0;
+      cnf->queue_conf.max_waiters = 0;
+    }
+    nqthr_node_init(node, cnf, state);
+    state->queuenet.nodes.set_node(&state->queuenet.nodes, i, node);
+    node->qstate.queues.curr_queue->id = i;
+  }
+  // configure channel
+  link = netconf->channels.next;
+  while (&netconf->channels != link) {
+    CHANNEL_CONF *c = container_of(link, CHANNEL_CONF, list_node);
+    state->queuenet.edges.set_edge(&state->queuenet.edges, c->src, c->dest, c);
+    link = link->next;
+  }
+  return SUCCESS;
+}
+
+static int nqthr_create_initial_events (NETQ_ALL_STATE * state, NET_CONFIG *netconf) {
+  int i = 0;
+  NETQ_ONE_STATE *node = NULL;
+  CONFIG *cnf = NULL;
+  QUEUE_TYPE *qt = NULL;
+  //PACKET *packet = NULL;
+
+  for (i=0; i< netconf->nnodes; i++) {
+    node = state->queuenet.nodes.get_node(&state->queuenet.nodes, i);
+    qt = node->qstate.queues.curr_queue;
+    cnf = netconfig_get_conf(netconf, i);
+
+    if (cnf->nodetype == NODE_SOURCE)
+      nqthr_process_packet(cnf, node);
+  }
+
+  return SUCCESS;
+}
+
+/**
+ * Initialize system state of one-queue system
+ * @param state : system state
+ * @param conf : user configuration
+ * @return Error code (more in def.h and error.h)
+ */
+int nqthr_state_init (NETQ_ALL_STATE *state, NET_CONFIG *netconf) {
+  check_null_pointer(state);
+  check_null_pointer(netconf);
+  extern sem_t nq_mutex;
+
+  packet_list_init(&free_packets, LL_CONF_STORE_FREE);
+  sem_init(&nq_mutex, 0, 1);
+  // init netq_all_state and netq_one_state
+  array_setup(&state->nodes, sizeof(NETQ_ONE_STATE), netconf->nnodes);
+  graph_setup_matrix(&state->queuenet, netconf->nnodes);
+  /* Build topology */
+  nqthr_build_topology(state, netconf);
+  /* Init the trigger/initial events */
+  nqthr_create_initial_events(state, netconf);
+
+  return SUCCESS;
+}
+
+static void* nqthr_thread_run (NETQ_ALL_STATE *state) {
+  /*
+   * Algorithm:
+   * Traverse over all nodes, if its state is RUNNING/OFF then skip it
+   * if its state is ON thn simulate on it.
+   */
+  int i = -1;
+  int off_nodes = 0;
+  NETQ_ONE_STATE *node = NULL;
+  SYS_STATE_OPS *ops = NULL;
+  CONFIG *cnf = NULL;
+  int count = 0;
+  extern NET_CONFIG netconf;
+
+  while (off_nodes < netconf.nnodes) {
+    i = (i+1) % netconf.nnodes;
+    node = state->queuenet.nodes.get_node(&state->queuenet.nodes, i);
+    ops = &node->qstate.ops;
+    cnf = netconfig_get_conf(&netconf, i);
+    if (sem_trywait(&node->mutex) < 0) {
+      count++;
+      continue;
+    }
+
+    switch (node->state){
+    case NETQ_ONE_STATE_ON:
+      off_nodes = 0;
+      node->state = NETQ_ONE_STATE_RUNNING;
+      sem_post(&node->mutex);
+      break;
+    case NETQ_ONE_STATE_OFF:
+      off_nodes++;
+      sem_post(&node->mutex);
+      continue;
+    case NETQ_ONE_STATE_RUNNING:
+    case NETQ_ONE_STATE_WAITING:
+      off_nodes = 0;
+    default:
+      sem_post(&node->mutex);
+      continue;
+    }
+    // now we sure that only one thread can do the following simulation:
+    //sem_wait(&node->mutex);
+    pisas_sched(cnf, ops);
+    //sem_post(&node->mutex);
+  }
+  printf("Number of collision %d \n",count);
+  return NULL;
+}
+
+int nqthr_start(char *f) {
+  extern NET_CONFIG netconf;
+  NETQ_ALL_STATE state;
+  //SYS_STATE_OPS *ops = NULL;
+  pthread_t *threads;
+  CONFIG *cnf = NULL;
+  int i = 0;
+  time_t start;
+  start = time(NULL);
+
+  netconfig_init(&netconf, 3);
+  netconfig_parse_nodes("src/netsim/conf/source.conf");
+  netconfig_parse_nodes("src/netsim/conf/node1.conf");
 //  netconfig_parse_nodes("src/netsim/conf/node2.conf");
-//  netconfig_parse_nodes("src/netsim/conf/sink.conf");
-//  netconfig_parse_channels("src/netsim/conf/netconf.conf");
-//  netq_state_init(&state, &netconf);
-//  ops = &state.ops;
-//  pisas_sched(&netconf, ops);
-//  printf("ALL SYSTEM\n");
-//  print_measurement(&state.measurement);
-//  for (i=0; i<netconf.nnodes; i++) {
-//    QUEUE_TYPE *qt = netq_get_queue(&state, i);
-//    printf("Queue %d \n", i);
-//    print_measurement(&((FIFO_QINFO*)qt->info)->measurement);
-//  }
-//  netsim_print_theorical_mm1 (80, 100);
-//  return SUCCESS;
-//}
+  netconfig_parse_nodes("src/netsim/conf/sink.conf");
+  netconfig_parse_channels("src/netsim/conf/netconf.conf");
+  nqthr_state_init(&state, &netconf);
+
+  cnf = netconfig_get_conf(&netconf, 0);
+  threads = malloc_gc(sizeof(pthread_t)*cnf->nthreads);
+  check_null_pointer(threads);
+
+  for (i = 0; i < cnf->nthreads; i++)
+      pthread_create(&threads[i], NULL, nqthr_thread_run, &state);
+
+  for (i = 0; i < cnf->nthreads; i++) {
+    pthread_join(threads[i], NULL);
+    printf("Thread %d finished.\n", i);
+  }
+
+//  nqthr_thread_run(&state);
+
+  printf("ALL SYSTEM\n");
+  for (i=0; i<netconf.nnodes; i++) {
+    NETQ_ONE_STATE *node = state.queuenet.nodes.get_node(&state.queuenet.nodes, i);
+    QUEUE_TYPE *qt = node->qstate.queues.curr_queue;
+    printf("Queue %d \n", qt->id);
+    print_measurement(&((FIFO_QINFO*)qt->info)->measurement);
+  }
+  netsim_print_theorical_mm1 (80, 100);
+  printf("Time of simulation: %d (seconds) \n", time(NULL)-start);
+  return SUCCESS;
+}

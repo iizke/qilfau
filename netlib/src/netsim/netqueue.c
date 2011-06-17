@@ -182,7 +182,6 @@ static int nq_process_packet (NET_CONFIG *netconf, NETQ_STATE *state, QUEUE_TYPE
 int nq_process_arrival (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
   PACKET *packet = e->info.packet;
   QUEUE_TYPE *qt = packet->info.queue;
-  int qid = qt->id;
 
   try ( update_time(e, state) );
   measurement_collect_data(&state->measurement, packet, state->curr_time);
@@ -401,11 +400,14 @@ int netq_run(char *f) {
   int i = 0;
   NETQ_STATE state;
   SYS_STATE_OPS *ops = NULL;
+  time_t start;
 
-  netconfig_init(&netconf, 4);
+  start = time(NULL);
+
+  netconfig_init(&netconf, 3);
   netconfig_parse_nodes("src/netsim/conf/source.conf");
   netconfig_parse_nodes("src/netsim/conf/node1.conf");
-  netconfig_parse_nodes("src/netsim/conf/node2.conf");
+  //netconfig_parse_nodes("src/netsim/conf/node2.conf");
   netconfig_parse_nodes("src/netsim/conf/sink.conf");
   netconfig_parse_channels("src/netsim/conf/netconf.conf");
   netq_state_init(&state, &netconf);
@@ -419,5 +421,6 @@ int netq_run(char *f) {
     print_measurement(&((FIFO_QINFO*)qt->info)->measurement);
   }
   netsim_print_theorical_mm1 (80, 100);
+  printf("Time of simulation: %d (seconds) \n", time(NULL)-start);
   return SUCCESS;
 }

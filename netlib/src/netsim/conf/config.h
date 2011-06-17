@@ -111,6 +111,8 @@ typedef struct config {
   RANDOM_CONF service_conf;
   /// Configuration of queue system
   QUEUE_CONF queue_conf;
+  /// Routing
+  RANDOM_CONF routing_conf;
   /// Configuration of terminated conditions
   STOP_CONF stop_conf;
   /// Configuration of random library (IRAND, RANDLIB)
