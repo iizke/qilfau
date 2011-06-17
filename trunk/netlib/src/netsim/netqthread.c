@@ -63,6 +63,7 @@
 #include "error.h"
 #include "netqueue.h"
 #include "queues/fifo.h"
+#include "event.h"
 
 // _nq: type is NETQ_ONE_STATE
 // _qid: type is int
@@ -75,6 +76,9 @@
 
 #define nqthr_get_node (_nq,_qid) \
   (_nq->queuenet.nodes.get_node(&_nq->queuenet->nodes, _qid))
+
+#define nqthr_node_need_wait(_nq,_neighbor) \
+  ((_nq->qstate.curr_time.real - 30*_nq->qstate.measurement.servtime.avg) > _neighbor->qstate.curr_time.real)
 
 /// Free packet list (used to avoiding malloc operations
 PACKET_LIST free_packets;
@@ -204,14 +208,20 @@ static int nqthr_allow_continue (CONFIG *cnf, SYS_STATE_OPS *ops) {
     return 0;
   }
 
+  if (state->waited_node > 0) {
+    // check waited node
+    neighbor = state->queuenet->nodes.get_node(&state->queuenet->nodes, state->waited_node);
+    if (nqthr_node_need_wait(state, neighbor)) {
+      nqthr_node_set_state(state, NETQ_ONE_STATE_ON);
+      return 0;
+    } else
+      state->waited_node = -1;
+  }
   /*
    * If it is transit node, then turn off this node when all head neighbors are off
    * and there is no packets in queue.
    */
   if (cnf->nodetype != NODE_SOURCE) {
-//    QUEUE_TYPE *qt = state->qstate.queues.curr_queue;
-//    if ((qt->get_waiting_length(qt) > 0) || (!qt->is_idle(qt)))
-//      return 1;
     if (!event_list_is_empty(&state->qstate.future_events))
       return 1;
     while ((neighbor = nqthr_traverse_head_neighbor(state, qid, from))) {
@@ -234,6 +244,7 @@ static int nqthr_allow_continue (CONFIG *cnf, SYS_STATE_OPS *ops) {
     // By doing this, source nodes will not generate more packet when the system need to finish
     cnf->service_conf.type = RANDOM_OTHER;
     nqthr_node_set_state(state, NETQ_ONE_STATE_OFF);
+    printf("Source Queue off \n");
     //state->state = NETQ_ONE_STATE_OFF;
     return 0;
   }
@@ -264,19 +275,32 @@ static int nqthr_process_packet (CONFIG *cnf, NETQ_ONE_STATE *state) {
   PACKET *p = NULL;
   QUEUE_TYPE *qt = state->qstate.queues.curr_queue;
   int to_node = 0;
+  int count = 0;
+  int max = 0;
 
   switch (cnf->nodetype) {
   case NODE_SOURCE:
-    to_node = nqthr_routing_to_node(state);
-    if (to_node < 0)
-      return ERR_INVALID_VAL;
-    try (_new_packet(&p));
-    packet_init(p);
-    p->info.atime.real = state->qstate.curr_time.real;
-    p->info.queue = qt;
-    p->info.to_queue = to_node;
-    qt->push_packet(qt, p);
-    state->qstate.measurement.total_arrivals++;
+    if ((max = cnf->queue_conf.max_waiters) < 0)
+      max = 10;
+    if (qt->get_waiting_length(qt) == 0) {
+      while (count < max) {
+        to_node = nqthr_routing_to_node(state);
+        if (to_node < 0)
+          return ERR_INVALID_VAL;
+        try (_new_packet(&p));
+        packet_init(p);
+        p->info.atime.real = state->qstate.curr_time.real;
+        p->info.queue = qt;
+        p->info.to_queue = to_node;
+        qt->push_packet(qt, p);
+        if (p->info.state == PACKET_STATE_DROPPED) {
+          _free_packet(p);
+          break;
+        }
+        state->qstate.measurement.total_arrivals++;
+        count++;
+      }
+    }
   case NODE_TRANSIT:
     qt->select_waiting_packet(qt, &p);
     p->info.stime.real = state->qstate.curr_time.real;
@@ -338,21 +362,32 @@ int nqthr_process_end_service (EVENT *e, CONFIG *cnf, NETQ_ONE_STATE *state) {
 
   try ( _update_local_time(e, state) );
   packet->info.etime.real = e->info.time.real;
-  //if (cnf->nodetype != NODE_SOURCE)
   qt->finish_packet(qt, packet);
   measurement_collect_data(&state->qstate.measurement, packet, state->qstate.curr_time);
   //try ( _free_packet(state, packet) );
 
   // forwarding packet
   neighbor = state->queuenet->nodes.get_node(&state->queuenet->nodes, packet->info.to_queue);
-  ch = state->queuenet->edges.get_edge(&state->queuenet->edges, qid, packet->info.to_queue);
-  packet->info.atime.real = e->info.time.real + ch->delay.distribution.gen(&ch->delay.distribution);
-  packet->info.ctime.real = 0;
-  packet->info.stime.real = 0;
-  packet->info.etime.real = 0;
-  packet->info.queue = neighbor->qstate.queues.curr_queue;
-  packet->info.state = PACKET_STATE_IN;
-  nqthr_generate_arrival_from_packet(neighbor, packet);
+  if ((!neighbor) || (neighbor->state == NETQ_ONE_STATE_OFF)) {
+    _free_packet(packet);
+  }else {
+    ch = state->queuenet->edges.get_edge(&state->queuenet->edges, qid, packet->info.to_queue);
+    packet->info.atime.real = e->info.time.real + ch->delay.distribution.gen(&ch->delay.distribution);
+    packet->info.ctime.real = 0;
+    packet->info.stime.real = 0;
+    packet->info.etime.real = 0;
+    packet->info.queue = neighbor->qstate.queues.curr_queue;
+    packet->info.state = PACKET_STATE_IN;
+    nqthr_generate_arrival_from_packet(neighbor, packet);
+    // Check balance time condition
+    //printf("node %d, service time %f, curr %f \n", state->qstate.queues.curr_queue->id, state->qstate.measurement.servtime.avg, state->qstate.curr_time.real);
+    if (nqthr_node_need_wait(state, neighbor)) {
+    //if ((state->qstate.curr_time.real) > neighbor->qstate.curr_time.real) {
+      nqthr_node_set_state(state, NETQ_ONE_STATE_WAITING);
+      state->waited_node = packet->info.to_queue;
+      //return SUCCESS;
+    }
+  }
 
   if (cnf->nodetype == NODE_SOURCE)
     nqthr_process_packet(cnf, state);
@@ -446,7 +481,7 @@ int nqthr_get_next_event (SYS_STATE_OPS *ops, EVENT **e) {
   int from = 0;
   float min = 0;
 
-  try ( event_list_get_first(&state->qstate.future_events, &ev) );
+  try ( event_list_get_first_mutex(&state->qstate.future_events, &ev) );
   min = ev->info.time.real;
   while ((neighbor = (nqthr_traverse_head_neighbor(state, qid, from)))) {
     // find processing packet that come to this node (qid) from node neighbor
@@ -464,9 +499,12 @@ int nqthr_get_next_event (SYS_STATE_OPS *ops, EVENT **e) {
     from = nqt->id + 1;
   }
 
-  if ((from == 0) && (neighbor == NULL))
+  if ((from == 0) && (neighbor == NULL)) {
     // detect source node: only allow to generate 1 packet per time
-    nqthr_node_set_state(state, NETQ_ONE_STATE_WAITING);
+    nqt = state->qstate.queues.curr_queue;
+    if (nqt->get_waiting_length(nqt) == 1)
+      nqthr_node_set_state(state, NETQ_ONE_STATE_WAITING);
+  }
 
   if (min >= ev->info.time.real)
     *e = ev;
@@ -496,6 +534,7 @@ static int nqthr_node_init (NETQ_ONE_STATE *node, CONFIG *conf, NETQ_ALL_STATE *
   sys_state_init(&node->qstate, conf);
   node->state = NETQ_ONE_STATE_ON;
   sem_init(&node->mutex, 0, 1);
+  node->waited_node = -1;
   node->queuenet = &state->queuenet;
   // Reconfigure the interface
   node->qstate.ops.allow_continue = nqthr_allow_continue;
@@ -621,9 +660,7 @@ static void* nqthr_thread_run (NETQ_ALL_STATE *state) {
       continue;
     }
     // now we sure that only one thread can do the following simulation:
-    //sem_wait(&node->mutex);
     pisas_sched(cnf, ops);
-    //sem_post(&node->mutex);
   }
   printf("Number of collision %d \n",count);
   return NULL;
@@ -667,6 +704,7 @@ int nqthr_start(char *f) {
     QUEUE_TYPE *qt = node->qstate.queues.curr_queue;
     printf("Queue %d \n", qt->id);
     print_measurement(&((FIFO_QINFO*)qt->info)->measurement);
+    print_statistical_value("# events", &node->qstate.future_events.snum_events, 0.9);
   }
   netsim_print_theorical_mm1 (80, 100);
   printf("Time of simulation: %d (seconds) \n", time(NULL)-start);

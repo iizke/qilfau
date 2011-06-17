@@ -46,6 +46,8 @@ typedef struct netqueue_one_state {
   GRAPH *queuenet;
   /// Routing to find the next node
   RANDOM_DIST * routing;
+  /// Waiting for this node
+  int waited_node;
   /// State: ON or OFF (based on exiting conditions) or RUNNING
   int state;
   sem_t mutex;
