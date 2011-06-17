@@ -5,7 +5,7 @@
  * @author iizke
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include "error.h"
 #include "netsim/netsim.h"
 #include "poligraph/main_graph.h"
@@ -42,7 +42,8 @@ int check_graph() {
 }
 
 int check_net_queue() {
-  netq_run("");
+  //netq_run("");
+  nqthr_start("");
   return SUCCESS;
 }
 

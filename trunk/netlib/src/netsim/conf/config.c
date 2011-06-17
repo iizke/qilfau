@@ -68,6 +68,7 @@ int config_setup (CONFIG *conf) {
 
   config_random_conf(&conf->arrival_conf);
   config_random_conf(&conf->service_conf);
+  config_random_conf(&conf->routing_conf);
   config_random_conf(&conf->csma_conf.backoff_conf);
   config_random_conf(&conf->csma_conf.persistent_conf);
   librand = conf->random_lib;

@@ -159,7 +159,7 @@ static PACKET * ff_find_executing_packet_to(QUEUE_TYPE* q, int id) {
   l = lm->next;
   while (lm != l) {
     PACKET *p = container_of(l, PACKET, list_node);
-    if (p->info.next_queue == id)
+    if (p->info.to_queue == id)
       return p;
     l = l->next;
   }
