@@ -738,10 +738,10 @@ calc_mean_variance_confidence () {
   done
   #echo sum = $SUM
   #echo sqr = $SQR
-  AVG=`echo $SUM $NUMS | awk '{printf("%.5f", $1 / $2)}'` 
+  AVG=`echo $SUM $NUMS | awk '{printf("%.7f", $1 / $2)}'` 
   #echo avg = $AVG
-  VAR=`echo $SQR $SUM $NUMS $AVG |awk '{printf("%.5f", sqrt(($1 - $2 * $4)/($3 - 1)))}'` 
-  CI=`echo $CI $VAR $NUMS |awk '{printf("%.5f", $1 * $2 / sqrt($3))}'`
+  VAR=`echo $SQR $SUM $NUMS $AVG |awk '{printf("%.7f", sqrt(($1 - $2 * $4)/($3 - 1)))}'` 
+  CI=`echo $CI $VAR $NUMS |awk '{printf("%.7f", $1 * $2 / sqrt($3))}'`
   echo $AVG $VAR $CI
 }
 
