@@ -78,6 +78,10 @@ option_config_add "--template" \
                   "TEMPLATE" \
                   "1" \
                   "Plot template"
+option_config_add "--yerrorbar" \
+                  "YERRORBAR" \
+                  "1" \
+                  "Y error bar"
 option_config_add "--plot-option" \
                   "PLOTOPT" \
                   "1" \
@@ -116,6 +120,13 @@ fi
 
 if [ "$MULTIPLOT" == "" ]; then
   MULTIPLOT="false"
+fi
+
+if [ "$YERRORBAR" == "" ]; then
+  ERROPT=""
+else
+  ERROPT="with yerrorbars"
+  YERRORBAR=":$YERRORBAR"
 fi
 
 if [ "$TEMPLATE" == "" ]; then
@@ -283,15 +294,19 @@ fi
 
 #Append line to show gnuplot what data is plotted
 count=0
-for f in $DATA; do
+
+for f in $DATA; do 
   if [ "$MULTIPLOT" == "false" ]; then
     if [ $count -eq 0 ]; then
-      PLOTSTR="\"$f\" using $XCOL:$YCOL title \"`basename $f`\" $PLOTOPT\\"
+      PLOTSTR="\"$f\" using $XCOL:${YCOL}$YERRORBAR $ERROPT notitle,\"$f\" using $XCOL:${YCOL} title \"`basename $f`\" $PLOTOPT \\"
     else
-      PLOTSTR=",\"$f\" using $XCOL:$YCOL title \"`basename $f`\" $PLOTOPT\\"
+      PLOTSTR=",\"$f\" using $XCOL:${YCOL}$YERRORBAR $ERROPT notitle,\"$f\" using $XCOL:${YCOL} title \"`basename $f`\" $PLOTOPT \\"
     fi
   else
-    PLOTSTR="set origin DX,DY+SY*$count; plot \"$f\" using $XCOL:$YCOL title \"`basename $f`\" $PLOTOPT;"
+    PLOTSTR="set origin DX,DY+SY*$count; plot \"$f\" using $XCOL:${YCOL}$YERRORBAR $ERROPT notitle, \"$f\" using $XCOL:${YCOL} title \"`basename $f`\" $PLOTOPT"
+  fi
+  if [ "ERROPT" != "" ]; then
+    PLOTSTR="$PLOTSTR "
   fi
   count=$((count+1))
   echo $PLOTSTR >> $PLOTSCRIPT

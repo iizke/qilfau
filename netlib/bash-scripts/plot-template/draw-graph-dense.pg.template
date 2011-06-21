@@ -21,16 +21,16 @@ set title "TITLE"
 set grid
 
 #set style data linespoints
-#set style data points
+set style data points
 #set style data boxplot
-set style data boxes
+#set style data boxes
 #set style data dots
 #set style data fsteps
 #set style data lines
 #set style data impulses
 
-set boxwidth 0.2
-set style fill solid 0.3
+#set boxwidth 0.2
+#set style fill solid 0.3
 #set style boxplot outliers pointtype 7
 set pointsize 1
 
