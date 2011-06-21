@@ -60,6 +60,7 @@
  */
 
 #include <pthread.h>
+#include <time.h>
 #include "error.h"
 #include "netqueue.h"
 #include "queues/fifo.h"
@@ -79,10 +80,16 @@
 
 #define nqthr_node_need_wait(_nq,_neighbor) \
   ((_nq->qstate.curr_time.real - 30*_nq->qstate.measurement.servtime.avg) > _neighbor->qstate.curr_time.real)
+  //((_nq->qstate.curr_time.real - 10*_nq->qstate.measurement.servtime.avg) > _neighbor->qstate.curr_time.real)
+
+// different in seconds
+#define time_diff(_start,_end) \
+  (_end->tv_sec - _start->tv_sec + (_end->tv_usec-_start->tv_usec)/1000000)
 
 /// Free packet list (used to avoiding malloc operations
 PACKET_LIST free_packets;
 sem_t nq_mutex;
+
 
 static int nqthr_node_set_state (NETQ_ONE_STATE *node, int state) {
   //check_null_pointer(node);
@@ -208,6 +215,7 @@ static int nqthr_allow_continue (CONFIG *cnf, SYS_STATE_OPS *ops) {
     return 0;
   }
 
+  // valley algorithm
   if (state->waited_node > 0) {
     // check waited node
     neighbor = state->queuenet->nodes.get_node(&state->queuenet->nodes, state->waited_node);
@@ -217,6 +225,7 @@ static int nqthr_allow_continue (CONFIG *cnf, SYS_STATE_OPS *ops) {
     } else
       state->waited_node = -1;
   }
+
   /*
    * If it is transit node, then turn off this node when all head neighbors are off
    * and there is no packets in queue.
@@ -630,6 +639,8 @@ static void* nqthr_thread_run (NETQ_ALL_STATE *state) {
   SYS_STATE_OPS *ops = NULL;
   CONFIG *cnf = NULL;
   int *collisions;
+  struct timeval start, end;
+  double simulation_time;
   extern NET_CONFIG netconf;
   collisions = malloc_gc(sizeof(int)*netconf.nnodes);
 
@@ -667,12 +678,17 @@ static void* nqthr_thread_run (NETQ_ALL_STATE *state) {
       continue;
     }
     // now we sure that only one thread can do the following simulation:
+    //gettimeofday(&start, NULL);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
     pisas_sched(cnf, ops);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+    //gettimeofday(&start, NULL);
+    //simulation_time += time_diff((&start),(&end));
   }
-  printf("Number of collision: ");
-  for (i=0; i<netconf.nnodes; i++)
-    printf("%d, ", collisions[i]);
-  printf("\n");
+  //printf("Number of collision: ");
+  //for (i=0; i<netconf.nnodes; i++)
+  //  printf("%d, ", collisions[i]);
+  //printf("\n Simulation time %f \n", simulation_time);
   return NULL;
 }
 
@@ -686,8 +702,9 @@ int nqthr_start(char *f) {
   time_t start;
   start = time(NULL);
 
-  netconfig_init(&netconf, 4);
+  netconfig_init(&netconf, 5);
   netconfig_parse_nodes("src/netsim/conf/source.conf");
+  netconfig_parse_nodes("src/netsim/conf/source1.conf");
   netconfig_parse_nodes("src/netsim/conf/node1.conf");
   netconfig_parse_nodes("src/netsim/conf/node2.conf");
   netconfig_parse_nodes("src/netsim/conf/sink.conf");

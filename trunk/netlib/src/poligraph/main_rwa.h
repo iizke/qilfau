@@ -8,11 +8,11 @@
 #define LIBERO -1
 
 /* prototipi per rwa.c */
-void alloca_richieste(int ***L, int num_req);
-void crea_richieste(int **L, int num_req, int num_nodes);
-void stampa_richieste(int **L, int num_req);
+void alloc_requests(int ***L, int num_req);
+void create_requests(int **L, int num_req, int num_nodes);
+void print_requests(int **L, int num_req);
 
-void alloca_lambda(int ***W, int num_req);
+void alloc_lambda(int ***W, int num_req);
 void print_lambda(int **W, int num_req);
 void max_lambda(int **lambda, int num_req);
 

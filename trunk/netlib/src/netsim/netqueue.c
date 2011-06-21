@@ -404,8 +404,9 @@ int netq_run(char *f) {
 
   start = time(NULL);
 
-  netconfig_init(&netconf, 4);
+  netconfig_init(&netconf, 5);
   netconfig_parse_nodes("src/netsim/conf/source.conf");
+  netconfig_parse_nodes("src/netsim/conf/source1.conf");
   netconfig_parse_nodes("src/netsim/conf/node1.conf");
   netconfig_parse_nodes("src/netsim/conf/node2.conf");
   netconfig_parse_nodes("src/netsim/conf/sink.conf");

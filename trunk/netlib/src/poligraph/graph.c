@@ -270,27 +270,48 @@ PGRAPH build_initial_solution(PGRAPH g, double prob, int iter_start) {
   double value;
 
   if (iter_start == 0) {
+    int ident = 0;
     for (i = 0; i < num_nodes; i++) {
       for (j = 0; j < num_nodes; j++) {
-        if ((i != j) && (find_link(g, first_link_out (g, i), i, j) == NULL))
+        if ((i != j) && (find_link(g, first_link_out (g, i), i, j) == NULL)) {
           p = add_link(g, i, j, 0.0);
+          p->identif = ident;
+          ident++;
+        }
       }
     }
     printf("Generated a Fully Connected Initial Solution \n");
-  } else {
+  } else if (iter_start == 1) {
+    int ident = 0;
     for (i = 0; i < num_nodes; i++) {
       for (j = 0; j < num_nodes; j++) {
         if ((i != j) && (find_link(g, first_link_out (g, i), i, j) == NULL)) {
           value = polirand_uniform(0, 1, &seed);
-          if (value < prob) /* Con probabilit� prob inserisco il link */
+          if (value < prob) {/* Con probabilità prob inserisco il link */
             p = add_link(g, i, j, 0.0);
+            p->identif = ident;
+            ident++;
+          }
         }
       }
     }
     printf("Generated a Random Initial Solution with p(i,j) = %f\n", prob);
+  } else if (iter_start == 2) {
+    int ident = 0;
+    for (i = 0; i < num_nodes; i++) {
+      j = ((i + 1) % num_nodes);
+      if ((find_link(g, first_link_out (g, i), i, j) == NULL))
+        p = add_link(g, i, j, 0.0);
+      p->identif = ident;
+      ident++;
+    }
+    printf("Generated a RING topology\n");
   }
+
   return (g);
 }
+
+
 
 void init_graph(PGRAPH g1, int num_nodes) {
   int i, j, k, max_num_nodes = MAX_NUM_NODES;
