@@ -17,17 +17,17 @@ main_rwa (int argc, char *argv[])
   FILE *fp_result = NULL;	/* puntatore al file di output                                                                                                                          */
   FILE *fp_weight_route = NULL;	/* puntatore al file di lettura dei pesi associati ad ogni linf (from -> to) */
   /* se il puntatore al file � NULL i pesi vengono posti ad 1.0 di default        */
-  int num_nodes = 8;
+  int num_nodes = 10;
   int num_req = 20;
   int i;
   
-  /* matrice delle richieste: L[i][0] = s_i, L[i][1] = d_i */
+  /* matrice of request: L[i][0] = s_i, L[i][1] = d_i */
   int **L;
 
-  /* matrice di lamba: lambda[a][w] = LIBERO, o lambda[a][w] = !LIBERO*/
+  /* matrice of lamba: lambda[a][w] = LIBERO, o lambda[a][w] = !LIBERO*/
   int **lambda;
-  
-  double prob = 0.5;
+
+  double prob = 0.3;
 
   char *s;
   char in_dist[200] = "";
@@ -192,7 +192,8 @@ main_rwa (int argc, char *argv[])
   alloc_PR_QUEUE (max_num_nodes_graph (&g));
   
   start_time = clock ();
-  build_initial_solution (&g, prob, 2);
+  //build_initial_solution (&g, prob, 2);
+  build_initial_solution (&g, prob, 1);
   
   /* initializza il vettore delle richieste */
   if(num_req >= MAX_REQ)
@@ -201,12 +202,12 @@ main_rwa (int argc, char *argv[])
              MAX_REQ);
       exit(0);
   }    
-  alloca_richieste(&L, num_req);
-  crea_richieste(L, num_req, num_nodes);
-  stampa_richieste(L, num_req);
+  alloc_requests(&L, num_req);
+  create_requests(L, num_req, num_nodes);
+  print_requests(L, num_req);
 
   /* initializza la matrice lambda */
-  alloca_lambda(&lambda, num_req);
+  alloc_lambda(&lambda, num_req);
   print_lambda(lambda, num_req);
   
   for (i = 0; i < num_nodes; i++)

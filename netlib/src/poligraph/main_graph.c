@@ -9,20 +9,32 @@
 #include "main_graph.h"
 #include "topo.h"
 
-static int _run (int num_nodes, int delta, FILE *fp_result) {
+static int _run (int num_nodes, int delta, double prob, long int seed0, FILE *fp_result) {
   clock_t start_time;
   int i;
-
+  double fmax = 0;
+  int state = 0;
   init_graph(&g, num_nodes);
   alloc_PR_QUEUE(max_num_nodes_graph (&g));
   start_time = clock();
-  //build_initial_solution(&g, prob, 1);
-  topo_build_ring2(&g, delta);
-  //topo_build_ring1(&g);
+  if (prob) 
+    build_initial_solution(&g, prob, 1);
+  else {
+    topo_build_greedy(&g, delta);
+//    if (delta >= num_nodes) {
+//      printf("number of tx no need to larger than number of nodes\n");
+//      delta = num_nodes; // build full mesh
+//      build_initial_solution(&g, 1, 0);
+//    } else
+//      topo_build_random_ring1(&g, delta);
+  }
+  //topo_build_ring(&g);
 
+  //print_matrix(trf_m, num_nodes, fp_result);
+  
   for (i = 0; i < num_nodes; i++) {
     dijkstra_heap(&g, i, pr_queue);
-    if (insert_sh_path_in_matrix(&g, i, g.node_set[i].matrix_path)
+    if ((state = insert_sh_path_in_matrix(&g, i, g.node_set[i].matrix_path))
         == DISCONNECTED)
       printf("Disconnected topology\n");
     //print_all_sh_path_from(fp_result, &g, g.node_set[i].matrix_path, i);
@@ -30,7 +42,9 @@ static int _run (int num_nodes, int delta, FILE *fp_result) {
   update_flow(&g, MP, trf_m, 0);
   start_time = clock() - start_time;
   //print_graph(&g, fp_result);
-  fprintf(fp_result, "fmax = %f delta = %d num_nodes = %d\n", topo_print_maxflow (&g), delta, g.num_nodes);
+  fmax = topo_print_maxflow (&g);
+  if ((fmax > 0) && (state != DISCONNECTED))
+  fprintf(fp_result, "fmax = %f delta = %d num_nodes = %d seed = %ld prob = %f\n", fmax, delta, g.num_nodes, seed0, prob);
   //fprintf(fp_result, "\nElapsed_time = %f\n", (double) start_time / CLOCKS_PER_SEC);
 
   fclose(fp_result);
@@ -46,7 +60,7 @@ int main_graph(int argc, char *argv[]) {
   /* se il puntatore al file � NULL i pesi vengono posti ad 1.0 di default        */
   //int i;
 
-  double prob = 0.6;
+  double prob = 0;
 
   char *s;
   char in_dist[200] = "";
@@ -57,8 +71,9 @@ int main_graph(int argc, char *argv[]) {
 
   int delta = 1;
   int num_nodes = 8;
-
+  long int seed0;
   seed = 213423;
+  seed0 = seed;
 
   /* Parsing of the Command line options. */
 
@@ -71,7 +86,7 @@ int main_graph(int argc, char *argv[]) {
           s += 2;
           sscanf(s, "%d", &delta);
           if (delta <= 0)
-            error("Warning:  Non positive num_nodes\n", stderr);
+            error("Warning:  Non positive delta\n", stderr);
         } else
           error("Warning: Invalid option ignored \n", stderr);
         break;
@@ -112,6 +127,7 @@ int main_graph(int argc, char *argv[]) {
         if (strncmp(s, "seed=", 5) == 0) {
           s += 5;
           sscanf(s, "%ld", &seed);
+          seed0 = seed;
           if (seed <= 0)
             error("Non positive seed\n", stderr);
         } else
@@ -179,7 +195,7 @@ int main_graph(int argc, char *argv[]) {
   if (read_input_matrix(num_nodes, fp_trf, fp_weight_route) == FALSE)
     exit(1);
 
-  _run(num_nodes, delta, fp_result);
+  _run(num_nodes, delta, prob, seed0, fp_result);
   //do_experiment(20, fp_result);
   return (1);
 }

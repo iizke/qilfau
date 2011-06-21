@@ -31,8 +31,11 @@ int build_random_traffic_matrix0(int num_nodes, double lb, double ub) {
 
   for (i = 0; i < num_nodes; i++)
   for (j = 0; j < num_nodes; j++) {
-    //entry (trf_m, i, j) = polirand_uniform(lb,ub,&seed);
-    entry (trf_m, i, j) = gen_uniform(lb,ub);
+    if (i != j)
+      entry (trf_m, i, j) = polirand_uniform(lb,ub,&seed);
+    else 
+      entry (trf_m, i, j) = 0;
+    //entry (trf_m, i, j) = gen_uniform(lb,ub);
   }
   return 0;
 }
