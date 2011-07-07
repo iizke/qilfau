@@ -31,6 +31,7 @@ struct system_state_operations {
 
 int netsim_start (char *conf_file);
 int netsim_start_thread (char *conf_file);
+int nqthr_start(char *f);
 int pisas_sched (void *conf, SYS_STATE_OPS *sys_ops);
 void netsim_print_theorical_mm1 (double arrival, double service);
 #endif /* CONFIG_H_ */

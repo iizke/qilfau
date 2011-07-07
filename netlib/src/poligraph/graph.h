@@ -5,7 +5,7 @@
 #define MP 0
 #define IMP 1
 #define MAX_NUM_NODES 100
-#define MAX_NUM_LINKS 50
+#define MAX_NUM_LINKS 1800
 
 typedef struct _node *PNODE;	/* puntatore alla struttura _node */
 typedef struct _link *PLINK;	/* puntatore alla struttura _list */

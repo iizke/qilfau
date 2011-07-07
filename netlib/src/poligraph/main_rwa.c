@@ -17,7 +17,7 @@ main_rwa (int argc, char *argv[])
   FILE *fp_result = NULL;	/* puntatore al file di output                                                                                                                          */
   FILE *fp_weight_route = NULL;	/* puntatore al file di lettura dei pesi associati ad ogni linf (from -> to) */
   /* se il puntatore al file � NULL i pesi vengono posti ad 1.0 di default        */
-  int num_nodes = 10;
+  int num_nodes = 20;
   int num_req = 20;
   int i;
   
@@ -27,7 +27,7 @@ main_rwa (int argc, char *argv[])
   /* matrice of lamba: lambda[a][w] = LIBERO, o lambda[a][w] = !LIBERO*/
   int **lambda;
 
-  double prob = 0.3;
+  double prob = 0.4;
 
   char *s;
   char in_dist[200] = "";
@@ -35,6 +35,10 @@ main_rwa (int argc, char *argv[])
   char in_weight_route[200] = "";	/* file contenente i pesi di ogni link utilizzati per il routing        */
   char out_result[200] = "";
   clock_t start_time;
+
+  int delta = 1;
+  int lmax = 1;
+  long int seed0;
 
   seed = 9171;
 
@@ -99,6 +103,7 @@ main_rwa (int argc, char *argv[])
 		  sscanf (s, "%ld", &seed);
 		  if (seed <= 0)
 		    error ("Non positive seed\n", stderr);
+		  seed0 = seed;
 		}
 	      else
 		printf ("Warning: Invalid option -%s ignored\n", s);
@@ -117,7 +122,17 @@ main_rwa (int argc, char *argv[])
 		printf ("Warning: Invalid option -%s ignored\n", s);
 	      break;
 
-	    default:
+      case 'r':
+        if (strncmp (s, "req=", 4) == 0){
+           s += 4;
+           sscanf (s, "%ld", &num_req);
+           if (num_req < 0 || num_req > MAX_REQ)
+             error ("No admissible prob parameter\n", stderr);
+        } else
+          printf ("Warning: Invalid option -%s ignored\n", s);
+        break;
+
+      default:
 	      printf ("Warning: Invalid option -%s ignored\n", s);
 	    }
 	}
@@ -125,7 +140,7 @@ main_rwa (int argc, char *argv[])
 
   if (strlen (out_result) != 0)
     {
-      fp_result = fopen (out_result, "w");
+      fp_result = fopen (out_result, "a+");
       if (fp_result == NULL)
 	{
 	  error ("Impossibile aprire file di output dei risultati", stderr);
@@ -139,7 +154,7 @@ main_rwa (int argc, char *argv[])
   else
     {
       fp_result = stdout;
-      fprintf (fp_result, "Writing output to stdout\n");
+      //fprintf (fp_result, "Writing output to stdout\n");
     }
 
   if (strlen (in_trf) != 0)
@@ -154,11 +169,11 @@ main_rwa (int argc, char *argv[])
 	}
       else
 	{
-	  fprintf (fp_result, "Reading the traffic matrix from %s\n", in_trf);
+	  //fprintf (fp_result, "Reading the traffic matrix from %s\n", in_trf);
 	}
     }
   else
-    fprintf (fp_result, "Traffico scambiato uniforme.\n");
+    //fprintf (fp_result, "Traffico scambiato uniforme.\n");
 
   if (strlen (in_weight_route) != 0)
     {
@@ -171,12 +186,11 @@ main_rwa (int argc, char *argv[])
 	}
       else
 	{
-	  fprintf (fp_result, "Reading the routing weights from %s\n",
-		   in_weight_route);
+	  //fprintf (fp_result, "Reading the routing weights from %s\n", in_weight_route);
 	}
     }
   else
-    fprintf (fp_result, "Pesi del routing fissati da default a 1.0\n");
+    //fprintf (fp_result, "Pesi del routing fissati da default a 1.0\n");
 
 
   if (read_input_matrix (num_nodes, fp_trf, fp_weight_route) == FALSE)
@@ -198,33 +212,31 @@ main_rwa (int argc, char *argv[])
   /* initializza il vettore delle richieste */
   if(num_req >= MAX_REQ)
   {
-      printf("Attenzione, num_req deve essere minore di %d\n",
-             MAX_REQ);
+      printf("Attenzione, num_req deve essere minore di %d\n", MAX_REQ);
       exit(0);
   }    
   alloc_requests(&L, num_req);
   create_requests(L, num_req, num_nodes);
-  print_requests(L, num_req);
+  //print_requests(L, num_req);
 
   /* initializza la matrice lambda */
   alloc_lambda(&lambda, num_req);
-  print_lambda(lambda, num_req);
+  //print_lambda(lambda, num_req);
   
   for (i = 0; i < num_nodes; i++)
   {
 	dijkstra_heap (&g, i, pr_queue);
-	if (insert_sh_path_in_matrix (&g, i, g.node_set[i].matrix_path) ==
-	     DISCONNECTED)
-             printf("Disconnected topology\n");
-        print_all_sh_path_from(fp_result,&g,g.node_set[i].matrix_path,i);
+	if (insert_sh_path_in_matrix (&g, i, g.node_set[i].matrix_path) == DISCONNECTED)
+      printf("Disconnected topology\n");
+      //print_all_sh_path_from(fp_result,&g,g.node_set[i].matrix_path,i);
   }
   RWA_ssff(&g, L, lambda, num_req);
-  print_lambda(lambda, num_req);
-  max_lambda(lambda, num_req);
+  //print_lambda(lambda, num_req);
+  lmax = max_lambda(lambda, num_req);
 
+  fprintf(fp_result, "fmax = %d delta = %d num_nodes = %d seed = %ld prob = %f\n", lmax, num_req, g.num_nodes, seed0, prob);
   start_time = clock () - start_time;
-  fprintf (fp_result, "\nElapsed_time = %f\n",
-	   (double) start_time / CLOCKS_PER_SEC);
+  printf ("\nElapsed_time = %f\n", (double) start_time / CLOCKS_PER_SEC);
 
   fclose (fp_result);
   //sleep(1000000);

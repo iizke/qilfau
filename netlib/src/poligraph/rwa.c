@@ -38,10 +38,10 @@ void print_requests(int **L, int num_req) {
 void alloc_lambda(int ***W, int num_req) {
   int arc, w;
 
-  (*W) = (int **) malloc(MAX_NUM_LINKS * sizeof(int**));
+  (*W) = (int **) malloc_gc(MAX_NUM_LINKS * sizeof(int**));
 
   for (arc = 0; arc < MAX_NUM_LINKS; arc++) {
-    (*W)[arc] = (int *) malloc(num_req * sizeof(int*));
+    (*W)[arc] = (int *) malloc_gc(num_req * sizeof(int*));
   }
 
   /* inizializza tutte le lambda a libero */
@@ -102,7 +102,7 @@ void RWA_ssff(PGRAPH g, int **L, int **lambda, int num_req) {
   } /*fine per tutte le richieste */
 }
 
-void max_lambda(int **lambda, int num_req) {
+int max_lambda(int **lambda, int num_req) {
   BOOL flag;
   int counter = 0, i, j;
   for (i = 0; i < num_req; i++) {
@@ -119,5 +119,6 @@ void max_lambda(int **lambda, int num_req) {
       break;
   }
   printf("Numero di lunghezze d'onda massimo: %d\n", counter);
+  return counter;
 }
 

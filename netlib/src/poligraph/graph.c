@@ -288,9 +288,11 @@ PGRAPH build_initial_solution(PGRAPH g, double prob, int iter_start) {
         if ((i != j) && (find_link(g, first_link_out (g, i), i, j) == NULL)) {
           value = polirand_uniform(0, 1, &seed);
           if (value < prob) {/* Con probabilità prob inserisco il link */
-            p = add_link(g, i, j, 0.0);
-            p->identif = ident;
-            ident++;
+            if (find_link(g, first_link_out (g, i), i, j) == NULL) {
+              p = add_link(g, i, j, 0.0);
+              p->identif = ident;
+              ident++;
+            }
           }
         }
       }
