@@ -14,7 +14,7 @@ void print_requests(int **L, int num_req);
 
 void alloc_lambda(int ***W, int num_req);
 void print_lambda(int **W, int num_req);
-void max_lambda(int **lambda, int num_req);
+int max_lambda(int **lambda, int num_req);
 
 
 void RWA_ssff(PGRAPH g, int **L, int **lambda, int num_req);

@@ -52,10 +52,10 @@ int main (int nargs, char** args) {
   random_init();
   //check_netsim();
   //main_graph(nargs, args);
-  main_rwa(nargs, args);
+  //main_rwa(nargs, args);
   //check_matrix();
   //check_graph();
-  //check_net_queue();
+  check_net_queue();
   trash_clean();
   return SUCCESS;
 }
