@@ -345,3 +345,17 @@ int random_dist_init_const (RANDOM_DIST *rd, double *val) {
   rd->params = val;
   return SUCCESS;
 }
+
+double random_dist_gen_mmpp (RANDOM_DIST *rd) {
+  struct mmpp_params *p = NULL;
+  check_null_pointer(rd);
+  p = rd->params;
+  return irand_gen_mmpp(p);
+}
+
+int random_dist_init_mmpp(RANDOM_DIST *rd, struct mmpp_params *p) {
+  check_null_pointer(rd);
+  rd->gen = random_dist_gen_mmpp;
+  rd->params = p;
+  return SUCCESS;
+}

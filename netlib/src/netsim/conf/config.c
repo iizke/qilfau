@@ -94,7 +94,7 @@ int config_parse_file(char * f) {
 }
 
 CONFIG* netconfig_get_conf(NET_CONFIG *net, int cid) {
-  return array_get(&net->configs, cid);
+  return array_get(&net->configs, cid).pointer;
 }
 
 int netconfig_get_size(NET_CONFIG *net) {
@@ -120,7 +120,7 @@ int netconfig_init (NET_CONFIG *netconf, int n) {
   array_setup(&netconf->configs, sizeof(CONFIG), n);
   linked_list_init(&netconf->channels);
   for (i=0; i<n; i++) {
-    CONFIG *c = array_get(&netconf->configs, i);
+    CONFIG *c = array_get(&netconf->configs, i).pointer;
     config_init(c);
   }
   return SUCCESS;

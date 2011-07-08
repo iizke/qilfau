@@ -58,7 +58,7 @@ static int update_time (EVENT *e, NETQ_STATE *state) {
 
 static QUEUE_TYPE * netq_get_queue (NETQ_STATE *nq, int qid) {
   if (!nq) return NULL;
-  return array_get(&nq->queues, qid);
+  return array_get(&nq->queues, qid).pointer;
 }
 
 static EVENT* nq_generate_arrival_from_packet (NET_CONFIG *netconf, NETQ_STATE *state, PACKET *packet) {
@@ -365,7 +365,7 @@ int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
   }
 
   for (i=0; i< netconf->nnodes; i++) {
-    qt = array_get(&state->queues, i);
+    qt = array_get(&state->queues, i).pointer;
     qt->id = i;
     cnf = netconfig_get_conf(netconf, i);
     state->queuenet.nodes.set_node(&state->queuenet.nodes, i, qt);

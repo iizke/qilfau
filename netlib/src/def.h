@@ -8,6 +8,11 @@
 #ifndef DEF_H_
 #define DEF_H_
 
+typedef union {
+  void* pointer;
+  float value;
+} POINTER_VAL;
+
 /**
  * Time definition
  */

@@ -9,6 +9,9 @@
 #ifndef IRAND_H_
 #define IRAND_H_
 
+#include "matrix/matrix.h"
+#include "list/array.h"
+
 /// Random generator: Linear Congruential
 #define RND_TYPE_LINEAR               1
 /// Random generator: Combined Linear Congruential
@@ -40,6 +43,16 @@ struct empirical_params {
   double *values;
   /// List of probabilities for each values
   double *probs;
+};
+
+/// Parameters of MMPP (Markov Modulation Poisson Process) distribution
+struct mmpp_params {
+  MATRIX markov_state;
+  ARRAY poisson_rate;
+  int last_state;
+  double last_time;
+  int next_state;
+  double next_time;
 };
 
 /// Random distribution structure (a framework)
