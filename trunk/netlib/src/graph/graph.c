@@ -43,7 +43,7 @@ void* edge_list_matrix_get_edge (EDGE_LIST *el, NODE_ID id1, NODE_ID id2) {
 }
 
 int edge_list_matrix_set_edge (EDGE_LIST *el, NODE_ID id1, NODE_ID id2, void* val) {
-  MATRIX_VAL v;
+  POINTER_VAL v;
   v.pointer = val;
   check_null_pointer(el);
   try ( matrix_set_value(el->edge_data, id1, id2, v) );

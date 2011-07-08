@@ -35,18 +35,21 @@ int array_setup(ARRAY* a, int len, int size) {
 
 #define array_id_is_ok(_a,_id) ((_id >= 0) && (_id < _a->size))
 
-void* array_get(ARRAY *a, int id) {
+POINTER_VAL array_get(ARRAY *a, int id) {
+  POINTER_VAL ret;
+  ret.pointer = NULL;
   if (!a)
-    return NULL;
+    return (ret);
   if (! array_id_is_ok(a, id))
-    return NULL;
-  return ((char*)a->data + id*a->len);
+    return (ret);
+  //ret = ((char*)a->data + id*a->len);
+  return a->data[id];
 }
 
 int array_set(ARRAY* a, int id, void* data) {
   void *p = NULL;
   check_null_pointer(a);
-  p = array_get(a, id);
+  p = array_get(a, id).pointer;
   check_null_pointer(p);
   memcpy(p, data, a->len);
   return SUCCESS;

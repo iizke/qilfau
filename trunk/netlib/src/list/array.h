@@ -9,8 +9,10 @@
 #ifndef ARRAY_H_
 #define ARRAY_H_
 
+#include "def.h"
+
 typedef struct array {
-  void* data;
+  POINTER_VAL* data;
   /// length of each data element
   int len;
   /// number of element
@@ -19,7 +21,7 @@ typedef struct array {
 
 int array_init (ARRAY**, int, int);
 int array_setup(ARRAY*, int, int);
-void* array_get(ARRAY *, int);
+POINTER_VAL array_get(ARRAY *, int);
 int array_set(ARRAY*, int, void*);
 
 #endif /* ARRAY_H_ */

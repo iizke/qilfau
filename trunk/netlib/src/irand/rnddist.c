@@ -232,6 +232,45 @@ double irand_gen_pareto (double lambda) {
   return _inverse_gen_rnd(_inverse_pareto, &lambda);
 }
 
+/**
+ * MMPP generator
+ * @param p: parameter of MMPP distribution
+ * @return
+ */
+double irand_gen_mmpp(struct mmpp_params * p) {
+  float curr_rate = 0;
+  float state_rate;
+  float mint = 999999999;
+  int i;
+
+  while (curr_rate == 0) {
+    curr_rate = array_get(&p->poisson_rate, p->last_state).value;
+    p->last_time += irand_gen_exp(curr_rate);
+
+    if (p->last_time >= p->next_time) {
+      curr_rate = 0;
+      p->last_time = p->next_time;
+      p->last_state = p->next_state;
+      // find next_state and next_time
+      for (i=0; i<p->markov_state.ncols; i++) {
+        // find min
+        float t = 0;
+        state_rate = matrix_get_value(&p->markov_state, p->last_state, i).value;
+        if (state_rate > 0) {
+          t = irand_gen_exp(state_rate);
+          if (mint > t) {
+            mint = t;
+            p->next_state = i;
+          }
+        }
+      }
+      p->next_time = p->last_time + mint;
+      // regenerate random value
+    }
+  }
+  return p->last_time;
+}
+
 int test_gen_distribution () {
   int i = 0;
   double avg = 0;

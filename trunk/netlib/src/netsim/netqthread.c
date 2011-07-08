@@ -65,6 +65,7 @@
 #include "netqueue.h"
 #include "queues/fifo.h"
 #include "event.h"
+#include "def.h"
 
 // _nq: type is NETQ_ONE_STATE
 // _qid: type is int
@@ -563,7 +564,7 @@ static int nqthr_build_topology (NETQ_ALL_STATE *state, NET_CONFIG *netconf) {
   int i = 0;
   // configure nodes
   for (i=0; i < netconf->nnodes; i++) {
-    node = array_get(&state->nodes, i);
+    node = array_get(&state->nodes, i).pointer;
     cnf = netconfig_get_conf(netconf, i);
     // avoid to set up wrong parameter for sink-node
     if (cnf->nodetype == NODE_SINK) {

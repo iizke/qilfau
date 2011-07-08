@@ -8,16 +8,13 @@
 
 #ifndef MATRIX_H_
 #define MATRIX_H_
-#include <stdio.h>
 
-typedef union {
-  void* pointer;
-  float value;
-} MATRIX_VAL;
+#include <stdio.h>
+#include "def.h"
 
 typedef struct column {
   int id;
-  MATRIX_VAL data;
+  POINTER_VAL data;
 } COLUMN;
 
 typedef struct row {
@@ -32,7 +29,7 @@ typedef struct sparse_data_matrix {
 } SPARSE_MATRIX;
 
 typedef struct dense_data_matrix {
-  MATRIX_VAL** vals;
+  POINTER_VAL** vals;
 }DENSE_MATRIX;
 
 typedef struct matrix {
@@ -51,7 +48,7 @@ typedef struct matrix {
 int matrix_init (MATRIX **, int);
 int matrix_setup (MATRIX *m, int nr, int nc);
 int matrix_setup_file (MATRIX *, FILE*);
-MATRIX_VAL matrix_get_value (MATRIX *, int, int);
+POINTER_VAL matrix_get_value (MATRIX *, int, int);
 void* matrix_get_row (MATRIX *, int row);
-int matrix_set_value (MATRIX *m, int row, int col, MATRIX_VAL val);
+int matrix_set_value (MATRIX *m, int row, int col, POINTER_VAL val);
 #endif /* MATRIX_H_ */

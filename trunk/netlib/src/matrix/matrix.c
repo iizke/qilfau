@@ -114,8 +114,8 @@ int matrix_setup (MATRIX *m, int nr, int nc) {
  * @param col : column position
  * @return : cell value (real number)
  */
-MATRIX_VAL matrix_get_value (MATRIX *m, int row, int col) {
-  MATRIX_VAL val;
+POINTER_VAL matrix_get_value (MATRIX *m, int row, int col) {
+  POINTER_VAL val;
   val.value = 0;
   val.pointer = NULL;
 
@@ -133,7 +133,7 @@ MATRIX_VAL matrix_get_value (MATRIX *m, int row, int col) {
   return val;
 }
 
-int matrix_set_value (MATRIX *m, int row, int col, MATRIX_VAL val) {
+int matrix_set_value (MATRIX *m, int row, int col, POINTER_VAL val) {
   if (!m)
     return ERR_POINTER_NULL;
 
