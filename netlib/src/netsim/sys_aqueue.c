@@ -114,6 +114,7 @@ int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
         return 1;
     } else {
       conf->arrival_conf.type = RANDOM_OTHER;
+      conf->arrival_conf.distribution.gen = NULL;
       if (!event_list_is_empty(&state->future_events))
         return 1;
     }

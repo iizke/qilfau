@@ -24,6 +24,7 @@ RANDOM_MARKOV				return R_MARKOV;
 RANDOM_UNIFORM				return R_UNF;
 RANDOM_FILE					return R_FILE;
 RANDOM_OTHER				return R_OTHER;
+RANDOM_MMPP					return R_MMPP;
  
 arrival.type				return ARRIVAL_TYPE;
 arrival.lambda				return ARRIVAL_LAMBDA;

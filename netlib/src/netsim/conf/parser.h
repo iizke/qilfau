@@ -79,17 +79,18 @@
      R_MARKOV = 295,
      R_UNF = 296,
      R_FILE = 297,
-     R_OTHER = 298,
-     DEBUG_ERROR = 299,
-     DEBUG_WARNING = 300,
-     DEBUG_INFO = 301,
-     YES = 302,
-     NO = 303,
-     EQ = 304,
-     ENDLINE = 305,
-     REALNUM = 306,
-     INTNUM = 307,
-     STRING = 308
+     R_MMPP = 298,
+     R_OTHER = 299,
+     DEBUG_ERROR = 300,
+     DEBUG_WARNING = 301,
+     DEBUG_INFO = 302,
+     YES = 303,
+     NO = 304,
+     EQ = 305,
+     ENDLINE = 306,
+     REALNUM = 307,
+     INTNUM = 308,
+     STRING = 309
    };
 #endif
 /* Tokens.  */
@@ -133,17 +134,18 @@
 #define R_MARKOV 295
 #define R_UNF 296
 #define R_FILE 297
-#define R_OTHER 298
-#define DEBUG_ERROR 299
-#define DEBUG_WARNING 300
-#define DEBUG_INFO 301
-#define YES 302
-#define NO 303
-#define EQ 304
-#define ENDLINE 305
-#define REALNUM 306
-#define INTNUM 307
-#define STRING 308
+#define R_MMPP 298
+#define R_OTHER 299
+#define DEBUG_ERROR 300
+#define DEBUG_WARNING 301
+#define DEBUG_INFO 302
+#define YES 303
+#define NO 304
+#define EQ 305
+#define ENDLINE 306
+#define REALNUM 307
+#define INTNUM 308
+#define STRING 309
 
 
 
@@ -158,7 +160,7 @@ char* str; int ival; double dval;
 
 
 /* Line 1676 of yacc.c  */
-#line 162 "parser.h"
+#line 164 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
