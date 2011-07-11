@@ -20,7 +20,7 @@ typedef union time {
   /// time is represented as slot time
   long slot;
   /// time is considered as real time
-  float real;
+  double real;
 } TIME;
 
 #define MAX_INT INT_MAX

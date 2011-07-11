@@ -255,9 +255,9 @@ int irand_mmpp_params_init (struct mmpp_params* p, FILE *f) {
  * @return
  */
 double irand_gen_mmpp(struct mmpp_params * p) {
-  float curr_rate = 0;
-  float state_rate;
-  float mint = 999999999;
+  double curr_rate = 0;
+  double state_rate;
+  double mint = 999999999;
   int i;
 
   while (curr_rate == 0) {
@@ -271,7 +271,7 @@ double irand_gen_mmpp(struct mmpp_params * p) {
       // find next_state and next_time
       for (i=0; i<p->markov_state.ncols; i++) {
         // find min
-        float t = 0;
+        double t = 0;
         if (i == p->last_state) continue;
         state_rate = matrix_get_value(&p->markov_state, p->last_state, i).value;
         if (state_rate > 0) {
@@ -286,7 +286,7 @@ double irand_gen_mmpp(struct mmpp_params * p) {
       // regenerate random value
     }
   }
-  return p->last_time;
+  return (p->last_time);
 }
 
 int test_gen_distribution () {

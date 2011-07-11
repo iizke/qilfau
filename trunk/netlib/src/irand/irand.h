@@ -84,4 +84,6 @@ double irand_gen_bernoulli (double prob);
 double irand_gen_pareto (double lambda);
 
 int irand_mmpp_params_init (struct mmpp_params*, FILE *);
+double irand_gen_mmpp(struct mmpp_params * p);
+
 #endif /* IRAND_H_ */

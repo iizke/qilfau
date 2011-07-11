@@ -211,9 +211,10 @@ int event_save (EVENT *e, FILE *f) {
  * @return Error code (see more in def.h and error.h)
  */
 int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
-  float time;
+  double time = 0;
   int type;
-  float etime;
+  double etime;
+  struct mmpp_params *p = NULL;
   switch (fc->type) {
 //  case RANDOM_MARKOVIAN:
 //    e->info.time.real = curr_time.real + gen_exponential(fc->lambda);
@@ -231,7 +232,12 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
       //iprint(LEVEL_WARNING, "Flow type is not supported \n");
       return ERR_RANDOM_TYPE_FAIL;
     }
-    e->info.time.real = curr_time.real + fc->distribution.gen(&fc->distribution);
+    time =  fc->distribution.gen(&fc->distribution);
+    if (fc->type == RANDOM_MMPP) {
+      p = fc->distribution.params;
+      time = p->last_time;
+    }
+    e->info.time.real = curr_time.real + time;
     break;
   }
   return SUCCESS;
