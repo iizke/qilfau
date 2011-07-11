@@ -215,20 +215,23 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
   int type;
   float etime;
   switch (fc->type) {
-  case RANDOM_MARKOVIAN:
-    e->info.time.real = curr_time.real + gen_exponential(fc->lambda);
-    break;
+//  case RANDOM_MARKOVIAN:
+//    e->info.time.real = curr_time.real + gen_exponential(fc->lambda);
+//    break;
   case RANDOM_FILE:
     fscanf(fc->from_file, "%f %d %f", &time, &type, &etime);
     e->info.time.real = time;
     iprint(LEVEL_INFO, "Get time from file, value %f \n", e->info.time.real);
     break;
-  case RANDOM_UNIFORM:
-    e->info.time.real = curr_time.real + gen_uniform(fc->from, fc->to);
-    break;
+//  case RANDOM_UNIFORM:
+//    e->info.time.real = curr_time.real + gen_uniform(fc->from, fc->to);
+//    break;
   default:
-    iprint(LEVEL_WARNING, "Flow type is not supported \n");
-    return ERR_RANDOM_TYPE_FAIL;
+    if (fc->distribution.gen == NULL) {
+      //iprint(LEVEL_WARNING, "Flow type is not supported \n");
+      return ERR_RANDOM_TYPE_FAIL;
+    }
+    e->info.time.real = curr_time.real + fc->distribution.gen(&fc->distribution);
     break;
   }
   return SUCCESS;

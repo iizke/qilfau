@@ -82,4 +82,6 @@ double irand_gen_uniform (double from, double to);
 double irand_gen_int_uniform (double from, double to);
 double irand_gen_bernoulli (double prob);
 double irand_gen_pareto (double lambda);
+
+int irand_mmpp_params_init (struct mmpp_params*, FILE *);
 #endif /* IRAND_H_ */

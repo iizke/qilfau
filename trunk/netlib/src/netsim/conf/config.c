@@ -22,6 +22,7 @@ extern NET_CONFIG netconf;
  * @return Error code (see more in def.h and error.h)
  */
 int config_random_conf (RANDOM_CONF *rc) {
+  struct mmpp_params *p = NULL;
   switch (rc->type) {
   case RANDOM_MARKOVIAN:
     random_dist_init_exp0(&rc->distribution, &rc->lambda);
@@ -37,6 +38,12 @@ int config_random_conf (RANDOM_CONF *rc) {
     break;
   case RANDOM_CONST:
     random_dist_init_const(&rc->distribution, &rc->constval);
+    break;
+  case RANDOM_MMPP:
+    p = malloc_gc(sizeof(struct mmpp_params));
+    irand_mmpp_params_init (p, rc->from_file);
+    rc->distribution.params = p;
+    random_dist_init_mmpp(&rc->distribution, p);
     break;
   default:
     iprint(LEVEL_ERROR, "This type (%d) of random type is not supported\n", rc->type);

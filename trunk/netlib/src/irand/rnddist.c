@@ -232,6 +232,23 @@ double irand_gen_pareto (double lambda) {
   return _inverse_gen_rnd(_inverse_pareto, &lambda);
 }
 
+int irand_mmpp_params_init (struct mmpp_params* p, FILE *f) {
+  int i = 0 ;
+  check_null_pointer(p);
+  p->markov_state.type = MATRIX_TYPE_DENSE;
+  matrix_setup_file(&p->markov_state, f);
+  array_setup(&p->poisson_rate, sizeof(POINTER_VAL), p->markov_state.nrows);
+  for (i = 0; i < p->markov_state.nrows; i++)
+    /// No check wrong input here!
+    fscanf(f, "%f", &p->poisson_rate.data[i].value);
+
+  p->last_state = 0;
+  p->last_time = 0;
+  p->next_state = 0;
+  p->next_time = 0;
+  return SUCCESS;
+}
+
 /**
  * MMPP generator
  * @param p: parameter of MMPP distribution
@@ -255,6 +272,7 @@ double irand_gen_mmpp(struct mmpp_params * p) {
       for (i=0; i<p->markov_state.ncols; i++) {
         // find min
         float t = 0;
+        if (i == p->last_state) continue;
         state_rate = matrix_get_value(&p->markov_state, p->last_state, i).value;
         if (state_rate > 0) {
           t = irand_gen_exp(state_rate);
