@@ -232,18 +232,16 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
       //iprint(LEVEL_WARNING, "Flow type is not supported \n");
       return ERR_RANDOM_TYPE_FAIL;
     }
-    time =  fc->distribution.gen(&fc->distribution);
+    time = fc->distribution.gen(&fc->distribution);
     if (fc->type == RANDOM_MMPP) {
       p = fc->distribution.params;
-      time = p->last_time;
-    }
-    e->info.time.real = curr_time.real + time;
+      e->info.time.real = p->last_time;
+    } else
+      e->info.time.real = curr_time.real + time;
     break;
   }
   return SUCCESS;
 }
-
-
 
 /**
  * Unit test of function event_list_insert
