@@ -50,6 +50,7 @@ int check_net_queue() {
 int main (int nargs, char** args) {
   trash_init();
   random_init();
+  //vexpr_test();
   check_netsim();
   //main_graph(nargs, args);
   //main_rwa(nargs, args);
