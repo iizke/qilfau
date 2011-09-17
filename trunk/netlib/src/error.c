@@ -34,6 +34,17 @@ int trash_collect_garbage(GARBAGE *g) {
 }
 
 /**
+ * Update new malloc link to garbage
+ * @param g : garbage link
+ * @return Error code
+ */
+int trash_remove_garbage(GARBAGE *g) {
+  check_null_pointer(g);
+  linked_list_remove(&g->list_node);
+  return SUCCESS;
+}
+
+/**
  * Malloc with garbage collector
  * @param size : size of memory
  * @return pointer to new allocated memory
@@ -53,6 +64,11 @@ void * gc_malloc(int size) {
 }
 
 void gc_free (void *p) {
+  if (!p) return;
+  GARBAGE *g = NULL;
+  g = p - sizeof(GARBAGE);
+  trash_remove_garbage (g);
+  free(g);
   return;
 }
 

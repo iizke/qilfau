@@ -42,7 +42,7 @@ typedef struct network_node_list {
 #define NETWORK_SP_DIJKSTRA           1
 #define NETWORK_SP_BELLFORD           2
 
-void* nw_find_shortest_path (NETWORK *, int, int, int);
+void* nw_find_shortest_path (NETWORK *, int alg, int src, int dest);
 #define nw_get_cost(nw,r,c) matrix_get_value(&nw->costs, r, c)
 int nw_get_neighbor(NETWORK*, int, NW_NODE_LIST*);
 
@@ -51,8 +51,8 @@ int nw_node_list_scan(NW_NODE_LIST*, int*);
 int sp_distance_list_init(SP_DISTANCE_LIST **list, int nentries, int src);
 int sp_distance_list_remove_smallest(SP_DISTANCE_LIST *, SP_DISTANCE **);
 int sp_distance_list_insert(SP_DISTANCE_LIST *, SP_DISTANCE*);
-float sp_distance_list_get_value(SP_DISTANCE_LIST *, int);
-int sp_distance_list_update(SP_DISTANCE_LIST*, int, int, float);
+float sp_distance_list_get_value(SP_DISTANCE_LIST *, int id);
+int sp_distance_list_update(SP_DISTANCE_LIST*, int end, int last, float distance);
 int sp_distance_list_is_empty(SP_DISTANCE_LIST*);
 SP_DISTANCE* sp_distance_list_get(SP_DISTANCE_LIST *l, int id);
 #endif /* NETWORK_H_ */

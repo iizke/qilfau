@@ -81,3 +81,19 @@ no							return NO;
 [ \t\n]+        			;       /* ignore whitespace */ 
 
 %% 
+
+#ifdef YYLEX_PARAM
+#define YYLEX1 yylex_fast (&yylval, &yylloc, YYLEX_PARAM)
+#else
+#define YYLEX1 yylex_fast (&yylval, &yylloc)
+#endif
+
+#ifndef YY_DECL1
+#define YY_DECL_IS_OURS1 1
+extern int yylex_fast(YYSTYPE * yylval_param,YYLTYPE * yylloc_param );
+#define YY_DECL1 int yylex_fast(YYSTYPE * yylval_param, YYLTYPE * yylloc_param )
+#endif /* !YY_DECL */
+
+YY_DECL1 {
+  return 0;
+}
