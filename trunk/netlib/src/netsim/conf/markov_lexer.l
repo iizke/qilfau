@@ -14,15 +14,15 @@ POINT						"."
 FCHAR						({CHAR}|{POINT}|{DIGIT})
 %% 
 
-=									            {return EQ;}
-;									            {return ENDLINE;}
+=							{return EQ;}
+;							{return ENDLINE;}
 
-{DIGIT}+{POINT}{DIGIT}+				{yylval->val = atof(yytext); return NUM;}
-{DIGIT}+							        {yylval->val = atoi(yytext); return NUM;}
-x                             {return VAR;}
-{CHAR}{FCHAR}*						    {yylval->str = strdup(yytext); return STRING;}
+{DIGIT}+{POINT}{DIGIT}+		{yylval->val = atof(yytext); return NUM;}
+{DIGIT}+					{yylval->val = atoi(yytext); return NUM;}
+x							{return VAR;}
+{CHAR}{FCHAR}*				{yylval->str = strdup(yytext); return STRING;}
 
-[ \t\n]+                      ;       /* ignore whitespace */
+[ \t\n]+					;       /* ignore whitespace */
 
-.                             {return yytext[0];}
+.							{return yytext[0];}
 %% 
