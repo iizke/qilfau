@@ -41,7 +41,8 @@ static int _calc_expr_tree (TREE_NODE *t, void* no_use) {
   if (t->right)
     ve_right = container_of(t->right, VEXPR_NODE, tree);
 
-  ve->val = _calc_expr(ve->op_type, ve_left, ve_right);
+  if (ve->op_type != VEXPR_OP_ISCONST && ve->op_type != VEXPR_OP_ISVAR)
+    ve->val = _calc_expr(ve->op_type, ve_left, ve_right);
   return SUCCESS;
 }
 
