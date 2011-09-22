@@ -42,16 +42,24 @@
      EQ = 258,
      ENDLINE = 259,
      VAR = 260,
-     NUM = 261,
-     STRING = 262
+     PP = 261,
+     IF = 262,
+     THEN = 263,
+     ANDO = 264,
+     NUM = 265,
+     STRING = 266
    };
 #endif
 /* Tokens.  */
 #define EQ 258
 #define ENDLINE 259
 #define VAR 260
-#define NUM 261
-#define STRING 262
+#define PP 261
+#define IF 262
+#define THEN 263
+#define ANDO 264
+#define NUM 265
+#define STRING 266
 
 
 
@@ -66,7 +74,7 @@ char* str; double val;
 
 
 /* Line 1676 of yacc.c  */
-#line 70 "markov_parser.h"
+#line 78 "markov_parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

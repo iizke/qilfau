@@ -19,10 +19,19 @@ VEXPR vexpr;
 %token EQ
 %token ENDLINE
 %token VAR
+%token PP
+%token IF
+%token THEN
+%token ANDO
 %token <val> NUM
 %token <str> STRING
 /* %type <val> exp */
 %type <str> vexp
+/* %type <str> poison */
+
+%left ANDO
+%left '<' '>'
+%left EQ '?'
 %left '+' '-'
 %left '*' '/'
 %% /* Grammar rules and actions follow */
@@ -30,30 +39,30 @@ input:    /* empty */
         | input line 
 ;
 
-line:		vexp ENDLINE { vexpr_assign_value(&vexpr, $1); printf("resultl = %f\n", vexpr_calc(&vexpr)); }
+line:		vexp ENDLINE { vexpr_assign_value(&vexpr, $1); 
+							VEXPR_NODE *var = vexpr_get_var(&vexpr,'x');
+							printf("result = %f\n", vexpr_calc(&vexpr));
+							if (var) printf("x = %f\n", var->val); }
     	|   ENDLINE
 ;
 
+vexp:   VAR {$$ = vexpr_declare_varid(&vexpr, 'x', 1);}
+	| 	NUM {$$ = vexpr_node_const($1);}
+    |   vexp '+' vexp {$$ = vexpr_node_formular(VEXPR_OP_PLUS, $1, $3);}
+    |   vexp '-' vexp {$$ = vexpr_node_formular(VEXPR_OP_MINUS, $1, $3);}
+    |   vexp '*' vexp {$$ = vexpr_node_formular(VEXPR_OP_MUL, $1, $3);}
+    |   vexp '/' vexp {$$ = vexpr_node_formular(VEXPR_OP_DIV, $1, $3);}
+    |   vexp '>' vexp {$$ = vexpr_node_formular(VEXPR_OP_GT, $1, $3);}
+    |   vexp '<' vexp {$$ = vexpr_node_formular(VEXPR_OP_LT, $1, $3);}
+    |   '(' vexp ')' {$$ = $2;}
+    |	vexp '?' vexp {$$ = vexpr_node_formular(VEXPR_OP_INFER, $1, $3);}
+    |	vexp ANDO vexp {$$ = vexpr_node_formular(VEXPR_OP_ANDO, $1, $3);}
+    |	vexp EQ vexp {$$ = vexpr_node_formular(VEXPR_OP_ASSIGN, $1, $3);}
+;
 /*
-exp:    NUM  
-    |   exp '+' exp { $$=$1+$3; }
-    |   exp '-' exp { $$=$1-$3; }
-    |   exp '*' exp { $$=$1*$3; }
-    |   exp '/' exp { $$=$1/$3; }
-    |   '(' exp ')' { $$=$2;}
+poison: PP '[' NUM ']' EQ NUM {printf("Poison rate \n");}
 ;
 */
-
-vexp:   VAR {printf("x \n"); $$ = vexpr_declare_varid(&vexpr, 'x', 1);}
-	| 	NUM {printf("NUM \n"); $$ = vexpr_node_const($1);};
-    |   vexp '+' vexp { printf("x+x"); $$ = vexpr_node_formular(VEXPR_OP_PLUS, $1, $3);}
-    |   vexp '-' vexp { printf("x-x"); $$ = vexpr_node_formular(VEXPR_OP_MINUS, $1, $3);}
-    |   vexp '*' vexp { printf("x*x"); $$ = vexpr_node_formular(VEXPR_OP_MUL, $1, $3);}
-    |   vexp '/' vexp { printf("x/x"); $$ = vexpr_node_formular(VEXPR_OP_DIV, $1, $3);}
-    |   '(' vexp ')' { printf("-x-"); $$ = $2;}
-
-;
-
 %%
 
 int mperror (char *s)  /* Called by yyparse on error */

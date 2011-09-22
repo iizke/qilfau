@@ -9,6 +9,8 @@
 #include "vexpr.h"
 #include "error.h"
 
+static int _calc_expr_tree (TREE_NODE *t, void* no_use);
+
 static double _calc_expr (int op_type, VEXPR_NODE *left, VEXPR_NODE *right) {
   double val;
   switch (op_type) {
@@ -24,6 +26,32 @@ static double _calc_expr (int op_type, VEXPR_NODE *left, VEXPR_NODE *right) {
   case VEXPR_OP_DIV:
     val = left->val / right->val;
     break;
+  case VEXPR_OP_GT:
+    val = left->val > right->val;
+    break;
+  case VEXPR_OP_LT:
+    val = left->val < right->val;
+    break;
+  case VEXPR_OP_ASSIGN:
+    if (left->op_type == VEXPR_OP_ISVAR) {
+      left->val = right->val;
+      val = 1;
+    }
+    else
+      val = 0;
+    break;
+  case VEXPR_OP_ANDO:
+    val = 1;
+    break;
+  case VEXPR_OP_INFER:
+    if (left->val == 0) val = 0;
+    else {
+      right->state = VEXPR_STATE_NORMAL;
+      tree_do(&right->tree, NULL, _calc_expr_tree);
+      right->state = VEXPR_STATE_WAITED;
+      val = 1;
+    }
+    break;
   default:
     return 0;
   }
@@ -36,20 +64,25 @@ static int _calc_expr_tree (TREE_NODE *t, void* no_use) {
   if (!t)
     return ERR_TREE_NODE_NULL;
   ve = container_of(t, VEXPR_NODE, tree);
+
   if (t->left)
     ve_left = container_of(t->left, VEXPR_NODE, tree);
   if (t->right)
     ve_right = container_of(t->right, VEXPR_NODE, tree);
 
+  if (ve->state == VEXPR_STATE_WAITED)
+    return SUCCESS;
+
   if (ve->op_type != VEXPR_OP_ISCONST && ve->op_type != VEXPR_OP_ISVAR)
     ve->val = _calc_expr(ve->op_type, ve_left, ve_right);
+
   return SUCCESS;
 }
 
-static VEXPR_NODE* _vexpr_get_var (VEXPR *vexpr, int id) {
+VEXPR_NODE* vexpr_get_var (VEXPR *vexpr, int id) {
   LINKED_LIST * vp = NULL;
   linked_list_get_first(&vexpr->vars, &vp);
-  while  (vp) {
+  while  (vp && vp != &(vexpr->vars)) {
     VEXPR_NODE *var = container_of(vp, VEXPR_NODE, list);
     if (var->id  == id && var->op_type == VEXPR_OP_ISVAR)
       return var;
@@ -60,15 +93,11 @@ static VEXPR_NODE* _vexpr_get_var (VEXPR *vexpr, int id) {
 }
 
 int vexpr_setup_var(VEXPR *vexpr, int id, double val) {
-  LINKED_LIST * vp = NULL;
-  linked_list_get_first(&vexpr->vars, &vp);
-  while  (vp && vp != &(vexpr->vars)) {
-    VEXPR_NODE *var = container_of(vp, VEXPR_NODE, list);
-    if (var->id  == id)
-      var->val = val;
-
-    vp = vp->next;
-  }
+  VEXPR_NODE *var = NULL;
+  if ((var = vexpr_get_var(vexpr, id)) != NULL)
+    var->val = val;
+  else
+    return ERR_VEXPR_VAR_NOEXIST;
   return SUCCESS;
 }
 
@@ -77,7 +106,7 @@ int vexpr_declare_var (VEXPR *vexpr, VEXPR_NODE *var) {
   check_null_pointer(var);
   if (var->op_type != VEXPR_OP_ISVAR)
     return ERR_VEXPR_NOT_VAR;
-  if (_vexpr_get_var(vexpr, var->id) != NULL)
+  if (vexpr_get_var(vexpr, var->id) != NULL)
     return ERR_VEXPR_DUP_VAR;
 
   linked_list_insert(&vexpr->vars, &var->list);
@@ -87,7 +116,7 @@ int vexpr_declare_var (VEXPR *vexpr, VEXPR_NODE *var) {
 VEXPR_NODE* vexpr_declare_varid (VEXPR *vexpr, int id, int init_val) {
   VEXPR_NODE* v = NULL;
   if (!vexpr) return NULL;
-  if ((v = _vexpr_get_var(vexpr, id)) != NULL)
+  if ((v = vexpr_get_var(vexpr, id)) != NULL)
     return v;
   v = vexpr_node_var(id, init_val);
   vexpr_declare_var(vexpr, v);
@@ -126,6 +155,7 @@ int vexpr_node_init (VEXPR_NODE *e) {
   e->val = 0;
   e->id = 0;
   e->op_type = 0;
+  e->state = VEXPR_STATE_NORMAL;
   linked_list_init(&e->list);
   tree_init (&e->tree);
   return SUCCESS;
@@ -139,16 +169,25 @@ static int _vexpr_node_formular(VEXPR_NODE **node, int id, int op_type, VEXPR_NO
     gc_free(right);
     return SUCCESS;
   }
+
   *node = gc_malloc(sizeof (VEXPR_NODE));
   if (! (*node))
     return ERR_MALLOC_FAIL;
+
   vexpr_node_init(*node);
+
   if (left)
     (*node)->tree.left = &left->tree;
+
   if (right)
     (*node)->tree.right = &right->tree;
+
   (*node)->op_type = op_type;
   (*node)->id = id;
+
+  if (op_type == VEXPR_OP_INFER)
+    right->state = VEXPR_STATE_WAITED;
+
   return SUCCESS;
 }
 
