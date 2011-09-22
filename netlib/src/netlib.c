@@ -50,8 +50,8 @@ int check_net_queue() {
 int main (int nargs, char** args) {
   trash_init();
   random_init();
-  //main_markov_parser(nargs, args);
-  check_netsim();
+  main_markov_parser(nargs, args);
+  //check_netsim();
   //main_graph(nargs, args);
   //main_rwa(nargs, args);
   //check_matrix();
