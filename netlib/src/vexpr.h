@@ -39,9 +39,18 @@ typedef struct vexpr_node {
  * content of each structure
  */
 typedef struct vexpr {
+  LINKED_LIST list;
   TREE_NODE *root;
   LINKED_LIST vars;
 } VEXPR;
+
+typedef LINKED_LIST VEXPR_LIST;
+#define vexpr_list_init(l) linked_list_init(l)
+#define vexpr_list_insert(l,e) linked_list_insert(l,e)
+#define vexpr_list_remove(e) linked_list_remove (e)
+#define vexpr_list_get_first(l,pe) linked_list_get_first(l,pe)
+
+#define vexpr_from_linked_list(L) container_of(L,VEXPR,list)
 
 VEXPR_NODE * vexpr_node_formular(int op_type, VEXPR_NODE* left, VEXPR_NODE *right);
 VEXPR_NODE * vexpr_node_const (double val);
@@ -55,6 +64,8 @@ VEXPR_NODE* vexpr_get_expr (VEXPR *vexpr);
 double vexpr_calc (VEXPR* vexpr);
 VEXPR_NODE* vexpr_get_var (VEXPR *vexpr, int id);
 int vexpr_init (VEXPR *e);
+int vexpr_new(VEXPR** vexpr);
+
 VEXPR_NODE* vexpr_node_formular_vc (VEXPR *vexpr, int op_type, int id, int val);
 VEXPR_NODE* vexpr_node_formular_cv (VEXPR *vexpr, int op_type, int val, int id);
 VEXPR_NODE* vexpr_node_formular_vv (VEXPR *vexpr, int op_type, int id1, int id2);

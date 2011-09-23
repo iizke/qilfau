@@ -354,7 +354,7 @@ int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf) {
   event_list_init(&state->future_events);
   measures_init (&state->measurement);
 
-  array_setup(&state->queues, sizeof(QUEUE_TYPE), netconf->nnodes);
+  array_init(&state->queues, sizeof(QUEUE_TYPE), netconf->nnodes);
   graph_setup_matrix(&state->queuenet, netconf->nnodes);
   /* TODO: Build topology */
   link = netconf->channels.next;

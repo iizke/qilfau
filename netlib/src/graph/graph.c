@@ -11,22 +11,22 @@
 #include "error.h"
 #include "matrix/matrix.h"
 
-int node_list_setup (NODE_LIST *nl) {
+int node_list_init (NODE_LIST *nl) {
   check_null_pointer(nl);
   memset(nl, 0, sizeof(NODE_LIST));
   return SUCCESS;
 }
 
-int edge_list_setup (EDGE_LIST *el) {
+int edge_list_init (EDGE_LIST *el) {
   check_null_pointer(el);
   memset(el, 0, sizeof(EDGE_LIST));
   return SUCCESS;
 }
 
-int graph_setup (GRAPH* g) {
+int graph_init (GRAPH* g) {
   check_null_pointer(g);
-  edge_list_setup(&g->edges);
-  node_list_setup(&g->nodes);
+  edge_list_init(&g->edges);
+  node_list_init(&g->nodes);
   return SUCCESS;
 }
 
@@ -79,8 +79,8 @@ int node_list_setup_matrix (NODE_LIST *nl, int n) {
 int edge_list_setup_matrix (EDGE_LIST *el, int n) {
   check_null_pointer(el);
   if (!el->edge_data) {
-    matrix_init(&el->edge_data, MATRIX_TYPE_DENSE);
-    matrix_setup(el->edge_data, n, n);
+    matrix_new(&el->edge_data, MATRIX_TYPE_DENSE);
+    matrix_init(el->edge_data, n, n);
   }
   el->get_edge = edge_list_matrix_get_edge;
   el->get_edge_from = edge_list_matrix_get_edge_from;
@@ -89,7 +89,7 @@ int edge_list_setup_matrix (EDGE_LIST *el, int n) {
 }
 
 int graph_setup_matrix (GRAPH* g, int n) {
-  try ( graph_setup(g) );
+  try ( graph_init(g) );
   edge_list_setup_matrix(&g->edges, n);
   node_list_setup_matrix(&g->nodes, n);
   return SUCCESS;

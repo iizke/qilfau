@@ -83,14 +83,15 @@
 #include <stdlib.h>
 
 #include "vexpr.h"
-//#include "error.h"
+#include "error.h"
 //long debug = 0;
 //CONFIG conf;
-VEXPR vexpr;
+static VEXPR *vexpr = NULL;
+VEXPR_LIST vexpr_list;
 
 
 /* Line 189 of yacc.c  */
-#line 94 "markov_parser.c"
+#line 95 "markov_parser.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -147,12 +148,12 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 17 "markov_parser.y"
+#line 18 "markov_parser.y"
 char* str; double val;
 
 
 /* Line 214 of yacc.c  */
-#line 156 "markov_parser.c"
+#line 157 "markov_parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -177,7 +178,7 @@ typedef struct YYLTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 181 "markov_parser.c"
+#line 182 "markov_parser.c"
 
 #ifdef short
 # undef short
@@ -467,8 +468,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    38,    38,    39,    42,    46,    49,    50,    51,    52,
-      53,    54,    55,    56,    57,    58,    59,    60
+       0,    39,    39,    40,    43,    49,    53,    54,    55,    56,
+      57,    58,    59,    60,    61,    62,    63,    64
 };
 #endif
 
@@ -1423,101 +1424,103 @@ yyreduce:
         case 4:
 
 /* Line 1455 of yacc.c  */
-#line 42 "markov_parser.y"
-    { vexpr_assign_value(&vexpr, (yyvsp[(1) - (2)].str)); 
-							VEXPR_NODE *var = vexpr_get_var(&vexpr,'x');
-							printf("result = %f\n", vexpr_calc(&vexpr));
-							if (var) printf("x = %f\n", var->val); }
+#line 43 "markov_parser.y"
+    {  
+                if (!vexpr) try( vexpr_new(&vexpr) );
+                vexpr_assign_value(vexpr, (yyvsp[(1) - (2)].str)); 
+                vexpr_list_insert (&vexpr_list, vexpr);
+                vexpr = NULL; 
+            }
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 49 "markov_parser.y"
-    {(yyval.str) = vexpr_declare_varid(&vexpr, 'x', 1);}
+#line 53 "markov_parser.y"
+    {if (!vexpr) try(vexpr_new (&vexpr)); (yyval.str) = vexpr_declare_varid(vexpr, 'x', 1);}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 50 "markov_parser.y"
+#line 54 "markov_parser.y"
     {(yyval.str) = vexpr_node_const((yyvsp[(1) - (1)].val));}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 51 "markov_parser.y"
+#line 55 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_PLUS, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 52 "markov_parser.y"
+#line 56 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_MINUS, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 53 "markov_parser.y"
+#line 57 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_MUL, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 54 "markov_parser.y"
+#line 58 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_DIV, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 55 "markov_parser.y"
+#line 59 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_GT, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 56 "markov_parser.y"
+#line 60 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_LT, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 57 "markov_parser.y"
+#line 61 "markov_parser.y"
     {(yyval.str) = (yyvsp[(2) - (3)].str);}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 58 "markov_parser.y"
+#line 62 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_INFER, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 59 "markov_parser.y"
+#line 63 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_ANDO, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 60 "markov_parser.y"
+#line 64 "markov_parser.y"
     {(yyval.str) = vexpr_node_formular(VEXPR_OP_ASSIGN, (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1521 "markov_parser.c"
+#line 1524 "markov_parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1736,7 +1739,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 66 "markov_parser.y"
+#line 70 "markov_parser.y"
 
 
 int mperror (char *s)  /* Called by yyparse on error */
@@ -1755,14 +1758,20 @@ int main_markov_parser (int argc, char** argv) {
   extern FILE *mpin; 
   extern int mplex();
   extern int mpparse();
-  
+  VEXPR_LIST *v = NULL;
   //trash_init();
-  vexpr_init(&vexpr);
+  vexpr_list_init(&vexpr_list);
   printf("Testing markov_parser \n");
   mpin = fopen("/home/iizke/projects/netlib/src/netsim/conf/calc.txt", "r");
   mpparse();
   fclose(mpin);
   
+  v = vexpr_list.next;
+  while (v != &vexpr_list) {
+    VEXPR *vexpr = vexpr_from_linked_list(v);
+    printf("result = %f\n",vexpr_calc(vexpr));
+    v = v->next;
+  }
   //trash_clean(); 
   return 0;
 }

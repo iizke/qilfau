@@ -146,6 +146,15 @@ double vexpr_calc (VEXPR* vexpr) {
 int vexpr_init (VEXPR *e) {
   e->root = NULL;
   linked_list_init(&e->vars);
+  linked_list_init(&e->list);
+  return SUCCESS;
+}
+
+int vexpr_new(VEXPR** vexpr) {
+  (*vexpr) = malloc_gc(sizeof(VEXPR));
+  if (!(*vexpr))
+    return ERR_MALLOC_FAIL;
+  vexpr_init((*vexpr));
   return SUCCESS;
 }
 

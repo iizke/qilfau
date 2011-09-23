@@ -69,7 +69,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 17 "markov_parser.y"
+#line 18 "markov_parser.y"
 char* str; double val;
 
 

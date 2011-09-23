@@ -237,7 +237,7 @@ int irand_mmpp_params_init (struct mmpp_params* p, FILE *f) {
   check_null_pointer(p);
   p->markov_state.type = MATRIX_TYPE_DENSE;
   matrix_setup_file(&p->markov_state, f);
-  array_setup(&p->poisson_rate, sizeof(POINTER_VAL), p->markov_state.nrows);
+  array_init(&p->poisson_rate, sizeof(POINTER_VAL), p->markov_state.nrows);
   for (i = 0; i < p->markov_state.nrows; i++)
     /// No check wrong input here!
     fscanf(f, "%f", &p->poisson_rate.data[i].value);

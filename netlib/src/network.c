@@ -40,7 +40,7 @@ int sp_distance_list_init0(SP_DISTANCE_LIST **list) {
   return SUCCESS;
 }
 
-int sp_distance_list_init(SP_DISTANCE_LIST **list, int nentries, int src) {
+int sp_distance_list_new(SP_DISTANCE_LIST **list, int nentries, int src) {
   SP_DISTANCE *d_list = NULL;
   int i;
 
@@ -115,7 +115,7 @@ SP_DISTANCE_LIST* _nw_shortest_path_dijkstra (NETWORK *net, int src) {
   //int i = 0;
 
   if (!net) return NULL;
-  sp_distance_list_init(&distances, n, src);
+  sp_distance_list_new(&distances, n, src);
   sp_distance_list_init0(&sol_list);
 
   while ( ! sp_distance_list_is_empty(distances) ) {

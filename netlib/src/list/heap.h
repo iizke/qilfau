@@ -21,8 +21,8 @@ typedef struct _item_heap {
   float value;
 } ITEM_HEAP;
 
-int heap_init(HEAP **);
-int heap_setup(HEAP *, int);
+int heap_new(HEAP **);
+int heap_init(HEAP *, int);
 //int heap_insert(HEAP *, void *, int);
 //int heap_remove(HEAP *, void *, int);
 void heap_heapify(HEAP * h, int start);

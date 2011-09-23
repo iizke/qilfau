@@ -12,16 +12,16 @@
 #include "array.h"
 #include "error.h"
 
-int array_init (ARRAY** a, int len, int size) {
+int array_new (ARRAY** a, int len, int size) {
   check_null_pointer(a);
   *a = malloc(sizeof(ARRAY));
   check_null_pointer(*a);
   (*a)->data = NULL;
-  array_setup(*a, len, size);
+  array_init(*a, len, size);
   return SUCCESS;
 }
 
-int array_setup(ARRAY* a, int len, int size) {
+int array_init(ARRAY* a, int len, int size) {
   check_null_pointer(a);
   if (len < 0 || size < 0)
     return ERR_INVALID_VAL;

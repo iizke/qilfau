@@ -15,7 +15,7 @@
  * @param h : Heap
  * @return Error code (see more in def.h and error.h)
  */
-int heap_init(HEAP **h) {
+int heap_new(HEAP **h) {
   check_null_pointer(h);
   (*h) = malloc_gc(sizeof(HEAP));
   check_null_pointer(*h);
@@ -32,7 +32,7 @@ static void * _heap_get_key (void * entry) {
  * @param n : size of heap
  * @return Error code (see more in def.h and error.h)
  */
-int heap_setup(HEAP *h, int n) {
+int heap_init(HEAP *h, int n) {
   check_null_pointer(h);
   h->entries = malloc_gc(n*sizeof(void*));
   check_null_pointer(h->entries);

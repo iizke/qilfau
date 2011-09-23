@@ -17,7 +17,7 @@
  * @param type : type of matrix (dense or sparse). If not decided, fill with 0.
  * @return Error code (see in def.h and error.h)
  */
-int matrix_init (MATRIX **m, int type) {
+int matrix_new (MATRIX **m, int type) {
   if (*m != NULL)
     iprint(LEVEL_WARNING, "matrix initted is not NULL. Take care of it.\n");
 
@@ -91,7 +91,7 @@ int matrix_setup_file (MATRIX *m, FILE* f) {
   return SUCCESS;
 }
 
-int matrix_setup (MATRIX *m, int nr, int nc) {
+int matrix_init (MATRIX *m, int nr, int nc) {
   check_null_pointer(m);
 
   m->nrows = nr;
