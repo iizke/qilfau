@@ -45,8 +45,8 @@ typedef struct matrix {
 #define MATRIX_TYPE_DENSE           1
 #define MATRIX_TYPE_SPARSE          2
 
-int matrix_init (MATRIX **, int);
-int matrix_setup (MATRIX *m, int nr, int nc);
+int matrix_new (MATRIX **, int);
+int matrix_init (MATRIX *m, int nr, int nc);
 int matrix_setup_file (MATRIX *, FILE*);
 POINTER_VAL matrix_get_value (MATRIX *, int, int);
 void* matrix_get_row (MATRIX *, int row);

@@ -19,8 +19,8 @@ typedef struct array {
   int size;
 } ARRAY;
 
-int array_init (ARRAY**, int, int);
-int array_setup(ARRAY*, int, int);
+int array_new (ARRAY**, int, int);
+int array_init(ARRAY*, int, int);
 POINTER_VAL array_get(ARRAY *, int);
 int array_set(ARRAY*, int, void*);
 

@@ -618,7 +618,7 @@ int nqthr_state_init (NETQ_ALL_STATE *state, NET_CONFIG *netconf) {
   packet_list_init(&free_packets, LL_CONF_STORE_FREE);
   sem_init(&nq_mutex, 1, 1);
   // init netq_all_state and netq_one_state
-  array_setup(&state->nodes, sizeof(NETQ_ONE_STATE), netconf->nnodes);
+  array_init(&state->nodes, sizeof(NETQ_ONE_STATE), netconf->nnodes);
   graph_setup_matrix(&state->queuenet, netconf->nnodes);
   /* Build topology */
   nqthr_build_topology(state, netconf);

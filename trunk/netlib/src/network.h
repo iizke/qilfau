@@ -48,7 +48,7 @@ int nw_get_neighbor(NETWORK*, int, NW_NODE_LIST*);
 
 int nw_node_list_scan(NW_NODE_LIST*, int*);
 
-int sp_distance_list_init(SP_DISTANCE_LIST **list, int nentries, int src);
+int sp_distance_list_new(SP_DISTANCE_LIST **list, int nentries, int src);
 int sp_distance_list_remove_smallest(SP_DISTANCE_LIST *, SP_DISTANCE **);
 int sp_distance_list_insert(SP_DISTANCE_LIST *, SP_DISTANCE*);
 float sp_distance_list_get_value(SP_DISTANCE_LIST *, int id);

@@ -124,7 +124,7 @@ int netconfig_init (NET_CONFIG *netconf, int n) {
   int i = 0;
   check_null_pointer(netconf);
   memset(netconf, 0, sizeof(CONFIG));
-  array_setup(&netconf->configs, sizeof(CONFIG), n);
+  array_init(&netconf->configs, sizeof(CONFIG), n);
   linked_list_init(&netconf->channels);
   for (i=0; i<n; i++) {
     CONFIG *c = array_get(&netconf->configs, i).pointer;
