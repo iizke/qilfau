@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "irand.h"
+#include "vexpr.h"
 #include "../error.h"
 
 /**
@@ -328,3 +329,88 @@ int test_gen_distribution () {
 
   return 0;
 }
+
+int irand_mmpp_r_params_init (struct mmpp_r_params* p, FILE *f) {
+  extern FILE *mpin;
+  extern int mplex();
+  extern int mpparse();
+  extern VEXPR_LIST vexpr_list;
+
+  VEXPR_LIST *next = NULL;
+
+  check_null_pointer(p);
+  check_null_pointer(f);
+  vexpr_list_init(&p->markov_rules);
+  p->last_state = 0;
+  p->last_time = 0;
+  p->next_state = 0;
+  p->next_time = 0;
+  p->max_checked_states = 20;
+
+  mpin = f;
+  mpparse();
+  fclose(mpin);
+
+  // Let p->rules becomes pivot of vexpr
+  vexpr_list_insert(&vexpr_list, &p->markov_rules);
+  vexpr_list_remove(&vexpr_list);
+
+  // Find poisson rule
+  next = p->markov_rules.next;
+  while (next != &p->markov_rules) {
+    VEXPR *vexpr = vexpr_from_linked_list(next);
+    VEXPR_NODE * var = vexpr_get_var(vexpr, MMPP_ID_RATE);
+    if (var) {
+      p->poisson_rule = vexpr;
+      vexpr_list_remove(next);
+    }
+    next = next->next;
+  }
+  return SUCCESS;
+}
+
+/**
+ * MMPP generator : rules
+ * @param p: parameter of MMPP distribution
+ * @return
+ */
+double irand_gen_mmpp_r(struct mmpp_r_params * p) {
+  double curr_rate = 0;
+  double state_rate;
+  double mint = 999999999;
+  LINKED_LIST *next = NULL;
+
+  while (curr_rate == 0) {
+    vexpr_setup_var(p->poisson_rule, MMPP_ID_STATE, p->last_state);
+    vexpr_calc(p->poisson_rule);
+    curr_rate = vexpr_get_var(p->poisson_rule, MMPP_ID_RATE)->val;
+    p->last_time += irand_gen_exp(curr_rate);
+
+    if (p->last_time >= p->next_time) {
+      curr_rate = 0;
+      p->last_time = p->next_time;
+      p->last_state = p->next_state;
+      // find next_state and next_time
+      vexpr_list_calc_1(&p->markov_rules, MMPP_ID_STATE, p->last_state);
+      next = p->markov_rules.next;
+      while (next != &(p->markov_rules)) {
+        double t = 0;
+        VEXPR * vexpr = vexpr_from_linked_list(next);
+        if (vexpr_get_expr(vexpr)->val > 0){
+          state_rate = vexpr_get_var(vexpr, MMPP_ID_RATE)->val;
+          t = irand_gen_exp(state_rate);
+          if (mint > t) {
+            mint = t;
+            p->next_state = ((int)(vexpr_get_var(vexpr, MMPP_ID_NEXT)->val));
+          }
+        }
+
+        next = next->next;
+      }
+      p->next_time = p->last_time + mint;
+      // regenerate random value
+    }
+  }
+  return (p->last_time);
+}
+

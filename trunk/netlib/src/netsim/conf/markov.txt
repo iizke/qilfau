@@ -1,8 +1,0 @@
-s[1].rate = 10;
-(s[1], s[2]) = 2;
-s[n].rate = 12 and {n >= 1};
-(s[n], s[2n]) = n*2;
-
-s[EXPR] = EXPR;
-EXPR :: CONST | n | EXPR + EXPR | EXPR - EXPR | EXPR * EXPR | EXPR / EXPR | EXPR ^ EXPR
-

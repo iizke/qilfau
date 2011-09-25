@@ -25,7 +25,8 @@ RANDOM_UNIFORM				return R_UNF;
 RANDOM_FILE					return R_FILE;
 RANDOM_OTHER				return R_OTHER;
 RANDOM_MMPP					return R_MMPP;
- 
+RANDOM_MMPP_RULES			return R_MMPP_R;
+
 arrival.type				return ARRIVAL_TYPE;
 arrival.lambda				return ARRIVAL_LAMBDA;
 arrival.from				return ARRIVAL_FROM;

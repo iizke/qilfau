@@ -55,6 +55,16 @@ static double _calc_expr (int op_type, VEXPR_NODE *left, VEXPR_NODE *right) {
   case VEXPR_OP_EQUAL:
     val = (left->val == right->val);
     break;
+  case VEXPR_OP_OR:
+    if (left->val == 1) val = 1;
+    else {
+      right->tree.state = VEXPR_STATE_NORMAL;
+      tree_do(&right->tree, NULL, _calc_expr_tree);
+      right->tree.state = VEXPR_STATE_WAITED;
+      if (right->val == 1) val = 1;
+      else val = 0;
+    }
+    break;
   default:
     return 0;
   }
@@ -197,7 +207,7 @@ static int _vexpr_node_formular(VEXPR_NODE **node, int id, int op_type, VEXPR_NO
   (*node)->op_type = op_type;
   (*node)->id = id;
 
-  if (op_type == VEXPR_OP_INFER)
+  if ((op_type == VEXPR_OP_INFER) || (op_type == VEXPR_OP_OR))
     right->tree.state = VEXPR_STATE_WAITED;
 
   return SUCCESS;

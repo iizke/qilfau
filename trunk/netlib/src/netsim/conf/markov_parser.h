@@ -40,28 +40,30 @@
       know about them.  */
    enum yytokentype {
      EQ = 258,
-     EQUAL = 259,
-     ENDLINE = 260,
-     VAR = 261,
-     PP = 262,
-     IF = 263,
-     THEN = 264,
-     ANDO = 265,
-     NUM = 266,
-     STRING = 267
+     OR = 259,
+     EQUAL = 260,
+     ENDLINE = 261,
+     VAR = 262,
+     PP = 263,
+     IF = 264,
+     THEN = 265,
+     ANDO = 266,
+     NUM = 267,
+     STRING = 268
    };
 #endif
 /* Tokens.  */
 #define EQ 258
-#define EQUAL 259
-#define ENDLINE 260
-#define VAR 261
-#define PP 262
-#define IF 263
-#define THEN 264
-#define ANDO 265
-#define NUM 266
-#define STRING 267
+#define OR 259
+#define EQUAL 260
+#define ENDLINE 261
+#define VAR 262
+#define PP 263
+#define IF 264
+#define THEN 265
+#define ANDO 266
+#define NUM 267
+#define STRING 268
 
 
 
@@ -76,7 +78,7 @@ char* str; double val;
 
 
 /* Line 1676 of yacc.c  */
-#line 80 "markov_parser.h"
+#line 82 "markov_parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -24,6 +24,7 @@
 #define VEXPR_OP_INFER      9
 #define VEXPR_OP_ANDO       10
 #define VEXPR_OP_EQUAL      11
+#define VEXPR_OP_OR         12
 
 #define VEXPR_STATE_NORMAL  0
 #define VEXPR_STATE_WAITED  1
