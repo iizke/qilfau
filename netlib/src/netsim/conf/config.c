@@ -45,6 +45,12 @@ int config_random_conf (RANDOM_CONF *rc) {
     rc->distribution.params = p;
     random_dist_init_mmpp(&rc->distribution, p);
     break;
+  case RANDOM_MMPP_R:
+    p = malloc_gc(sizeof(struct mmpp_r_params));
+    irand_mmpp_r_params_init (p, rc->from_file);
+    rc->distribution.params = p;
+    random_dist_init_mmpp_r(&rc->distribution, p);
+    break;
   default:
     iprint(LEVEL_ERROR, "This type (%d) of random type is not supported\n", rc->type);
     return ERR_RANDOM_TYPE_FAIL;

@@ -359,3 +359,17 @@ int random_dist_init_mmpp(RANDOM_DIST *rd, struct mmpp_params *p) {
   rd->params = p;
   return SUCCESS;
 }
+
+double random_dist_gen_mmpp_r (RANDOM_DIST *rd) {
+  struct mmpp_params *p = NULL;
+  check_null_pointer(rd);
+  p = rd->params;
+  return irand_gen_mmpp_r(p);
+}
+
+int random_dist_init_mmpp_r(RANDOM_DIST *rd, struct mmpp_r_params *p) {
+  check_null_pointer(rd);
+  rd->gen = random_dist_gen_mmpp_r;
+  rd->params = p;
+  return SUCCESS;
+}

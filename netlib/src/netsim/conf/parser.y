@@ -64,6 +64,7 @@ CONFIG conf;
 %token R_UNF;
 %token R_FILE;
 %token R_MMPP;
+%token R_MMPP_R;
 %token R_OTHER;
 
 %token DEBUG_ERROR;
@@ -92,6 +93,7 @@ exp:      ARRIVAL_TYPE EQ INTNUM { conf.arrival_conf.type = $3; }
 		| ARRIVAL_TYPE EQ R_UNF { conf.arrival_conf.type = RANDOM_UNIFORM; }
 		| ARRIVAL_TYPE EQ R_FILE { conf.arrival_conf.type = RANDOM_FILE; }
 		| ARRIVAL_TYPE EQ R_MMPP { conf.arrival_conf.type = RANDOM_MMPP; }
+		| ARRIVAL_TYPE EQ R_MMPP_R { conf.arrival_conf.type = RANDOM_MMPP_R; }
 		| ARRIVAL_TYPE EQ R_OTHER { conf.arrival_conf.type = RANDOM_OTHER; }
 		| ARRIVAL_FROM EQ INTNUM { conf.arrival_conf.from = $3; }
 		| ARRIVAL_TO EQ INTNUM { conf.arrival_conf.to = $3; }
@@ -107,6 +109,7 @@ exp:      ARRIVAL_TYPE EQ INTNUM { conf.arrival_conf.type = $3; }
 		| SERVICE_TYPE EQ INTNUM {conf.service_conf.type = $3; }
 		| SERVICE_TYPE EQ R_MARKOV {conf.service_conf.type = RANDOM_MARKOVIAN; }
 		| SERVICE_TYPE EQ R_MMPP {conf.service_conf.type = RANDOM_MMPP; }
+		| SERVICE_TYPE EQ R_MMPP_R {conf.service_conf.type = RANDOM_MMPP_R; }
 		| SERVICE_TYPE EQ R_UNF {conf.service_conf.type = RANDOM_UNIFORM; }
 		| SERVICE_TYPE EQ R_OTHER {conf.service_conf.type = RANDOM_OTHER; }
 		| SERVICE_FROM EQ INTNUM { conf.service_conf.from = $3; }

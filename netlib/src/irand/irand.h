@@ -11,6 +11,7 @@
 
 #include "matrix/matrix.h"
 #include "list/array.h"
+#include "vexpr.h"
 
 /// Random generator: Linear Congruential
 #define RND_TYPE_LINEAR               1
@@ -55,6 +56,19 @@ struct mmpp_params {
   double next_time;
 };
 
+#define MMPP_ID_STATE 's'
+#define MMPP_ID_NEXT  'n'
+#define MMPP_ID_RATE  'l'
+/// Parameters of MMPP (Markov Modulation Poisson Process) distribution by Rules
+struct mmpp_r_params {
+  VEXPR_LIST markov_rules;
+  VEXPR *poisson_rule;
+  int last_state;
+  int next_state;
+  int max_checked_states;
+  double next_time;
+  double last_time;
+};
 /// Random distribution structure (a framework)
 typedef struct random_distribution RANDOM_DIST;
 /// Random distribution structure (a framework)
@@ -85,5 +99,8 @@ double irand_gen_pareto (double lambda);
 
 int irand_mmpp_params_init (struct mmpp_params*, FILE *);
 double irand_gen_mmpp(struct mmpp_params * p);
+
+int irand_mmpp_r_params_init (struct mmpp_r_params*, FILE *);
+double irand_gen_mmpp_r(struct mmpp_r_params * p);
 
 #endif /* IRAND_H_ */
