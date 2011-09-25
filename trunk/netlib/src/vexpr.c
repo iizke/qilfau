@@ -46,11 +46,14 @@ static double _calc_expr (int op_type, VEXPR_NODE *left, VEXPR_NODE *right) {
   case VEXPR_OP_INFER:
     if (left->val == 0) val = 0;
     else {
-//      right->state = VEXPR_STATE_NORMAL;
-//      tree_do(&right->tree, NULL, _calc_expr_tree);
-//      right->state = VEXPR_STATE_WAITED;
+      right->tree.state = VEXPR_STATE_NORMAL;
+      tree_do(&right->tree, NULL, _calc_expr_tree);
+      right->tree.state = VEXPR_STATE_WAITED;
       val = 1;
     }
+    break;
+  case VEXPR_OP_EQUAL:
+    val = (left->val == right->val);
     break;
   default:
     return 0;
@@ -164,7 +167,7 @@ int vexpr_node_init (VEXPR_NODE *e) {
   e->val = 0;
   e->id = 0;
   e->op_type = 0;
-  e->state = VEXPR_STATE_NORMAL;
+  //e->state = VEXPR_STATE_NORMAL;
   linked_list_init(&e->list);
   tree_init (&e->tree);
   return SUCCESS;
@@ -195,7 +198,7 @@ static int _vexpr_node_formular(VEXPR_NODE **node, int id, int op_type, VEXPR_NO
   (*node)->id = id;
 
   if (op_type == VEXPR_OP_INFER)
-    right->state = VEXPR_STATE_WAITED;
+    right->tree.state = VEXPR_STATE_WAITED;
 
   return SUCCESS;
 }
@@ -229,7 +232,6 @@ VEXPR_NODE* vexpr_node_formular_vc (VEXPR *vexpr, int op_type, int id, int val) 
   VEXPR_NODE *c = NULL;
   if (op_type == VEXPR_OP_ISVAR) {
     var = vexpr_declare_varid(vexpr, id, val);
-    //vexpr_setup_var(vexpr, id, val);
     f = var;
   }
   else if (op_type == VEXPR_OP_ISCONST)
@@ -317,8 +319,6 @@ int vexpr_list_calc_1 (VEXPR_LIST *rules, int id, double val) {
 
 int vexpr_test() {
   VEXPR e;
-  VEXPR_NODE *var = NULL;
-  VEXPR_NODE *c = NULL;
   VEXPR_NODE *f = NULL;
   VEXPR_NODE *g = NULL;
   vexpr_init (&e);
@@ -335,6 +335,7 @@ int vexpr_test() {
 int vexpr_view_vars (VEXPR *vexpr) {
   check_null_pointer(vexpr);
   LINKED_LIST *next = vexpr->vars.next;
+  printf("Result = %f \n", vexpr_calc(vexpr));
   while (next != &(vexpr->vars)) {
     VEXPR_NODE * var = container_of(next, VEXPR_NODE, list);
     printf("id = %d, val = %f\n", var->id, var->val);

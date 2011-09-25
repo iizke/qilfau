@@ -10,10 +10,14 @@
 
 #include "def.h"
 
+#define TREE_STATE_NORMAL  0
+#define TREE_STATE_WAITED  1
+
 typedef struct tree_node {
   struct tree_node *left;
   struct tree_node *right;
   struct tree_node *mom;
+  int state;
 } TREE_NODE;
 
 int tree_insert_mom (TREE_NODE* mom, TREE_NODE* left, TREE_NODE* right);
