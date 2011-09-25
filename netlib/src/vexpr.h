@@ -26,6 +26,7 @@
 
 #define VEXPR_STATE_NORMAL  0
 #define VEXPR_STATE_WAITED  1
+
 typedef struct vexpr_node {
   TREE_NODE tree;
   LINKED_LIST list;
@@ -52,6 +53,8 @@ typedef LINKED_LIST VEXPR_LIST;
 
 #define vexpr_from_linked_list(L) container_of(L,VEXPR,list)
 
+#define vexpr_str2id(str) (*((int*)str))
+
 VEXPR_NODE * vexpr_node_formular(int op_type, VEXPR_NODE* left, VEXPR_NODE *right);
 VEXPR_NODE * vexpr_node_const (double val);
 VEXPR_NODE * vexpr_node_var (int id, double init_val);
@@ -65,6 +68,10 @@ double vexpr_calc (VEXPR* vexpr);
 VEXPR_NODE* vexpr_get_var (VEXPR *vexpr, int id);
 int vexpr_init (VEXPR *e);
 int vexpr_new(VEXPR** vexpr);
+int vexpr_list_calc_fast (VEXPR_LIST *rules);
+int vexpr_list_setup_var (VEXPR_LIST *rules, int id, double val);
+int vexpr_list_calc (VEXPR_LIST *rules, int nvars, const VEXPR_NODE *var_list);
+int vexpr_list_calc_1 (VEXPR_LIST *rules, int id, double val) ;
 
 VEXPR_NODE* vexpr_node_formular_vc (VEXPR *vexpr, int op_type, int id, int val);
 VEXPR_NODE* vexpr_node_formular_cv (VEXPR *vexpr, int op_type, int val, int id);

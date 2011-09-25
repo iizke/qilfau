@@ -19,7 +19,7 @@ VEXPR_LIST vexpr_list;
 
 %token EQ
 %token ENDLINE
-%token VAR
+%token <str> VAR
 %token PP
 %token IF
 %token THEN
@@ -30,9 +30,10 @@ VEXPR_LIST vexpr_list;
 %type <str> vexp
 /* %type <str> poison */
 
+%left '?'
 %left ANDO
+%left EQ
 %left '<' '>'
-%left EQ '?'
 %left '+' '-'
 %left '*' '/'
 %% /* Grammar rules and actions follow */
@@ -50,7 +51,7 @@ line:		vexp ENDLINE {
         
 ;
 
-vexp:   VAR {if (!vexpr) try(vexpr_new (&vexpr)); $$ = vexpr_declare_varid(vexpr, 'x', 1);}
+vexp:   VAR {if (!vexpr) try(vexpr_new (&vexpr)); $$ = vexpr_declare_varid(vexpr, vexpr_str2id($1), 1);}
     |   NUM {$$ = vexpr_node_const($1);}
     |   vexp '+' vexp {$$ = vexpr_node_formular(VEXPR_OP_PLUS, $1, $3);}
     |   vexp '-' vexp {$$ = vexpr_node_formular(VEXPR_OP_MINUS, $1, $3);}
@@ -78,9 +79,6 @@ int mperror (char *s)  /* Called by yyparse on error */
 
 int mpwrap(void* no_use) { return 1;  }
 
-int result = 0;
-
-
 int main_markov_parser (int argc, char** argv) {
   extern FILE *mpin; 
   extern int mplex();
@@ -88,17 +86,20 @@ int main_markov_parser (int argc, char** argv) {
   VEXPR_LIST *v = NULL;
   //trash_init();
   vexpr_list_init(&vexpr_list);
-  printf("Testing markov_parser \n");
+  
   mpin = fopen("/home/iizke/projects/netlib/src/netsim/conf/calc.txt", "r");
   mpparse();
   fclose(mpin);
   
+  vexpr_list_calc_1 (&vexpr_list, 's', 10);
   v = vexpr_list.next;
   while (v != &vexpr_list) {
     VEXPR *vexpr = vexpr_from_linked_list(v);
-    printf("result = %f\n",vexpr_calc(vexpr));
+    vexpr_view_vars (vexpr);
+    
     v = v->next;
   }
+  
   //trash_clean(); 
   return 0;
 }

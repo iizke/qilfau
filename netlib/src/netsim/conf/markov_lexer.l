@@ -25,8 +25,7 @@ FCHAR						({CHAR}|{POINT}|{DIGIT})
 "ando"						{return ANDO;}
 {DIGIT}+{POINT}{DIGIT}+		{yylval->val = atof(yytext); return NUM;}
 {DIGIT}+					{yylval->val = atoi(yytext); return NUM;}
-x							{return VAR;}
-{CHAR}{FCHAR}*				{yylval->str = strdup(yytext); return STRING;}
+{CHAR}{FCHAR}*				{yylval->str = strdup(yytext); return VAR;}
 [ \t\n]+					;       /* ignore whitespace */
 
 .							{return yytext[0];}
