@@ -45,6 +45,9 @@ int tree_remove (TREE_NODE* t) {
 int tree_do (TREE_NODE* t, void* param, int (*func)(TREE_NODE*, void*)) {
   if (!t)
     return ERR_TREE_NODE_NULL;
+  if (t->state == TREE_STATE_WAITED)
+    return ERR_TREE_COMPUTING_PENDING;
+
   if (t->left)
     tree_do(t->left, param, func);
   if (t->right)
@@ -57,5 +60,6 @@ int tree_init(TREE_NODE *t) {
   t->left = NULL;
   t->right = NULL;
   t->mom = NULL;
+  t->state = TREE_STATE_NORMAL;
   return SUCCESS;
 }

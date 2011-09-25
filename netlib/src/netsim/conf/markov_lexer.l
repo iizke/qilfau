@@ -14,6 +14,7 @@ POINT						"."
 FCHAR						({CHAR}|{POINT}|{DIGIT})
 %% 
 
+"=="						{return EQUAL;}
 =							{return EQ;}
 ;							{return ENDLINE;}
 "PP"						{return PP;}

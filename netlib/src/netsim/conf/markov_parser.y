@@ -18,6 +18,7 @@ VEXPR_LIST vexpr_list;
 %union {char* str; double val;}
 
 %token EQ
+%token EQUAL
 %token ENDLINE
 %token <str> VAR
 %token PP
@@ -33,7 +34,7 @@ VEXPR_LIST vexpr_list;
 %left '?'
 %left ANDO
 %left EQ
-%left '<' '>'
+%left '<' '>' EQUAL 
 %left '+' '-'
 %left '*' '/'
 %% /* Grammar rules and actions follow */
@@ -59,6 +60,7 @@ vexp:   VAR {if (!vexpr) try(vexpr_new (&vexpr)); $$ = vexpr_declare_varid(vexpr
     |   vexp '/' vexp {$$ = vexpr_node_formular(VEXPR_OP_DIV, $1, $3);}
     |   vexp '>' vexp {$$ = vexpr_node_formular(VEXPR_OP_GT, $1, $3);}
     |   vexp '<' vexp {$$ = vexpr_node_formular(VEXPR_OP_LT, $1, $3);}
+    |   vexp EQUAL vexp {$$ = vexpr_node_formular(VEXPR_OP_EQUAL, $1, $3);}
     |   '(' vexp ')' {$$ = $2;}
     |   vexp '?' vexp {$$ = vexpr_node_formular(VEXPR_OP_INFER, $1, $3);}
     |   vexp ANDO vexp {$$ = vexpr_node_formular(VEXPR_OP_ANDO, $1, $3);}

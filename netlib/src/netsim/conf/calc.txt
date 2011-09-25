@@ -1,2 +1,2 @@
-s = 1 ? n = 1 ando l = 3;
+s == 1 ? n = 1 ando l = 3;
 s > 1 ? n = (s + 2) ando l = n + s;

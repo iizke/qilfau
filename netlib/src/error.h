@@ -78,6 +78,7 @@ extern long debug;
 /// Error while inconsistent happen in simulating CSMA
 #define ERR_CSMA_INCONSISTENT       (-30)
 #define ERR_TREE_NODE_NULL          (-40)
+#define ERR_TREE_COMPUTING_PENDING  (-41)
 #define ERR_VEXPR_NULL              (-50)
 #define ERR_VEXPR_NEED_ID           (-51)
 #define ERR_VEXPR_NOT_VAR           (-52)
