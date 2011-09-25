@@ -46,9 +46,9 @@ static double _calc_expr (int op_type, VEXPR_NODE *left, VEXPR_NODE *right) {
   case VEXPR_OP_INFER:
     if (left->val == 0) val = 0;
     else {
-      right->state = VEXPR_STATE_NORMAL;
-      tree_do(&right->tree, NULL, _calc_expr_tree);
-      right->state = VEXPR_STATE_WAITED;
+//      right->state = VEXPR_STATE_NORMAL;
+//      tree_do(&right->tree, NULL, _calc_expr_tree);
+//      right->state = VEXPR_STATE_WAITED;
       val = 1;
     }
     break;
@@ -70,8 +70,8 @@ static int _calc_expr_tree (TREE_NODE *t, void* no_use) {
   if (t->right)
     ve_right = container_of(t->right, VEXPR_NODE, tree);
 
-  if (ve->state == VEXPR_STATE_WAITED)
-    return SUCCESS;
+//  if (ve->state == VEXPR_STATE_WAITED)
+//    return SUCCESS;
 
   if (ve->op_type != VEXPR_OP_ISCONST && ve->op_type != VEXPR_OP_ISVAR)
     ve->val = _calc_expr(ve->op_type, ve_left, ve_right);
@@ -268,6 +268,53 @@ VEXPR_NODE* vexpr_node_formular_vv (VEXPR *vexpr, int op_type, int id1, int id2)
   return f;
 }
 
+int vexpr_list_setup_var (VEXPR_LIST *rules, int id, double val) {
+  LINKED_LIST *next = NULL;
+  check_null_pointer(rules);
+  next = rules->next;
+  while (next != rules) {
+    VEXPR *vexpr = vexpr_from_linked_list(next);
+    vexpr_setup_var(vexpr, id, val);
+    next = next->next;
+  }
+  return SUCCESS;
+}
+
+int vexpr_list_calc_fast (VEXPR_LIST *rules) {
+  LINKED_LIST *next = NULL;
+  check_null_pointer(rules);
+  next = rules->next;
+  while (next != rules) {
+    VEXPR *vexpr = vexpr_from_linked_list(next);
+    vexpr_calc(vexpr);
+    next = next->next;
+  }
+  return SUCCESS;
+}
+
+int vexpr_list_calc (VEXPR_LIST *rules, int nvars, const VEXPR_NODE *var_list) {
+  LINKED_LIST *next = NULL;
+  int i = 0;
+  check_null_pointer(rules);
+  next = rules->next;
+  while (next != rules) {
+    VEXPR *vexpr = vexpr_from_linked_list(next);
+    for (i=0; i<nvars; i++) {
+      vexpr_setup_var(vexpr, var_list[i].id, var_list[i].val);
+    }
+    vexpr_calc(vexpr);
+    next = next->next;
+  }
+  return SUCCESS;
+}
+
+int vexpr_list_calc_1 (VEXPR_LIST *rules, int id, double val) {
+  VEXPR_NODE var;
+  var.id = id;
+  var.val = val;
+  return vexpr_list_calc (rules, 1, &var);
+}
+
 int vexpr_test() {
   VEXPR e;
   VEXPR_NODE *var = NULL;
@@ -282,5 +329,16 @@ int vexpr_test() {
   vexpr_setup_var(&e, 1, 11);
   vexpr_calc(&e);
   printf("result = %f\n",vexpr_calc(&e));
+  return SUCCESS;
+}
+
+int vexpr_view_vars (VEXPR *vexpr) {
+  check_null_pointer(vexpr);
+  LINKED_LIST *next = vexpr->vars.next;
+  while (next != &(vexpr->vars)) {
+    VEXPR_NODE * var = container_of(next, VEXPR_NODE, list);
+    printf("id = %d, val = %f\n", var->id, var->val);
+    next = next->next;
+  }
   return SUCCESS;
 }

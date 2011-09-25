@@ -46,9 +46,9 @@ int tree_do (TREE_NODE* t, void* param, int (*func)(TREE_NODE*, void*)) {
   if (!t)
     return ERR_TREE_NODE_NULL;
   if (t->left)
-    func(t->left, param);
+    tree_do(t->left, param, func);
   if (t->right)
-    func(t->right, param);
+    tree_do(t->right, param, func);
   func(t, param);
   return SUCCESS;
 }
