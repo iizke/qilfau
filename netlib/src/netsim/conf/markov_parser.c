@@ -1791,7 +1791,7 @@ int main_markov_parser (int argc, char** argv) {
   mpparse();
   fclose(mpin);
   
-  vexpr_list_calc_1 (&vexpr_list, 's', 10);
+  //vexpr_list_calc_1 (&vexpr_list, 's', 10);
   v = vexpr_list.next;
   while (v != &vexpr_list) {
     VEXPR *vexpr = vexpr_from_linked_list(v);

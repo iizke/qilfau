@@ -18,7 +18,7 @@ FCHAR						({CHAR}|{POINT}|{DIGIT})
 =							{return EQ;}
 ;							{return ENDLINE;}
 "PP"						{return PP;}
-"OR"						{return OR;}
+"||"						{return OR;}
 "IF"						{return IF;}
 "if"						{return IF;}
 "THEN"						{return THEN;}

@@ -233,7 +233,7 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
       return ERR_RANDOM_TYPE_FAIL;
     }
     time = fc->distribution.gen(&fc->distribution);
-    if (fc->type == RANDOM_MMPP) {
+    if ((fc->type == RANDOM_MMPP) || (fc->type == RANDOM_MMPP_R)) {
       p = fc->distribution.params;
       e->info.time.real = p->last_time;
     } else

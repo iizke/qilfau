@@ -106,7 +106,7 @@ int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
   STOP_CONF *stop_conf = &conf->stop_conf;
   if ((stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time) ||
       (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) ||
-      ((conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))) {
+      ((conf->arrival_conf.type == RANDOM_FILE) && (conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))) {
     if (conf->stop_conf.queue_zero == STOP_QUEUE_ZERO) {
       QUEUE_TYPE *qt = NULL;
       qt = state->queues.curr_queue;
