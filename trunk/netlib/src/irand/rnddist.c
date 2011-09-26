@@ -293,7 +293,13 @@ double irand_gen_mmpp(struct mmpp_params * p) {
 int test_gen_distribution () {
   int i = 0;
   double avg = 0;
-  for (i=0; i < 10000; i++) {
+  struct mmpp_r_params p1;
+  RANDOM_DIST dist1;
+
+  struct mmpp_params p2;
+  RANDOM_DIST dist2;
+
+    for (i=0; i < 10000; i++) {
     avg += irand_gen_exp(10);
   }
   avg = avg / 10000;
@@ -327,6 +333,21 @@ int test_gen_distribution () {
   avg = avg / 10000;
   printf("avg of pareto: %f \n", avg);
 
+
+//  irand_mmpp_params_init (&p2, fopen("/home/iizke/projects/netlib/mmpp.txt", "r"));
+//  random_dist_init_mmpp(&dist2, &p2);
+//  printf("Check MMPP:\n");
+//  for (i=0; i < 1; i++) {
+//    printf("%f, ", dist2.gen(&dist2));
+//  }
+
+  irand_mmpp_r_params_init (&p1, fopen("/home/iizke/projects/netlib/src/netsim/conf/calc.txt", "r"));
+  random_dist_init_mmpp_r(&dist1, &p1);
+  printf("Check MMPP_R:\n");
+  for (i=0; i < 1; i++) {
+    printf("%f, ", dist1.gen(&dist1));
+  }
+
   return 0;
 }
 
@@ -335,6 +356,7 @@ int irand_mmpp_r_params_init (struct mmpp_r_params* p, FILE *f) {
   extern int mplex();
   extern int mpparse();
   extern VEXPR_LIST vexpr_list;
+  vexpr_list_init(&vexpr_list);
 
   VEXPR_LIST *next = NULL;
 
@@ -354,17 +376,16 @@ int irand_mmpp_r_params_init (struct mmpp_r_params* p, FILE *f) {
   // Let p->rules becomes pivot of vexpr
   vexpr_list_insert(&vexpr_list, &p->markov_rules);
   vexpr_list_remove(&vexpr_list);
-
   // Find poisson rule
   next = p->markov_rules.next;
   while (next != &p->markov_rules) {
     VEXPR *vexpr = vexpr_from_linked_list(next);
     VEXPR_NODE * var = vexpr_get_var(vexpr, MMPP_ID_RATE);
+    next = next->next;
     if (var) {
       p->poisson_rule = vexpr;
-      vexpr_list_remove(next);
+      vexpr_list_remove(next->prev);
     }
-    next = next->next;
   }
   return SUCCESS;
 }
@@ -397,7 +418,7 @@ double irand_gen_mmpp_r(struct mmpp_r_params * p) {
         double t = 0;
         VEXPR * vexpr = vexpr_from_linked_list(next);
         if (vexpr_get_expr(vexpr)->val > 0){
-          state_rate = vexpr_get_var(vexpr, MMPP_ID_RATE)->val;
+          state_rate = vexpr_get_var(vexpr, MMPP_ID_MRATE)->val;
           t = irand_gen_exp(state_rate);
           if (mint > t) {
             mint = t;

@@ -58,7 +58,8 @@ struct mmpp_params {
 
 #define MMPP_ID_STATE 's'
 #define MMPP_ID_NEXT  'n'
-#define MMPP_ID_RATE  'l'
+#define MMPP_ID_MRATE 'l'
+#define MMPP_ID_RATE  'r'
 /// Parameters of MMPP (Markov Modulation Poisson Process) distribution by Rules
 struct mmpp_r_params {
   VEXPR_LIST markov_rules;
