@@ -270,6 +270,7 @@ double irand_gen_mmpp(struct mmpp_params * p) {
       p->last_time = p->next_time;
       p->last_state = p->next_state;
       // find next_state and next_time
+      mint = 999999999;
       for (i=0; i<p->markov_state.ncols; i++) {
         // find min
         double t = 0;
@@ -364,10 +365,11 @@ int irand_mmpp_r_params_init (struct mmpp_r_params* p, FILE *f) {
   check_null_pointer(f);
   vexpr_list_init(&p->markov_rules);
   p->last_state = 0;
-  p->last_time = 0;
   p->next_state = 0;
-  p->next_time = 0;
-  p->max_checked_states = 20;
+  p->duration = 0;
+  //p->last_time = 0;
+  //p->next_time = 0;
+  //p->max_checked_states = 20;
 
   mpin = f;
   mpparse();
@@ -398,20 +400,25 @@ int irand_mmpp_r_params_init (struct mmpp_r_params* p, FILE *f) {
 double irand_gen_mmpp_r(struct mmpp_r_params * p) {
   double curr_rate = 0;
   double state_rate;
-  double mint = 999999999;
+  double interval = 0;
+  double total_interval = 0;
   LINKED_LIST *next = NULL;
 
   while (curr_rate == 0) {
     vexpr_setup_var(p->poisson_rule, MMPP_ID_STATE, p->last_state);
-    vexpr_calc(p->poisson_rule);
-    curr_rate = vexpr_get_var(p->poisson_rule, MMPP_ID_RATE)->val;
-    p->last_time += irand_gen_exp(curr_rate);
+    if (vexpr_calc(p->poisson_rule) > 0) {
+      curr_rate = vexpr_get_var(p->poisson_rule, MMPP_ID_RATE)->val;
+      interval = irand_gen_exp(curr_rate);
+    } else
+      interval = p->duration;
 
-    if (p->last_time >= p->next_time) {
+    if (interval >= p->duration) {
       curr_rate = 0;
-      p->last_time = p->next_time;
+      total_interval += p->duration;
+      //p->last_time = p->next_time;
+      p->duration = 99999999;
       p->last_state = p->next_state;
-      // find next_state and next_time
+      // find next_state and next duration
       vexpr_list_calc_1(&p->markov_rules, MMPP_ID_STATE, p->last_state);
       next = p->markov_rules.next;
       while (next != &(p->markov_rules)) {
@@ -420,18 +427,18 @@ double irand_gen_mmpp_r(struct mmpp_r_params * p) {
         if (vexpr_get_expr(vexpr)->val > 0){
           state_rate = vexpr_get_var(vexpr, MMPP_ID_MRATE)->val;
           t = irand_gen_exp(state_rate);
-          if (mint > t) {
-            mint = t;
+          if (p->duration > t) {
+            p->duration = t;
             p->next_state = ((int)(vexpr_get_var(vexpr, MMPP_ID_NEXT)->val));
           }
         }
-
         next = next->next;
       }
-      p->next_time = p->last_time + mint;
       // regenerate random value
+    } else {
+      p->duration -= interval;
+      total_interval += interval;
     }
   }
-  return (p->last_time);
+  return total_interval;
 }
-
