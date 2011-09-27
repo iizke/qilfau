@@ -216,9 +216,6 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
   double etime;
   struct mmpp_params *p = NULL;
   switch (fc->type) {
-//  case RANDOM_MARKOVIAN:
-//    e->info.time.real = curr_time.real + gen_exponential(fc->lambda);
-//    break;
   case RANDOM_FILE:
     fscanf(fc->from_file, "%f %d %f", &time, &type, &etime);
     e->info.time.real = time;
@@ -233,9 +230,9 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
       return ERR_RANDOM_TYPE_FAIL;
     }
     time = fc->distribution.gen(&fc->distribution);
-    if ((fc->type == RANDOM_MMPP) || (fc->type == RANDOM_MMPP_R)) {
+    if ((fc->type == RANDOM_MMPP) || (fc->type == RANDOM_MMPP)) {
       p = fc->distribution.params;
-      e->info.time.real = p->last_time;
+      e->info.time.real = time;
     } else
       e->info.time.real = curr_time.real + time;
     break;

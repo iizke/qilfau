@@ -66,9 +66,10 @@ struct mmpp_r_params {
   VEXPR *poisson_rule;
   int last_state;
   int next_state;
-  int max_checked_states;
-  double next_time;
-  double last_time;
+  double duration;
+  //int max_checked_states;
+  //double next_time;
+  //double last_time;
 };
 /// Random distribution structure (a framework)
 typedef struct random_distribution RANDOM_DIST;
