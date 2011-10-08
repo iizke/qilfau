@@ -255,7 +255,7 @@ int irand_mmpp_params_init (struct mmpp_params* p, FILE *f) {
  * @param p: parameter of MMPP distribution
  * @return
  */
-double irand_gen_mmpp(struct mmpp_params * p) {
+double irand_gen_mmpp_0(struct mmpp_params * p) {
   double curr_rate = 0;
   double state_rate;
   double mint = 999999999;
@@ -288,6 +288,84 @@ double irand_gen_mmpp(struct mmpp_params * p) {
       // regenerate random value
     }
   }
+  return (p->last_time);
+}
+
+double irand_gen_mmpp_1(struct mmpp_params * p) {
+  double curr_rate = 0;
+  double state_rate;
+  double prob = 0;
+  double range = 0;
+  int i;
+
+  while (curr_rate == 0) {
+    curr_rate = array_get(&p->poisson_rate, p->last_state).value;
+    p->last_time += irand_gen_exp(curr_rate);
+
+    if (p->last_time >= p->next_time) {
+      curr_rate = 0;
+      p->last_time = p->next_time;
+      p->last_state = p->next_state;
+      // find next_state and next_time
+      state_rate = 0;
+      for (i=0; i<p->markov_state.ncols; i++) {
+        if (i == p->last_state) continue;
+        state_rate += matrix_get_value(&p->markov_state, p->last_state, i).value;
+      }
+      p->next_time = p->last_time + irand_gen_exp(state_rate);
+      prob = irand_gen_uniform(0,1);
+      range = 0;
+      for (i=0; i<p->markov_state.ncols; i++) {
+        //if (i == p->last_state) continue;
+        range += (matrix_get_value(&p->markov_state, p->last_state, i).value/state_rate);
+        if (prob <= range) {
+          p->next_state = i;
+          break;
+        }
+      }
+      // regenerate random value
+    }
+  }
+  return (p->last_time);
+}
+
+double irand_gen_mmpp(struct mmpp_params * p) {
+  double curr_rate = 0;
+  double state_rate;
+  double prob = 0;
+  double range = 0;
+  int i;
+
+  while (curr_rate == 0) {
+    // find next_state and next_time
+    state_rate = 0;
+    for (i=0; i<p->markov_state.ncols; i++) {
+      if (i == p->last_state) continue;
+      state_rate += matrix_get_value(&p->markov_state, p->last_state, i).value;
+    }
+    p->next_time = p->last_time + irand_gen_exp(state_rate);
+    prob = irand_gen_uniform(0,1);
+    range = 0;
+    for (i=0; i<p->markov_state.ncols; i++) {
+      if (i == p->last_state) continue;
+      range += (matrix_get_value(&p->markov_state, p->last_state, i).value/state_rate);
+      if (prob <= range) {
+        p->next_state = i;
+        break;
+      }
+    }
+
+    curr_rate = array_get(&p->poisson_rate, p->last_state).value;
+    p->last_time += irand_gen_exp(curr_rate);
+
+    if (p->last_time >= p->next_time) {
+      curr_rate = 0;
+      p->last_time = p->next_time;
+      p->last_state = p->next_state;
+      // regenerate random value
+    }
+  }
+
   return (p->last_time);
 }
 
