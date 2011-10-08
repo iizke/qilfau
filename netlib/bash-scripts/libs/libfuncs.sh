@@ -1,5 +1,6 @@
 ##
 # library of functions 
+# Author: iizke
 
 if [ "$_COLOR_" != "false" ]; then
 txtrst=$(tput sgr0) # Text reset
