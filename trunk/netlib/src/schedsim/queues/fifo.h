@@ -16,16 +16,17 @@
  * FIFO queue structure
  */
 typedef struct fifo_queue {
+  QUEUE_TYPE queue_type;
   /// Incomming packet list
-  PACKET_LIST incomming_packets;
+  JOB_LIST incomming_packets;
   /// Waiting packet list
-  PACKET_LIST waiting_packets;
+  JOB_LIST waiting_packets;
   /// Executing packet list
-  PACKET_LIST executing_packets;
+  JOB_LIST executing_packets;
   /// Dropped packet list
-  PACKET_LIST dropped_packets;
+  JOB_LIST dropped_packets;
   /// Departure packet list
-  PACKET_LIST departure_packets;
+  JOB_LIST departure_packets;
   /// Queue measurement
   MEASURES measurement;
   /// Queue state
@@ -34,7 +35,9 @@ typedef struct fifo_queue {
   int max_executing;
   /// Maximum number of waiting packets
   int max_waiting;
-} FIFO_QINFO;
+} QUEUE_FF;
+
+#define queue_type_get_fifo_queue(qt) (container_of(qt, QUEUE_FF, queue_type))
 
 int sched_fifo_init (QUEUE_TYPE **q, int max_executing, int max_waiting);
 int sched_fifo_setup (QUEUE_TYPE *q, int max_executing, int max_waiting);

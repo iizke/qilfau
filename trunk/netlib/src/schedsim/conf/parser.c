@@ -123,7 +123,7 @@ CONFIG conf;
      ARRIVAL_SAVETO = 262,
      ARRIVAL_LOADFROM = 263,
      QUEUE_KIND = 264,
-     FIFO_QUEUE = 265,
+     Q_FIFO = 265,
      QUEUE_MAXLENGTH = 266,
      QUEUE_SERVERS = 267,
      SERVICE_TYPE = 268,
@@ -169,7 +169,7 @@ CONFIG conf;
 #define ARRIVAL_SAVETO 262
 #define ARRIVAL_LOADFROM 263
 #define QUEUE_KIND 264
-#define FIFO_QUEUE 265
+#define Q_FIFO 265
 #define QUEUE_MAXLENGTH 266
 #define QUEUE_SERVERS 267
 #define SERVICE_TYPE 268
@@ -554,11 +554,11 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    72,    72,    73,    76,    77,    80,    81,    82,    83,
-      84,    85,    86,    87,    88,    89,    90,    91,    92,    94,
-      95,    96,    97,    98,    99,   100,   101,   102,   103,   104,
-     105,   106,   107,   108,   109,   111,   112,   113,   114,   115,
-     117,   118,   120,   121,   122,   123,   124,   125,   127,   129
+       0,    73,    73,    74,    77,    78,    81,    82,    83,    84,
+      85,    86,    87,    88,    89,    90,    91,    92,    93,    95,
+      96,    97,    98,    99,   100,   101,   102,   103,   104,   105,
+     106,   107,   108,   109,   110,   112,   113,   114,   115,   116,
+     118,   119,   121,   122,   123,   124,   125,   126,   128,   130
 };
 #endif
 
@@ -569,7 +569,7 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "ARRIVAL_TYPE", "ARRIVAL_FROM",
   "ARRIVAL_TO", "ARRIVAL_LAMBDA", "ARRIVAL_SAVETO", "ARRIVAL_LOADFROM",
-  "QUEUE_KIND", "FIFO_QUEUE", "QUEUE_MAXLENGTH", "QUEUE_SERVERS",
+  "QUEUE_KIND", "Q_FIFO", "QUEUE_MAXLENGTH", "QUEUE_SERVERS",
   "SERVICE_TYPE", "SERVICE_LAMBDA", "SERVICE_TO", "SERVICE_FROM",
   "SERVICE_SAVETO", "SERVICE_LOADFROM", "DEPARTURE_SAVETO", "STOP_MAXTIME",
   "STOP_MAXARRIVAL", "STOP_QUEUEZERO", "NTHREADS", "NODETYPE", "PROTOCOL",
@@ -1559,308 +1559,308 @@ yyreduce:
         case 6:
 
 /* Line 1455 of yacc.c  */
-#line 80 "parser.y"
+#line 81 "parser.y"
     { conf.arrival_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 81 "parser.y"
+#line 82 "parser.y"
     { conf.arrival_conf.type = RANDOM_MARKOVIAN; }
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 82 "parser.y"
+#line 83 "parser.y"
     { conf.arrival_conf.type = RANDOM_UNIFORM; }
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 83 "parser.y"
+#line 84 "parser.y"
     { conf.arrival_conf.type = RANDOM_FILE; }
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 84 "parser.y"
+#line 85 "parser.y"
     { conf.arrival_conf.type = RANDOM_MMPP; }
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 85 "parser.y"
+#line 86 "parser.y"
     { conf.arrival_conf.type = RANDOM_MMPP_R; }
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 86 "parser.y"
+#line 87 "parser.y"
     { conf.arrival_conf.type = RANDOM_OTHER; }
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 87 "parser.y"
+#line 88 "parser.y"
     { conf.arrival_conf.from = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 88 "parser.y"
+#line 89 "parser.y"
     { conf.arrival_conf.to = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 89 "parser.y"
+#line 90 "parser.y"
     { conf.arrival_conf.lambda = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 90 "parser.y"
+#line 91 "parser.y"
     { conf.arrival_conf.lambda = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 91 "parser.y"
+#line 92 "parser.y"
     { conf.arrival_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+"); }
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 92 "parser.y"
+#line 93 "parser.y"
     { conf.arrival_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r"); }
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 94 "parser.y"
+#line 95 "parser.y"
     { conf.queue_conf.max_waiters = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 95 "parser.y"
+#line 96 "parser.y"
     { conf.queue_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 96 "parser.y"
+#line 97 "parser.y"
     { conf.queue_conf.type = QUEUE_FIFO; }
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 97 "parser.y"
+#line 98 "parser.y"
     { conf.queue_conf.num_servers = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 98 "parser.y"
+#line 99 "parser.y"
     {conf.service_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 99 "parser.y"
+#line 100 "parser.y"
     {conf.service_conf.type = RANDOM_MARKOVIAN; }
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 100 "parser.y"
+#line 101 "parser.y"
     {conf.service_conf.type = RANDOM_MMPP; }
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 101 "parser.y"
+#line 102 "parser.y"
     {conf.service_conf.type = RANDOM_MMPP_R; }
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 102 "parser.y"
+#line 103 "parser.y"
     {conf.service_conf.type = RANDOM_UNIFORM; }
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 103 "parser.y"
+#line 104 "parser.y"
     {conf.service_conf.type = RANDOM_OTHER; }
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 104 "parser.y"
+#line 105 "parser.y"
     { conf.service_conf.from = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 105 "parser.y"
+#line 106 "parser.y"
     { conf.service_conf.to = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 106 "parser.y"
+#line 107 "parser.y"
     { conf.service_conf.lambda = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 107 "parser.y"
+#line 108 "parser.y"
     { conf.service_conf.lambda = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 108 "parser.y"
+#line 109 "parser.y"
     {conf.service_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+");}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 109 "parser.y"
+#line 110 "parser.y"
     {conf.service_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r");}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 111 "parser.y"
+#line 112 "parser.y"
     { conf.queue_conf.out_file = fopen((yyvsp[(3) - (3)].str), "w+");}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 112 "parser.y"
+#line 113 "parser.y"
     { conf.stop_conf.max_time = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 113 "parser.y"
+#line 114 "parser.y"
     { conf.stop_conf.max_arrival = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 114 "parser.y"
+#line 115 "parser.y"
     {conf.stop_conf.queue_zero = STOP_QUEUE_ZERO; }
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 115 "parser.y"
+#line 116 "parser.y"
     {conf.stop_conf.queue_zero = STOP_QUEUE_NONZERO; }
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 117 "parser.y"
+#line 118 "parser.y"
     {conf.random_lib = LIB_RANDOM_IRAND; }
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 118 "parser.y"
+#line 119 "parser.y"
     {conf.random_lib = LIB_RANDOM_RANDLIB; }
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 120 "parser.y"
+#line 121 "parser.y"
     {debug |= LEVEL_ERROR; }
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 121 "parser.y"
+#line 122 "parser.y"
     {debug &= ~LEVEL_ERROR;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 122 "parser.y"
+#line 123 "parser.y"
     {debug |= LEVEL_WARNING;}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 123 "parser.y"
+#line 124 "parser.y"
     {debug &= ~LEVEL_WARNING;}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 124 "parser.y"
+#line 125 "parser.y"
     {debug |= LEVEL_INFO;}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 125 "parser.y"
+#line 126 "parser.y"
     {debug &= ~LEVEL_INFO;}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 127 "parser.y"
+#line 128 "parser.y"
     {conf.protocol = PROTOCOL_ONE_QUEUE;}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 129 "parser.y"
+#line 130 "parser.y"
     { conf.nthreads = (yyvsp[(3) - (3)].ival); }
     break;
 
@@ -2086,7 +2086,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 131 "parser.y"
+#line 132 "parser.y"
 
 
 int schederror (char *s)  /* Called by yyparse on error */

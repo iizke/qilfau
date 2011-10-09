@@ -23,9 +23,10 @@ CONFIG conf;
 %token ARRIVAL_LOADFROM
 
 %token QUEUE_KIND
-%token FIFO_QUEUE
+%token Q_FIFO
 %token QUEUE_MAXLENGTH
 %token QUEUE_SERVERS
+
 %token SERVICE_TYPE;
 %token SERVICE_LAMBDA;
 %token SERVICE_TO;
@@ -93,7 +94,7 @@ exp:      ARRIVAL_TYPE EQ INTNUM { conf.arrival_conf.type = $3; }
 		
 		| QUEUE_MAXLENGTH EQ INTNUM { conf.queue_conf.max_waiters = $3; }
 		| QUEUE_KIND EQ INTNUM { conf.queue_conf.type = $3; }
-		| QUEUE_KIND EQ FIFO_QUEUE { conf.queue_conf.type = QUEUE_FIFO; }
+		| QUEUE_KIND EQ Q_FIFO { conf.queue_conf.type = QUEUE_FIFO; }
 		| QUEUE_SERVERS EQ INTNUM { conf.queue_conf.num_servers = $3; }
 		| SERVICE_TYPE EQ INTNUM {conf.service_conf.type = $3; }
 		| SERVICE_TYPE EQ R_MARKOV {conf.service_conf.type = RANDOM_MARKOVIAN; }

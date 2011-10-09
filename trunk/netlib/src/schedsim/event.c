@@ -165,7 +165,7 @@ int sevent_list_stop_growing (EVENT_LIST *l) {
 int sevent_init (EVENT *e) {
   check_null_pointer(e);
   linked_list_init(&e->list_node);
-  e->data = NULL;
+  //e->data = NULL;
   //e->info.action = NULL;
   e->time = 0;
   e->type = 0;

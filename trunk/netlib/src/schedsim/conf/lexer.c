@@ -1130,7 +1130,7 @@ return QUEUE_KIND;
 case 18:
 YY_RULE_SETUP
 #line 37 "lexer.l"
-return FIFO_QUEUE;
+return Q_FIFO;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP

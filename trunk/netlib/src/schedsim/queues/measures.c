@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "error.h"
-#include "packet.h"
+#include "job.h"
 #include "measures.h"
 #include "queue_man.h"
 
@@ -52,31 +52,31 @@ int print_smeasurement (MEASURES *m) {
  * @param curr_time : Current time
  * @return Error code (see more in def.h and error.h)
  */
-int smeasurement_collect_data (MEASURES *m, PACKET *p, double curr_time) {
+int smeasurement_collect_data (MEASURES *m, JOB *p, double curr_time) {
   QUEUE_TYPE *qt = NULL;
   check_null_pointer(p);
   check_null_pointer(m);
-  qt = p->info.queue;
+  qt = p->queue;
 
-  switch (p->info.state) {
-  case PACKET_STATE_PROCESSING:
-    stat_num_new_sample(&m->waittime, p->info.stime - p->info.atime);
+  switch (p->state) {
+  case JOB_STATE_PROCESSING:
+    stat_num_new_sample(&m->waittime, p->stime - p->atime);
     stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) + 1, curr_time);
     break;
-  case PACKET_STATE_WAITING:
+  case JOB_STATE_WAITING:
     stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) - 1, curr_time);
     break;
-  case PACKET_STATE_DROPPED:
+  case JOB_STATE_DROPPED:
     m->total_dropped++;
     break;
-  case PACKET_STATE_IN:
+  case JOB_STATE_IN:
     m->total_arrivals++;
     stat_num_new_sample(&m->interarrival_time, curr_time - m->last_arrival_time);
     m->last_arrival_time = curr_time;
     break;
-  case PACKET_STATE_OUT:
+  case JOB_STATE_OUT:
     m->total_departures++;
-    stat_num_new_sample(&m->servtime, p->info.etime - p->info.stime);
+    stat_num_new_sample(&m->servtime, p->etime - p->stime);
     //stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) + 1, curr_time.real);
     //stat_num_new_sample(&m->waittime, curr_time.real - p->info.atime.real);
     break;

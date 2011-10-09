@@ -3,17 +3,19 @@
  * Manage all types of queue, for example: FIFO, LIFO, RR,...
  * At this time, only FIFO is implemented.
  *
- * @date Created on: Apr 16, 2011
+ * @date Created on: Oct 7, 2011
  * @author iizke
  */
 
 #ifndef QUEUE_MAN_H_
 #define QUEUE_MAN_H_
 
-#include "packet.h"
+#include "job.h"
 
 /// Queue type FIFO
 #define QUEUE_FIFO            1
+/// Queue type Round-Robin
+#define QUEUE_RR              2
 
 /// An alias of struct queue_type
 //typedef struct queue_type QUEUE_TYPE;
@@ -33,22 +35,21 @@ struct queue_type {
   /// Check whether a queue is idle or not
   int (*is_idle) (QUEUE_TYPE *);
   /// Push a packet into queue
-  int (*push_packet) (QUEUE_TYPE*, PACKET *);
+  int (*push_packet) (QUEUE_TYPE*, JOB *);
   /// Process packet getting from queue
-  int (*process_packet) (QUEUE_TYPE*, PACKET *);
+  int (*process_packet) (QUEUE_TYPE*, JOB *);
   /// Finish processing packet
-  int (*finish_packet) (QUEUE_TYPE*, PACKET *);
+  int (*finish_packet) (QUEUE_TYPE*, JOB *);
   /// Get current queue length
   int (*get_waiting_length) (QUEUE_TYPE*);
   /// Get a packet from waiting queue and remove it out of list
-  int (*select_waiting_packet) (QUEUE_TYPE*, PACKET **);
+  int (*select_waiting_packet) (QUEUE_TYPE*, JOB **);
   /// Get a packet from executing queue
-  int (*get_executing_packet) (QUEUE_TYPE*, PACKET**);
+  int (*get_executing_packet) (QUEUE_TYPE*, JOB**);
   /// Get a packet from waiting queue, but packet still in queue
-  int (*get_waiting_packet) (QUEUE_TYPE*, PACKET **);
-  PACKET* (*find_executing_packet_to) (QUEUE_TYPE*, int);
-
-  void *info;
+  int (*get_waiting_packet) (QUEUE_TYPE*, JOB **);
+  //JOB* (*find_executing_packet_to) (QUEUE_TYPE*, int);
+  //void *info;
 };
 
 /**

@@ -29,7 +29,7 @@ typedef struct onequeue_state {
   /// Measurement information
   MEASURES measurement;
   /// Free packet list (used to avoiding malloc operations
-  PACKET_LIST free_packets;
+  JOB_LIST free_packets;
 } ONEQ_STATE;
 
 #define get_sys_state_from_ops(_ops) (container_of(_ops, ONEQ_STATE, ops))

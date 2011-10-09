@@ -24,7 +24,7 @@ typedef struct packet_info {
   long id;
   /// Queue/Node that packet is stored
   QUEUE_TYPE *queue;
-  /// Destination queue id
+  /// Destination queue id - used for multi-queues
   int to_queue;
   /// State of packet: IN, WAITING, DROPPED, PROCESSING, OUT
   int state;

@@ -85,7 +85,7 @@ static void schedsim_print_result(CONFIG *conf) {
     case PROTOCOL_ONE_QUEUE:
       sys_state = get_sys_state_from_ops(((SYS_STATE_OPS*)conf->runtime_state));
       print_smeasurement(&sys_state->measurement);
-      //print_smeasurement(&((FIFO_QINFO*)(sys_state->queues.curr_queue->info))->measurement);
+      //print_smeasurement(&((QUEUE_FF*)(sys_state->queues.curr_queue->info))->measurement);
       break;
     default:
       break;

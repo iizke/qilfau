@@ -25,7 +25,7 @@ struct system_state_operations {
   /// Check whether the program is stopped (from user configuration)
   int (*allow_continue) (CONFIG*, SYS_STATE_OPS*);
   /// Generate new event
-  EVENT* (*generate_event) (int type, PACKET*, CONFIG*, SYS_STATE_OPS*);
+  EVENT* (*generate_event) (int type, JOB*, CONFIG*, SYS_STATE_OPS*);
   /// Process an event
   int (*process_event) (EVENT *e, CONFIG*, SYS_STATE_OPS*);
   /// Clean the simulated system (when finishing simulation)
