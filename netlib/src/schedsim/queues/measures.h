@@ -11,7 +11,7 @@
 
 #include "def.h"
 #include "stat_num.h"
-#include "packet.h"
+//#include "packet.h"
 
 /**
  * MEASURE structure used to store some results when simulating queue system
@@ -48,6 +48,6 @@ typedef struct measures {
 
 int smeasures_init (MEASURES *m);
 int print_smeasurement (MEASURES *m);
-int smeasurement_collect_data (MEASURES *m, PACKET *p, double curr_time);
+int smeasurement_collect_data (MEASURES *m, JOB *p, double curr_time);
 int smeasurement_merge (MEASURES *m1, MEASURES *m2);
 #endif /* MEASURES_H_ */

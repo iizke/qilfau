@@ -18,9 +18,9 @@
  * @return Error code (more in def.h and error.h)
  */
 static int ff_queue_init (QUEUE_TYPE *q) {
-  FIFO_QINFO *fq = NULL;
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
-  fq = (FIFO_QINFO*)q->info;
+  fq = queue_type_get_fifo_queue(q);
 
   job_list_init(&fq->incomming_packets, LL_CONF_STORE_ENTRY);
   job_list_init(&fq->dropped_packets, 0);
@@ -36,10 +36,11 @@ static int ff_queue_init (QUEUE_TYPE *q) {
  * @return 1 if this queue is ready to process a packet
  */
 static int ff_is_idle (QUEUE_TYPE *q) {
-  FIFO_QINFO *fq = NULL;
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
-  fq = (FIFO_QINFO*)q->info;
-  return  (fq->max_executing < 0) ? 1 : ((fq->executing_packets.size < fq->max_executing) ? 1 : 0);
+  fq = queue_type_get_fifo_queue(q);
+  return  (fq->max_executing < 0) ? 1 :
+              ((fq->executing_packets.size < fq->max_executing) ? 1 : 0);
 }
 
 /**
@@ -48,23 +49,23 @@ static int ff_is_idle (QUEUE_TYPE *q) {
  * @param p : packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_push_packet (QUEUE_TYPE *q, PACKET *p) {
+static int ff_push_packet (QUEUE_TYPE *q, JOB *p) {
   int curr_qlen;
-  FIFO_QINFO *fq = NULL;
+  QUEUE_FF *fq = NULL;
   check_null_pointer(p);
   check_null_pointer(q);
-  p->info.state = PACKET_STATE_IN;
-  p->info.queue = q;
+  p->state = JOB_STATE_IN;
+  p->queue = q;
   smeasurement_self_collect_data(p);
-  fq = (FIFO_QINFO*)q->info;
+  fq = queue_type_get_fifo_queue(q);
   curr_qlen = fq->waiting_packets.size;
   if ((fq->max_waiting <= curr_qlen) && (fq->max_waiting >= 0)) {
     try ( job_list_insert_job(&fq->dropped_packets, p) );
-    p->info.state = PACKET_STATE_DROPPED;
+    p->state = JOB_STATE_DROPPED;
     iprint(LEVEL_INFO, "Packet is dropped \n");
   } else {
     try ( job_list_insert_job(&fq->waiting_packets, p) );
-    p->info.state = PACKET_STATE_WAITING;
+    p->state = JOB_STATE_WAITING;
   }
   smeasurement_self_collect_data(p);
   return SUCCESS;
@@ -76,12 +77,12 @@ static int ff_push_packet (QUEUE_TYPE *q, PACKET *p) {
  * @param packet : packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_process_packet (QUEUE_TYPE *q, PACKET *packet) {
-  FIFO_QINFO *fq = NULL;
+static int ff_process_packet (QUEUE_TYPE *q, JOB *packet) {
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(packet);
-  fq = (FIFO_QINFO*)q->info;
-  packet->info.state = PACKET_STATE_PROCESSING;
+  fq = queue_type_get_fifo_queue(q);
+  packet->state = JOB_STATE_PROCESSING;
   job_list_insert_job(&fq->executing_packets, packet);
   smeasurement_self_collect_data(packet);
   return SUCCESS;
@@ -93,11 +94,12 @@ static int ff_process_packet (QUEUE_TYPE *q, PACKET *packet) {
  * @param packet : packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_finish_packet (QUEUE_TYPE *q, PACKET *packet) {
-  FIFO_QINFO *fq = NULL;
+static int ff_finish_packet (QUEUE_TYPE *q, JOB *packet) {
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
-  fq = (FIFO_QINFO*)q->info;
-  packet->info.state = PACKET_STATE_OUT;
+  fq = queue_type_get_fifo_queue(q);
+
+  packet->state = JOB_STATE_OUT;
   try ( job_list_remove_job(&fq->executing_packets, packet) );
   try ( job_list_insert_job(&fq->departure_packets, packet) );
   smeasurement_self_collect_data(packet);
@@ -110,9 +112,10 @@ static int ff_finish_packet (QUEUE_TYPE *q, PACKET *packet) {
  * @return A number of waiting packets in queue
  */
 static int ff_get_waiting_length (QUEUE_TYPE *q) {
-  FIFO_QINFO *fq = NULL;
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
-  fq = (FIFO_QINFO*)q->info;
+  fq = queue_type_get_fifo_queue(q);
+
   return fq->waiting_packets.size;
 }
 
@@ -122,11 +125,11 @@ static int ff_get_waiting_length (QUEUE_TYPE *q) {
  * @param p : selected packet (output)
  * @return Error code (more in def.h and error.h)
  */
-static int ff_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
-  FIFO_QINFO *fq = NULL;
+static int ff_select_waiting_packet (QUEUE_TYPE* q, JOB ** p) {
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(p);
-  fq = (FIFO_QINFO*)q->info;
+  fq = queue_type_get_fifo_queue(q);
   try ( job_list_get_first(&fq->waiting_packets, p) );
   job_list_remove_job(&fq->waiting_packets, *p);
   return SUCCESS;
@@ -138,34 +141,34 @@ static int ff_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
  * @param p : returned packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_get_executing_packet (QUEUE_TYPE* q, PACKET ** p) {
-  FIFO_QINFO *fq = NULL;
+static int ff_get_executing_packet (QUEUE_TYPE* q, JOB ** p) {
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(p);
-  fq = (FIFO_QINFO*)q->info;
+  fq = queue_type_get_fifo_queue(q);
   try ( job_list_get_first(&fq->executing_packets, p) );
   return SUCCESS;
 }
 
-static PACKET * ff_find_executing_packet_to(QUEUE_TYPE* q, int id) {
-  FIFO_QINFO *fq = NULL;
-  LINKED_LIST *lm = NULL, *l = NULL;
-
-  if (!q)
-    return NULL;
-
-  fq = (FIFO_QINFO*)q->info;
-  lm = &fq->executing_packets.list.entries;
-  l = lm->next;
-  while (lm != l) {
-    PACKET *p = container_of(l, PACKET, list_node);
-    if (p->info.to_queue == id)
-      return p;
-    l = l->next;
-  }
-
-  return NULL;
-}
+//static JOB * ff_find_executing_packet_to(QUEUE_TYPE* q, int id) {
+//  QUEUE_FF *fq = NULL;
+//  LINKED_LIST *lm = NULL, *l = NULL;
+//
+//  if (!q)
+//    return NULL;
+//
+//  fq = (QUEUE_FF*)q->info;
+//  lm = &fq->executing_packets.list.entries;
+//  l = lm->next;
+//  while (lm != l) {
+//    JOB *p = container_of(l, JOB, list_node);
+//    if (p->to_queue == id)
+//      return p;
+//    l = l->next;
+//  }
+//
+//  return NULL;
+//}
 
 /**
  * Get the first packet in waiting list, this packet is still in this list
@@ -173,11 +176,11 @@ static PACKET * ff_find_executing_packet_to(QUEUE_TYPE* q, int id) {
  * @param p : returned packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_get_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
-  FIFO_QINFO *fq = NULL;
+static int ff_get_waiting_packet (QUEUE_TYPE* q, JOB ** p) {
+  QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(p);
-  fq = (FIFO_QINFO*)q->info;
+  fq = queue_type_get_fifo_queue(q);
   try ( job_list_get_first(&fq->waiting_packets, p) );
   return SUCCESS;
 }
@@ -190,11 +193,12 @@ static int ff_get_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
  * @return Error code (see more in def.h and error.h)
  */
 int sched_fifo_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
-
+  QUEUE_FF *qf = NULL;
   if (! *q_fifo) {
-    *q_fifo = malloc_gc(sizeof(QUEUE_TYPE));
-    if (! *q_fifo)
+    qf = malloc_gc(sizeof(QUEUE_FF));
+    if (! qf)
       return ERR_MALLOC_FAIL;
+    (*q_fifo) = &qf->queue_type;
   }
   memset(*q_fifo, 0, sizeof(QUEUE_TYPE));
   sched_fifo_setup(*q_fifo, max_executing, max_waiting);
@@ -209,15 +213,10 @@ int sched_fifo_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
  * @return Error code (see more in def.h and error.h)
  */
 int sched_fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
-  FIFO_QINFO *ff_queue_info = NULL;
+  QUEUE_FF *ff_queue_info = NULL;
   check_null_pointer(q_fifo);
+  ff_queue_info = queue_type_get_fifo_queue(q_fifo);
 
-  if (!q_fifo->info) {
-    ff_queue_info = malloc_gc(sizeof(FIFO_QINFO));
-    if (!ff_queue_info)
-      return ERR_MALLOC_FAIL;
-    q_fifo->info = ff_queue_info;
-  }
   ff_queue_info->max_executing = max_executing;
   ff_queue_info->max_waiting = max_waiting;
   q_fifo->type = QUEUE_FIFO;
@@ -230,7 +229,7 @@ int sched_fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   q_fifo->select_waiting_packet = ff_select_waiting_packet;
   q_fifo->get_executing_packet = ff_get_executing_packet;
   q_fifo->get_waiting_packet = ff_get_waiting_packet;
-  q_fifo->find_executing_packet_to = ff_find_executing_packet_to;
+  //q_fifo->find_executing_packet_to = ff_find_executing_packet_to;
   q_fifo->init(q_fifo);
   return SUCCESS;
 }

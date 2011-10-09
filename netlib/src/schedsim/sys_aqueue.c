@@ -19,9 +19,9 @@
  * @param p : new packet
  * @return Error code (see more in def.h and error.h)
  */
-static int _new_packet (ONEQ_STATE *state, PACKET **p) {
+static int _new_packet (ONEQ_STATE *state, JOB **p) {
   try ( job_list_new_job(&state->free_packets, p) );
-  (*p)->info.queue = state->queues.curr_queue;
+  (*p)->queue = state->queues.curr_queue;
   return SUCCESS;
 }
 
@@ -33,7 +33,7 @@ static int _new_packet (ONEQ_STATE *state, PACKET **p) {
  * @param p : packet
  * @return Error code (see more in def.h and error.h)
  */
-static int _free_packet (ONEQ_STATE *state, PACKET *p) {
+static int _free_packet (ONEQ_STATE *state, JOB *p) {
   try (linked_list_remove(&p->list_node));
   job_list_remove_job(&state->free_packets, p);
   return SUCCESS;
@@ -84,12 +84,18 @@ static EVENT* _generate_arrival (CONFIG *conf, ONEQ_STATE *state) {
  * @param state : System state
  * @return New event (already added in the event list)
  */
-static EVENT* _generate_end_service (PACKET *p, CONFIG *conf, ONEQ_STATE *state) {
+static EVENT* _generate_end_service (JOB *p, CONFIG *conf, ONEQ_STATE *state) {
   EVENT *e = NULL;
   sevent_list_new_event(&state->future_events, &e);
   e->type = EVENT_END_SERVICE;
   sevent_setup(e, &conf->service_conf, state->curr_time);
-  e->data = p;
+  switch (conf->queue_conf.type) {
+  case QUEUE_FIFO:
+  case QUEUE_RR:
+    event_get_event_ff(e)->packet = p;
+  default:
+    break;
+  }
   sevent_list_insert_event(&state->future_events, e);
   return e;
 }
@@ -132,10 +138,10 @@ static int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
 static int _process_packet (CONFIG *conf, ONEQ_STATE *state) {
   QUEUE_TYPE *qt = state->queues.curr_queue;
   EVENT *e = NULL;
-  PACKET *p = NULL;
+  JOB *p = NULL;
 
   qt->select_waiting_packet(qt, &p);
-  p->info.stime = state->curr_time;
+  p->stime = state->curr_time;
   qt->process_packet(qt, p);
   smeasurement_collect_data(&state->measurement, p, state->curr_time);
   e = _generate_end_service (p, conf, state);
@@ -152,16 +158,16 @@ static int _process_packet (CONFIG *conf, ONEQ_STATE *state) {
  * @param p : Packet
  * @return Error code (see more in def.h and error.h)
  */
-static int _packet_from_event (EVENT *e, PACKET *p) {
+static int _packet_from_event (EVENT *e, JOB *p) {
   switch (e->type) {
   case EVENT_ARRIVAL:
-    p->info.atime = e->time;
-    p->info.state = PACKET_STATE_IN;
-    e->data = p;
+    p->atime = e->time;
+    p->state = JOB_STATE_IN;
+    //e->data = p;
     break;
   case EVENT_END_SERVICE:
-    p->info.etime = e->time;
-    p->info.state = PACKET_STATE_OUT;
+    p->etime = e->time;
+    p->state = JOB_STATE_OUT;
     break;
   default:
     iprint(LEVEL_WARNING, "Event Type not supported \n");
@@ -179,7 +185,7 @@ static int _packet_from_event (EVENT *e, PACKET *p) {
  * @return Error code (see more in def.h and libs/error.h)
  */
 static int _process_arrival (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
-  PACKET *packet = NULL;
+  JOB *packet = NULL;
   QUEUE_TYPE *qt = state->queues.curr_queue;
 
   try ( update_time(e, state) );
@@ -188,7 +194,7 @@ static int _process_arrival (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
   smeasurement_collect_data(&state->measurement, packet, state->curr_time);
   qt->push_packet(qt, packet);
   smeasurement_collect_data(&state->measurement, packet, state->curr_time);
-  if (packet->info.state == PACKET_STATE_DROPPED)
+  if (packet->state == JOB_STATE_DROPPED)
     _free_packet(state, packet);
 
   _generate_arrival(conf, state);
@@ -207,7 +213,7 @@ static int _process_arrival (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
  * @return Error code (see more in def.h and error.h)
  */
 static int _process_end_service (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
-  PACKET *packet = e->data;
+  JOB *packet = event_get_event_ff(e)->packet;
   QUEUE_TYPE *qt = state->queues.curr_queue;
 
   try ( update_time(e, state) );
@@ -241,7 +247,7 @@ static int _system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
   //This part of code is supported by Garbage collector -> comment these codes
 //  while (state->free_packets.size > 0) {
 //    // free packet
-//    PACKET *p = NULL;
+//    JOB *p = NULL;
 //    job_list_get_first(&state->free_packets, &p);
 //    linked_list_remove(&p->list_node);
 //    free(p);
@@ -258,7 +264,7 @@ static int _system_clean (CONFIG *conf, SYS_STATE_OPS *ops) {
  * @param ops : Abstract system operations
  * @return New event
  */
-static EVENT * _generate_event(int type, PACKET *p, CONFIG *conf, SYS_STATE_OPS *ops) {
+static EVENT * _generate_event(int type, JOB *p, CONFIG *conf, SYS_STATE_OPS *ops) {
   ONEQ_STATE *state = get_sys_state_from_ops(ops);
   EVENT *e = NULL;
 

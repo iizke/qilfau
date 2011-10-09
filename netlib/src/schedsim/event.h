@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <semaphore.h>
-#include "queues/packet.h"
+#include "queues/job.h"
 #include "conf/config.h"
 #include "queues/measures.h"
 
@@ -30,8 +30,15 @@ typedef struct event {
   /// Time that this event happens
   double time;
   /// Data related to this event (used for end-service event)
-  void *data;
+  //void *data;
 } EVENT;
+
+typedef struct event_fifo {
+  EVENT event;
+  JOB *packet;
+} EVENT_FF;
+
+#define event_get_event_ff(e) (container_of(e, EVENT_FF, event))
 
 #ifdef EVENT_LIST
 #undef EVENT_LIST
