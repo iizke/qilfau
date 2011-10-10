@@ -17,7 +17,7 @@
  * @param q : a FIFO Queue-type
  * @return Error code (more in def.h and error.h)
  */
-static int ff_queue_init (QUEUE_TYPE *q) {
+static int ff_queue_init (SQUEUE_TYPE *q) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   fq = queue_type_get_fifo_queue(q);
@@ -35,7 +35,7 @@ static int ff_queue_init (QUEUE_TYPE *q) {
  * @param q : FIFO queue type
  * @return 1 if this queue is ready to process a packet
  */
-static int ff_is_idle (QUEUE_TYPE *q) {
+static int ff_is_idle (SQUEUE_TYPE *q) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   fq = queue_type_get_fifo_queue(q);
@@ -49,7 +49,7 @@ static int ff_is_idle (QUEUE_TYPE *q) {
  * @param p : packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_push_packet (QUEUE_TYPE *q, JOB *p) {
+static int ff_push_packet (SQUEUE_TYPE *q, JOB *p) {
   int curr_qlen;
   QUEUE_FF *fq = NULL;
   check_null_pointer(p);
@@ -77,7 +77,7 @@ static int ff_push_packet (QUEUE_TYPE *q, JOB *p) {
  * @param packet : packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_process_packet (QUEUE_TYPE *q, JOB *packet) {
+static int ff_process_packet (SQUEUE_TYPE *q, JOB *packet) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(packet);
@@ -94,7 +94,7 @@ static int ff_process_packet (QUEUE_TYPE *q, JOB *packet) {
  * @param packet : packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_finish_packet (QUEUE_TYPE *q, JOB *packet) {
+static int ff_finish_packet (SQUEUE_TYPE *q, JOB *packet) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   fq = queue_type_get_fifo_queue(q);
@@ -111,7 +111,7 @@ static int ff_finish_packet (QUEUE_TYPE *q, JOB *packet) {
  * @param q : FIFO queue
  * @return A number of waiting packets in queue
  */
-static int ff_get_waiting_length (QUEUE_TYPE *q) {
+static int ff_get_waiting_length (SQUEUE_TYPE *q) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   fq = queue_type_get_fifo_queue(q);
@@ -125,7 +125,7 @@ static int ff_get_waiting_length (QUEUE_TYPE *q) {
  * @param p : selected packet (output)
  * @return Error code (more in def.h and error.h)
  */
-static int ff_select_waiting_packet (QUEUE_TYPE* q, JOB ** p) {
+static int ff_select_waiting_packet (SQUEUE_TYPE* q, JOB ** p) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(p);
@@ -141,7 +141,7 @@ static int ff_select_waiting_packet (QUEUE_TYPE* q, JOB ** p) {
  * @param p : returned packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_get_executing_packet (QUEUE_TYPE* q, JOB ** p) {
+static int ff_get_executing_packet (SQUEUE_TYPE* q, JOB ** p) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(p);
@@ -150,7 +150,7 @@ static int ff_get_executing_packet (QUEUE_TYPE* q, JOB ** p) {
   return SUCCESS;
 }
 
-//static JOB * ff_find_executing_packet_to(QUEUE_TYPE* q, int id) {
+//static JOB * ff_find_executing_packet_to(SQUEUE_TYPE* q, int id) {
 //  QUEUE_FF *fq = NULL;
 //  LINKED_LIST *lm = NULL, *l = NULL;
 //
@@ -176,7 +176,7 @@ static int ff_get_executing_packet (QUEUE_TYPE* q, JOB ** p) {
  * @param p : returned packet
  * @return Error code (more in def.h and error.h)
  */
-static int ff_get_waiting_packet (QUEUE_TYPE* q, JOB ** p) {
+static int ff_get_waiting_packet (SQUEUE_TYPE* q, JOB ** p) {
   QUEUE_FF *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(p);
@@ -192,7 +192,7 @@ static int ff_get_waiting_packet (QUEUE_TYPE* q, JOB ** p) {
  * @param max_waiting: Maximum number of waiting packets (negative value ~ infinite)
  * @return Error code (see more in def.h and error.h)
  */
-int sched_fifo_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
+int sched_fifo_init (SQUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
   QUEUE_FF *qf = NULL;
   if (! *q_fifo) {
     qf = malloc_gc(sizeof(QUEUE_FF));
@@ -200,7 +200,7 @@ int sched_fifo_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
       return ERR_MALLOC_FAIL;
     (*q_fifo) = &qf->queue_type;
   }
-  memset(*q_fifo, 0, sizeof(QUEUE_TYPE));
+  memset(*q_fifo, 0, sizeof(SQUEUE_TYPE));
   sched_fifo_setup(*q_fifo, max_executing, max_waiting);
   return SUCCESS;
 }
@@ -212,7 +212,7 @@ int sched_fifo_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
  * @param max_waiting: Maximum number of waiting packets (negative value ~ infinite)
  * @return Error code (see more in def.h and error.h)
  */
-int sched_fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
+int sched_fifo_setup (SQUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   QUEUE_FF *ff_queue_info = NULL;
   check_null_pointer(q_fifo);
   ff_queue_info = queue_type_get_fifo_queue(q_fifo);

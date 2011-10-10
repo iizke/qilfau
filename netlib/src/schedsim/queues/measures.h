@@ -6,17 +6,19 @@
  * @author iizke
  */
 
-#ifndef MEASURES_H_
-#define MEASURES_H_
+#ifndef SCHED_MEASURES_H_
+#define SCHED_MEASURES_H_
 
 #include "def.h"
 #include "stat_num.h"
+#include "job.h"
+
 //#include "packet.h"
 
 /**
  * MEASURE structure used to store some results when simulating queue system
  */
-typedef struct measures {
+typedef struct sched_measures {
   /// Total number of arrival events appearing in simulation
   long total_arrivals;
   /// Total number of departure packets/events at output in simulation
@@ -35,7 +37,7 @@ typedef struct measures {
   STAT_NUM interarrival_time;
   /// Last value of arrival time (temporary variable supporting to compute interarrival_time
   float last_arrival_time;
-} MEASURES;
+} SCHED_MEASURES;
 
 #define print_statistical_value(_var_name,_var, _conf) { \
     printf("%20s : mean %4.5f, var %4.5f, min %4.3f, max %4.3f, confidency %4.3f\n", \
@@ -46,8 +48,8 @@ typedef struct measures {
       (_var)->max, \
       stat_num_calc_confidence_interval(_var, _conf)); }
 
-int smeasures_init (MEASURES *m);
-int print_smeasurement (MEASURES *m);
-int smeasurement_collect_data (MEASURES *m, JOB *p, double curr_time);
-int smeasurement_merge (MEASURES *m1, MEASURES *m2);
+int smeasures_init (SCHED_MEASURES *m);
+int print_smeasurement (SCHED_MEASURES *m);
+int smeasurement_collect_data (SCHED_MEASURES *m, JOB *p, double curr_time);
+int smeasurement_merge (SCHED_MEASURES *m1, SCHED_MEASURES *m2);
 #endif /* MEASURES_H_ */

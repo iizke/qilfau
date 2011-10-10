@@ -35,6 +35,7 @@ queue.maxlength				return QUEUE_MAXLENGTH;
 queue.servers				return QUEUE_SERVERS;
 queue.type					return QUEUE_KIND;
 QUEUE_FIFO					return Q_FIFO;
+QUEUE_RR					return Q_RR;
 service.type				return SERVICE_TYPE;
 service.lambda				return SERVICE_LAMBDA;
 service.to					return SERVICE_TO;

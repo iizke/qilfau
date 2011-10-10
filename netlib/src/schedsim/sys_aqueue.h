@@ -6,8 +6,8 @@
  * @author iizke
  */
 
-#ifndef SYS_AQUEUE_H_
-#define SYS_AQUEUE_H_
+#ifndef SCHEDSYS_AQUEUE_H_
+#define SCHEDSYS_AQUEUE_H_
 
 #include "queues/measures.h"
 #include "queues/queue_man.h"
@@ -19,21 +19,28 @@
  */
 typedef struct onequeue_state {
   /// Abstract operations of a simulated system
-  SYS_STATE_OPS ops;
+  SCHED_STATE_OPS ops;
   /// Current time
   double curr_time;
   /// List of future events (used for scheduling events)
-  EVENT_LIST future_events;
+  SEVENT_LIST future_events;
   /// Queue manager (support a list of queues)
-  QUEUE_MAN queues;
+  SQUEUE_MAN queues;
   /// Measurement information
-  MEASURES measurement;
+  SCHED_MEASURES measurement;
   /// Free packet list (used to avoiding malloc operations
   JOB_LIST free_packets;
 } ONEQ_STATE;
 
 #define get_sys_state_from_ops(_ops) (container_of(_ops, ONEQ_STATE, ops))
 
-int sched_sys_state_init (ONEQ_STATE *state, CONFIG *conf);
+int sched_sys_state_init (ONEQ_STATE *state, SCHED_CONFIG *conf);
+int oneq_set_ops (ONEQ_STATE *state) ;
+
+int oneq_new_packet (ONEQ_STATE *state, JOB **p);
+int oneq_free_packet (ONEQ_STATE *state, JOB *p);
+int oneq_update_time (ONEQ_STATE *state, double time);
+SEVENT* oneq_generate_arrival (ONEQ_STATE *state, SCHED_CONFIG *conf);
+SEVENT* oneq_generate_end_service (ONEQ_STATE *state, JOB *p, SCHED_CONFIG *conf);
 
 #endif /* SYS_AQUEUE_H_ */

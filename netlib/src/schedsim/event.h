@@ -6,8 +6,8 @@
  * @author iizke
  */
 
-#ifndef EVENT_H_
-#define EVENT_H_
+#ifndef SCHED_EVENT_H_
+#define SCHED_EVENT_H_
 
 #include <stdio.h>
 #include <semaphore.h>
@@ -15,13 +15,10 @@
 #include "conf/config.h"
 #include "queues/measures.h"
 
-#ifdef EVENT
-#undef EVENT
-#endif
 /**
  * Event structure
  */
-typedef struct event {
+typedef struct sched_event {
   /// Double linked list. This member is used to join in a list of event
   LINKED_LIST list_node;
   /// Event information
@@ -31,29 +28,26 @@ typedef struct event {
   double time;
   /// Data related to this event (used for end-service event)
   //void *data;
-} EVENT;
+} SEVENT;
 
-typedef struct event_fifo {
-  EVENT event;
+typedef struct sevent_info {
+  SEVENT event;
   JOB *packet;
-} EVENT_FF;
+} SEVENT_INFO;
 
-#define event_get_event_ff(e) (container_of(e, EVENT_FF, event))
+#define event_get_event_info(e) (container_of(e, SEVENT_INFO, event))
 
-#ifdef EVENT_LIST
-#undef EVENT_LIST
-#endif
 /**
  * Event list structure
  */
-typedef struct event_list {
+typedef struct sched_event_list {
   /// Manager of double linked list of event
   LINKED_LIST_MAN list;
   sem_t mutex;
   STAT_NUM snum_events;
   int num_events;
   int (*gen) (void *,...);
-} EVENT_LIST;
+} SEVENT_LIST;
 
 /// Arrival event
 #define EVENT_ARRIVAL         1
@@ -73,21 +67,21 @@ typedef struct event_list {
     _l2->prev->next = _l2;                                  \
   }
 
-int sevent_init (EVENT *e);
-int sevent_save (EVENT *e, FILE *file);
-int sevent_setup (EVENT *e, RANDOM_CONF *fc, double curr_time);
+int sevent_init (SEVENT *e);
+int sevent_save (SEVENT *e, FILE *file);
+int sevent_setup (SEVENT *e, RANDOM_SCONF *fc, double curr_time);
 
-int sevent_list_init (EVENT_LIST *el);
-int sevent_list_new_event (EVENT_LIST *el, EVENT **e);
-int sevent_list_insert_event (EVENT_LIST *el, EVENT *e);
-int sevent_list_remove_event (EVENT_LIST *el, EVENT *e);
-int sevent_list_get_first (EVENT_LIST *el, EVENT **e);
-int sevent_list_new_event_mutex (EVENT_LIST *el, EVENT **e);
-int sevent_list_insert_event_mutex (EVENT_LIST *el, EVENT *e);
-int sevent_list_remove_event_mutex (EVENT_LIST *el, EVENT *e);
-int sevent_list_get_first_mutex (EVENT_LIST *el, EVENT **e);
-int sevent_list_is_empty (EVENT_LIST *l);
-int sevent_list_stop_growing (EVENT_LIST *l);
+int sevent_list_init (SEVENT_LIST *el);
+int sevent_list_new_event (SEVENT_LIST *el, SEVENT **e);
+int sevent_list_insert_event (SEVENT_LIST *el, SEVENT *e);
+int sevent_list_remove_event (SEVENT_LIST *el, SEVENT *e);
+int sevent_list_get_first (SEVENT_LIST *el, SEVENT **e);
+int sevent_list_new_event_mutex (SEVENT_LIST *el, SEVENT **e);
+int sevent_list_insert_event_mutex (SEVENT_LIST *el, SEVENT *e);
+int sevent_list_remove_event_mutex (SEVENT_LIST *el, SEVENT *e);
+int sevent_list_get_first_mutex (SEVENT_LIST *el, SEVENT **e);
+int sevent_list_is_empty (SEVENT_LIST *l);
+int sevent_list_stop_growing (SEVENT_LIST *l);
 int test_sevent_list_insert ();
 
 #endif /* EVENT_H_ */

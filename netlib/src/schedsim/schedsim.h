@@ -1,6 +1,6 @@
 /**
  * @file netsim.h
- * @date Created on: Apr 6, 2011
+ * @date Created on: Oct 7, 2011
  * @author iizke
  */
 
@@ -9,30 +9,28 @@
 
 #include "event.h"
 #include "queues/measures.h"
+#include "queues/job.h"
 #include "conf/config.h"
 
 /// Functions of a simulated system
-#ifdef SYS_STATE_OPS
-#undef SYS_STATE_OPS
-#endif
-typedef struct system_state_operations SYS_STATE_OPS;
+typedef struct schedsim_state_operations SCHED_STATE_OPS;
 /// Functions of a simulated system
-struct system_state_operations {
+struct schedsim_state_operations {
   /// Get next event from event list
-  int (*get_next_event) (SYS_STATE_OPS*, EVENT **e);
+  int (*get_next_event) (SCHED_STATE_OPS*, SEVENT **e);
   /// Remove an event out of event list
-  int (*remove_event) (SYS_STATE_OPS *, EVENT *e);
+  int (*remove_event) (SCHED_STATE_OPS *, SEVENT *e);
   /// Check whether the program is stopped (from user configuration)
-  int (*allow_continue) (CONFIG*, SYS_STATE_OPS*);
+  int (*allow_continue) (SCHED_CONFIG*, SCHED_STATE_OPS*);
   /// Generate new event
-  EVENT* (*generate_event) (int type, JOB*, CONFIG*, SYS_STATE_OPS*);
+  SEVENT* (*generate_event) (int type, JOB*, SCHED_CONFIG*, SCHED_STATE_OPS*);
   /// Process an event
-  int (*process_event) (EVENT *e, CONFIG*, SYS_STATE_OPS*);
+  int (*process_event) (SEVENT *e, SCHED_CONFIG*, SCHED_STATE_OPS*);
   /// Clean the simulated system (when finishing simulation)
-  int (*clean) (CONFIG*, SYS_STATE_OPS*);
+  int (*clean) (SCHED_CONFIG*, SCHED_STATE_OPS*);
 };
 
 int schedsim_start (char *conf_file);
 int schedsim_start_thread (char *conf_file);
-int pisas_do_sched (void *conf, SYS_STATE_OPS *sys_ops);
+int pisas_do_sched (void *conf, SCHED_STATE_OPS *sys_ops);
 #endif /* CONFIG_H_ */
