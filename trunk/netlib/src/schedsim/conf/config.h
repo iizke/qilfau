@@ -6,8 +6,8 @@
  * @author iizke
  */
 
-#ifndef MYCONFIG_H_
-#define MYCONFIG_H_
+#ifndef SCHED_MYCONFIG_H_
+#define SCHED_MYCONFIG_H_
 
 #include <stdio.h>
 #include "random.h"
@@ -15,7 +15,7 @@
 #include "list/linked_list.h"
 
 /*
- * Definition of some constants used in type of RANDOM_CONF
+ * Definition of some constants used in type of RANDOM_SCONF
  */
 #define RANDOM_OTHER              1
 #define RANDOM_MARKOVIAN          2
@@ -41,7 +41,7 @@
  * Flow configuration is used to characterize a flow: what is its
  * distribution, define some parameters.
  */
-typedef struct random_config {
+typedef struct sched_random_config {
   /// types of flow: RANDOM_MARKOVIAN, RANDOM_UNIFORM, RANDOM_FILE, RANDOM_OTHER.
   int type;
   /// used when type is RANDOM_MARKOVIAN
@@ -60,12 +60,12 @@ typedef struct random_config {
   FILE *from_file;
   /// Random Distribution of flow
   RANDOM_DIST distribution;
-} RANDOM_CONF;
+} RANDOM_SCONF;
 
 /**
  * Queue configuration
  */
-typedef struct queue_config {
+typedef struct sched_queue_config {
   /// type of queue, now only support QUEUE_FIFO
   int type;
   /// number of servers in a system
@@ -76,19 +76,19 @@ typedef struct queue_config {
   FILE *out_file;
   double quantum;
   void* details;
-} QUEUE_CONF;
+} QUEUE_SCONF;
 
 /**
  * Define conditions of stopping program
  */
-typedef struct stop_config {
+typedef struct sched_stop_config {
   /// Maximum time is allowed to run simulation
   float max_time;
   /// Maximum number of arrival events
   int max_arrival;
   /// Stop when queue length is zero
   int queue_zero;
-} STOP_CONF;
+} STOP_SCONF;
 
 //typedef struct csma_conf {
 //  /// slot time
@@ -98,9 +98,9 @@ typedef struct stop_config {
 //  /// number of queues or station
 //  int nstations;
 //  /// Backoff
-//  RANDOM_CONF backoff_conf;
+//  RANDOM_SCONF backoff_conf;
 //  /// persistent probability
-//  RANDOM_CONF persistent_conf;
+//  RANDOM_SCONF persistent_conf;
 //  /// ratio: propagation / avg transmission time
 //  /// double propagation;
 //} CSMA_CONF;
@@ -108,17 +108,17 @@ typedef struct stop_config {
 /**
  * Configuration from user
  */
-typedef struct config {
+typedef struct sched_config {
   /// Configuration of arrival flow
-  RANDOM_CONF arrival_conf;
+  RANDOM_SCONF arrival_conf;
   /// flow configuration of service time
-  RANDOM_CONF service_conf;
+  RANDOM_SCONF service_conf;
   /// Configuration of queue system
-  QUEUE_CONF queue_conf;
+  QUEUE_SCONF queue_conf;
   /// Routing
-  RANDOM_CONF routing_conf;
+  RANDOM_SCONF routing_conf;
   /// Configuration of terminated conditions
-  STOP_CONF stop_conf;
+  STOP_SCONF stop_conf;
   /// Configuration of random library (IRAND, RANDLIB)
   int random_lib;
   /// CSMA configuration
@@ -133,7 +133,7 @@ typedef struct config {
    */
   void *runtime_state;
   int nodetype;
-} CONFIG;
+} SCHED_CONFIG;
 
 //typedef struct net_config {
 //  ARRAY configs;
@@ -147,16 +147,16 @@ typedef struct config {
 //  LINKED_LIST list_node;
 //  int src;
 //  int dest;
-//  RANDOM_CONF delay;
+//  RANDOM_SCONF delay;
 //  int state;
 //} CHANNEL_CONF;
 
-int schedconf_random_conf (RANDOM_CONF *rc);
-int schedconf_init (CONFIG *conf);
-int schedconf_setup (CONFIG *conf);
+int schedconf_random_conf (RANDOM_SCONF *rc);
+int schedconf_init (SCHED_CONFIG *conf);
+int schedconf_setup (SCHED_CONFIG *conf);
 int schedconf_parse_file (char *file);
 
-//CONFIG* netconfig_get_conf(NET_CONFIG *net, int cid);
+//SCHED_CONFIG* netconfig_get_conf(NET_CONFIG *net, int cid);
 //int netconfig_init (NET_CONFIG *netconf, int n);
 //int netconfig_get_size(NET_CONFIG *net);
 //int netconfig_traverse_arrival(NET_CONFIG *conf, int *qid);

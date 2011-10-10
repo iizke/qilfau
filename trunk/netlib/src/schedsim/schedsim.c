@@ -20,7 +20,7 @@
 #include "sys_aqueue.h"
 #include "schedsim.h"
 
-extern CONFIG conf;
+extern SCHED_CONFIG conf;
 extern long debug;
 //long debug = LEVEL_EWI; // print all Info message
 
@@ -30,7 +30,7 @@ extern long debug;
  * @param conf : Configuration
  * @return Error code (see more in def.h and error.h)
  */
-static int _save_event (EVENT *e, CONFIG *conf) {
+static int _save_event (SEVENT *e, SCHED_CONFIG *conf) {
   switch (e->type) {
   case EVENT_ARRIVAL:
     sevent_save(e, conf->arrival_conf.to_file);
@@ -49,13 +49,13 @@ static int _save_event (EVENT *e, CONFIG *conf) {
  * @param sys_ops : Operations of System state.
  * @return Error code (defined in libs/error.h and def.h)
  */
-int pisas_do_sched (void *conf, SYS_STATE_OPS *sys_ops) {
+int pisas_do_sched (void *conf, SCHED_STATE_OPS *sys_ops) {
   check_null_pointer(conf);
   check_null_pointer(sys_ops);
 
   while (sys_ops->allow_continue(conf, sys_ops)) {
     // assume that event_list support sorting follow time
-    EVENT *e = NULL;
+    SEVENT *e = NULL;
     sys_ops->get_next_event(sys_ops, &e);
 
     if (!e) {
@@ -79,11 +79,11 @@ int pisas_do_sched (void *conf, SYS_STATE_OPS *sys_ops) {
  * Print out result of measurement of simulation
  * @param conf : User configuration
  */
-static void schedsim_print_result(CONFIG *conf) {
+static void schedsim_print_result(SCHED_CONFIG *conf) {
   ONEQ_STATE *sys_state;
   switch (conf->protocol) {
     case PROTOCOL_ONE_QUEUE:
-      sys_state = get_sys_state_from_ops(((SYS_STATE_OPS*)conf->runtime_state));
+      sys_state = get_sys_state_from_ops(((SCHED_STATE_OPS*)conf->runtime_state));
       print_smeasurement(&sys_state->measurement);
       //print_smeasurement(&((QUEUE_FF*)(sys_state->queues.curr_queue->info))->measurement);
       break;
@@ -183,7 +183,7 @@ static void schedsim_print_theorical_mm1k (double ar, double sr, int maxlen) {
   printf("%20s : mean %4.5f\n", "Utilization", (1-p0));
 }
 
-static void schedsim_print_theorical_result (CONFIG *conf) {
+static void schedsim_print_theorical_result (SCHED_CONFIG *conf) {
   int atype = conf->arrival_conf.type;
   int stype = conf->service_conf.type;
   int nserver = conf->queue_conf.num_servers;
@@ -206,18 +206,18 @@ static void schedsim_print_theorical_result (CONFIG *conf) {
 static void netsim_sig_handler(int n) {
   schedsim_print_result(&conf);
   schedsim_print_theorical_result(&conf);
-  ((SYS_STATE_OPS*)conf.runtime_state)->clean(&conf, conf.runtime_state);
+  ((SCHED_STATE_OPS*)conf.runtime_state)->clean(&conf, conf.runtime_state);
   exit(1);
 }
 
-static void* netsim_thread (CONFIG *conf) {
+static void* netsim_thread (SCHED_CONFIG *conf) {
   ONEQ_STATE* sys_state;
-  MEASURES *m = NULL;
-  CONFIG local_conf;
-  SYS_STATE_OPS *ops = NULL;
+  SCHED_MEASURES *m = NULL;
+  SCHED_CONFIG local_conf;
+  SCHED_STATE_OPS *ops = NULL;
   time_t start = time(NULL);
 
-  memcpy(&local_conf, conf, sizeof(CONFIG));
+  memcpy(&local_conf, conf, sizeof(SCHED_CONFIG));
   local_conf.stop_conf.max_time /= local_conf.nthreads;
   local_conf.stop_conf.max_arrival /= local_conf.nthreads;
   switch (local_conf.protocol) {
@@ -248,7 +248,7 @@ static void* netsim_thread (CONFIG *conf) {
  */
 int schedsim_start (char *conf_file) {
   ONEQ_STATE sys_state;
-  SYS_STATE_OPS *ops = NULL;
+  SCHED_STATE_OPS *ops = NULL;
 
   signal(SIGINT, netsim_sig_handler);
   signal(SIGTERM, netsim_sig_handler);
@@ -281,8 +281,8 @@ int schedsim_start (char *conf_file) {
  */
 int schedsim_start_thread (char *conf_file) {
   pthread_t *threads;
-  MEASURES m;
-  MEASURES *lm; // local measurement
+  SCHED_MEASURES m;
+  SCHED_MEASURES *lm; // local measurement
   int i;
   time_t start;
 

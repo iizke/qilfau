@@ -11,11 +11,11 @@
 #include "event.h"
 
 /**
- * Initialize parametters in EVENT_LIST
- * @param el : pointer to EVENT_LIST
+ * Initialize parametters in SEVENT_LIST
+ * @param el : pointer to SEVENT_LIST
  * @return Error-code (normal SUCCESS)
  */
-int sevent_list_init (EVENT_LIST *el) {
+int sevent_list_init (SEVENT_LIST *el) {
   check_null_pointer(el);
   try ( linked_list_man_init(&el->list) );
   sem_init(&el->mutex, 0, 1);
@@ -31,14 +31,14 @@ int sevent_list_init (EVENT_LIST *el) {
  * @param e : output -> New event
  * @return Error-code (defined in def.h and libs/error.h)
  */
-int sevent_list_new_event (EVENT_LIST *el, EVENT **e){
+int sevent_list_new_event (SEVENT_LIST *el, SEVENT **e){
   LINKED_LIST *l = NULL;
   check_null_pointer(el);
   try (linked_list_man_get_free_entry(&el->list, &l) );
   if (l)
-    *e = container_of(l, EVENT, list_node);
+    *e = container_of(l, SEVENT, list_node);
   else
-    *e = malloc_gc(sizeof(EVENT));
+    *e = malloc_gc(sizeof(SEVENT));
   if(! *e)
     return ERR_MALLOC_FAIL;
 
@@ -46,7 +46,7 @@ int sevent_list_new_event (EVENT_LIST *el, EVENT **e){
   return SUCCESS;
 }
 
-int sevent_list_new_event_mutex (EVENT_LIST *el, EVENT **e){
+int sevent_list_new_event_mutex (SEVENT_LIST *el, SEVENT **e){
   int err = SUCCESS;
   sem_wait(&el->mutex);
   err = sevent_list_new_event(el, e);
@@ -60,15 +60,15 @@ int sevent_list_new_event_mutex (EVENT_LIST *el, EVENT **e){
  * @param e : event
  * @return Error-code (defined in def.h and libs/error.h)
  */
-int sevent_list_insert_event (EVENT_LIST *el, EVENT *e) {
-  EVENT *prev_e = e;
+int sevent_list_insert_event (SEVENT_LIST *el, SEVENT *e) {
+  SEVENT *prev_e = e;
 
   check_null_pointer(el);
   check_null_pointer(e);
   try ( linked_list_man_insert(&el->list, &e->list_node) );
   /// sort from end of list, assume that event_list already sorted before
   while (&e->list_node != el->list.entries.next) {
-    prev_e = container_of(e->list_node.prev, EVENT, list_node);
+    prev_e = container_of(e->list_node.prev, SEVENT, list_node);
     if (e->time >= prev_e->time)
       break;
     swap_prev_event(e);
@@ -78,7 +78,7 @@ int sevent_list_insert_event (EVENT_LIST *el, EVENT *e) {
   return SUCCESS;
 }
 
-int sevent_list_insert_event_mutex (EVENT_LIST *el, EVENT *e) {
+int sevent_list_insert_event_mutex (SEVENT_LIST *el, SEVENT *e) {
   int err = SUCCESS;
   sem_wait(&el->mutex);
   err = sevent_list_insert_event(el, e);
@@ -94,7 +94,7 @@ int sevent_list_insert_event_mutex (EVENT_LIST *el, EVENT *e) {
  * @param e : removed event
  * @return Error-code (defined in def.h and libs/error.h)
  */
-int sevent_list_remove_event (EVENT_LIST *el, EVENT *e) {
+int sevent_list_remove_event (SEVENT_LIST *el, SEVENT *e) {
   check_null_pointer(el);
   check_null_pointer(e);
   try ( linked_list_man_remove(&el->list, &e->list_node) );
@@ -103,7 +103,7 @@ int sevent_list_remove_event (EVENT_LIST *el, EVENT *e) {
   return SUCCESS;
 }
 
-int sevent_list_remove_event_mutex (EVENT_LIST *el, EVENT *e) {
+int sevent_list_remove_event_mutex (SEVENT_LIST *el, SEVENT *e) {
   int err = SUCCESS;
   sem_wait(&el->mutex);
   err = sevent_list_remove_event(el, e);
@@ -117,15 +117,15 @@ int sevent_list_remove_event_mutex (EVENT_LIST *el, EVENT *e) {
  * @param e : Output -> Event
  * @return Error-code (defined in def.h and libs/error.h)
  */
-int sevent_list_get_first (EVENT_LIST *el, EVENT **e) {
+int sevent_list_get_first (SEVENT_LIST *el, SEVENT **e) {
   LINKED_LIST *lle = NULL;
   check_null_pointer(el);
   try ( linked_list_man_get_first(&el->list, &lle) );
-  *e = container_of(lle, EVENT, list_node);
+  *e = container_of(lle, SEVENT, list_node);
   return SUCCESS;
 }
 
-int sevent_list_get_first_mutex (EVENT_LIST *el, EVENT **e) {
+int sevent_list_get_first_mutex (SEVENT_LIST *el, SEVENT **e) {
   int err = SUCCESS;
   sem_wait(&el->mutex);
   err = sevent_list_get_first(el, e);
@@ -139,7 +139,7 @@ int sevent_list_get_first_mutex (EVENT_LIST *el, EVENT **e) {
  * @return Return negative number if error. Return 1 if event list is empty, and
  * return 0 otherwise.
  */
-int sevent_list_is_empty (EVENT_LIST *l) {
+int sevent_list_is_empty (SEVENT_LIST *l) {
   check_null_pointer(l);
   return (linked_list_is_empty((&l->list.entries)));
 }
@@ -149,7 +149,7 @@ int sevent_list_is_empty (EVENT_LIST *l) {
  * @param l : event list
  * @return Error code (see more in def.h and error.h)
  */
-int sevent_list_stop_growing (EVENT_LIST *l) {
+int sevent_list_stop_growing (SEVENT_LIST *l) {
   check_null_pointer(l);
   sem_wait(&l->mutex);
   l->list.conf = 0;
@@ -162,7 +162,7 @@ int sevent_list_stop_growing (EVENT_LIST *l) {
  * @param e : Event
  * @return Error-code (defined in def.h and libs/error.h)
  */
-int sevent_init (EVENT *e) {
+int sevent_init (SEVENT *e) {
   check_null_pointer(e);
   linked_list_init(&e->list_node);
   //e->data = NULL;
@@ -178,13 +178,13 @@ int sevent_init (EVENT *e) {
  * @param l : Event list
  * @return Error-code (defined in def.h and libs/error.h)
  */
-int print_sevent_list (EVENT_LIST *l) {
-  EVENT *e = NULL;
+int print_sevent_list (SEVENT_LIST *l) {
+  SEVENT *e = NULL;
   check_null_pointer(l);
-  e = container_of(l->list.entries.next, EVENT, list_node);
+  e = container_of(l->list.entries.next, SEVENT, list_node);
   while (&l->list.entries != &e->list_node) {
     printf("Event %d, time %f \n", e->type, e->time);
-    e = container_of(e->list_node.next, EVENT, list_node);
+    e = container_of(e->list_node.next, SEVENT, list_node);
   }
   return SUCCESS;
 }
@@ -195,7 +195,7 @@ int print_sevent_list (EVENT_LIST *l) {
  * @param f : File pointer
  * @return Error code (see more in file def.h and libs/error.h )
  */
-int sevent_save (EVENT *e, FILE *f) {
+int sevent_save (SEVENT *e, FILE *f) {
   // FILE f should have write-permission
   // format: <time> <event-type> <processing-time>
   check_null_pointer(f);
@@ -210,7 +210,7 @@ int sevent_save (EVENT *e, FILE *f) {
  * @param curr_time : Current time
  * @return Error code (see more in def.h and error.h)
  */
-int sevent_setup (EVENT *e, RANDOM_CONF *fc, double curr_time) {
+int sevent_setup (SEVENT *e, RANDOM_SCONF *fc, double curr_time) {
   double time = 0;
   int type;
   double etime;
@@ -245,8 +245,8 @@ int sevent_setup (EVENT *e, RANDOM_CONF *fc, double curr_time) {
  * @return Error-code (defined in def.h and libs/error.h)
  */
 int test_sevent_list_insert () {
-  EVENT_LIST l;
-  EVENT e1, e2, e3, e4, e5;
+  SEVENT_LIST l;
+  SEVENT e1, e2, e3, e4, e5;
   sevent_list_init(&l);
   sevent_init(&e1);
   sevent_init(&e2);

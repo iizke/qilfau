@@ -13,22 +13,22 @@
 #include "queue_man.h"
 
 /**
- * Initialization of structure MEASURES
+ * Initialization of structure SCHED_MEASURES
  * @param m : pointer to Measures structure
  * @return Error code (defined in def.h)
  */
-int smeasures_init (MEASURES *m) {
+int smeasures_init (SCHED_MEASURES *m) {
   check_null_pointer(m);
-  memset(m, 0, sizeof(MEASURES));
+  memset(m, 0, sizeof(SCHED_MEASURES));
   return SUCCESS;
 }
 
 /**
  * Print out to screen measured information
- * @param m : pointer to a MEASURES structure.
+ * @param m : pointer to a SCHED_MEASURES structure.
  * @return Error code (defined in def.h)
  */
-int print_smeasurement (MEASURES *m) {
+int print_smeasurement (SCHED_MEASURES *m) {
   check_null_pointer(m);
   print_statistical_value("#customers in queue", &m->queue_len, 0.9);
   print_statistical_value("Queue response time", &m->waittime, 0.9);
@@ -52,8 +52,8 @@ int print_smeasurement (MEASURES *m) {
  * @param curr_time : Current time
  * @return Error code (see more in def.h and error.h)
  */
-int smeasurement_collect_data (MEASURES *m, JOB *p, double curr_time) {
-  QUEUE_TYPE *qt = NULL;
+int smeasurement_collect_data (SCHED_MEASURES *m, JOB *p, double curr_time) {
+  SQUEUE_TYPE *qt = NULL;
   check_null_pointer(p);
   check_null_pointer(m);
   qt = p->queue;
@@ -89,7 +89,7 @@ int smeasurement_collect_data (MEASURES *m, JOB *p, double curr_time) {
   return SUCCESS;
 }
 
-int smeasurement_merge (MEASURES *m1, MEASURES *m2) {
+int smeasurement_merge (SCHED_MEASURES *m1, SCHED_MEASURES *m2) {
   check_null_pointer(m1);
   check_null_pointer(m2);
   stat_num_merge(&m1->interarrival_time, &m2->interarrival_time);

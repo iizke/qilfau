@@ -6,26 +6,27 @@
  * @author iizke
  */
 
-#ifndef PACKET_H_
-#define PACKET_H_
+#ifndef JOB_H_
+#define JOB_H_
 
 #include "def.h"
 #include "list/linked_list.h"
-//#include "queue_man.h"
+#include "queue_man.h"
 
 /// An alias of struct queue_type
-typedef struct queue_type QUEUE_TYPE;
+
+//typedef struct sched_queue_type SQUEUE_TYPE;
 
 /**
  * Packet structure
  */
-typedef struct packet {
+typedef struct job {
   /// The element is used to connect to a packet-list
   LINKED_LIST list_node;
   /// Packet ID (currently no used)
   long id;
   /// Queue/Node that packet is stored
-  QUEUE_TYPE *queue;
+  SQUEUE_TYPE *queue;
   /// Destination queue id
   //int to_queue;
   /// State of packet: IN, WAITING, DROPPED, PROCESSING, OUT
@@ -47,7 +48,7 @@ typedef struct packet {
 /**
  * Packet list structure
  */
-typedef struct packet_list {
+typedef struct job_list {
   /// Manager of packet list
   LINKED_LIST_MAN list;
   /// Size of list

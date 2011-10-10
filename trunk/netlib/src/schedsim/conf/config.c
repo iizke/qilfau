@@ -13,13 +13,13 @@
 #include "parser.h"
 #include "config.h"
 
-extern CONFIG conf;
+extern SCHED_CONFIG conf;
 /**
  * Configure random distribution from parameters in RANDOM_CONFIG
  * @param rc : Random configuration
  * @return Error code (see more in def.h and error.h)
  */
-int schedconf_random_conf (RANDOM_CONF *rc) {
+int schedconf_random_conf (RANDOM_SCONF *rc) {
   struct mmpp_params *p = NULL;
   switch (rc->type) {
   case RANDOM_MARKOVIAN:
@@ -57,13 +57,13 @@ int schedconf_random_conf (RANDOM_CONF *rc) {
 }
 
 /**
- * Initialize the structure of CONFIG
+ * Initialize the structure of SCHED_CONFIG
  * @param conf : configuration
  * @return Error code (see more in def.h and error.h)
  */
-int schedconf_init (CONFIG *conf) {
+int schedconf_init (SCHED_CONFIG *conf) {
   check_null_pointer(conf);
-  memset(conf, 0, sizeof(CONFIG));
+  memset(conf, 0, sizeof(SCHED_CONFIG));
   conf->random_lib = LIB_RANDOM_IRAND;
   conf->stop_conf.queue_zero = STOP_QUEUE_ZERO;
   return SUCCESS;
@@ -74,7 +74,7 @@ int schedconf_init (CONFIG *conf) {
  * @param conf : User configuration
  * @return Error code (see more in def.h and error.h)
  */
-int schedconf_setup (CONFIG *conf) {
+int schedconf_setup (SCHED_CONFIG *conf) {
   extern int librand;
 
   schedconf_random_conf(&conf->arrival_conf);
@@ -90,15 +90,15 @@ int schedconf_setup (CONFIG *conf) {
  * @return : Error code (see more in def.h and error.h)
  */
 int schedconf_parse_file(char * f) {
-  extern FILE *yyin;
-  extern int yylex();
-  extern int yyparse();
+  extern FILE *schedin;
+  extern int schedlex();
+  extern int schedparse();
 
   schedconf_init(&conf);
-  yyin = fopen(f, "r");
-  yyparse();
+  schedin = fopen(f, "r");
+  schedparse();
   schedconf_setup(&conf);
-  fclose(yyin);
+  fclose(schedin);
   return SUCCESS;
 }
 

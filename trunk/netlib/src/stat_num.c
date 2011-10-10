@@ -64,7 +64,7 @@ int stat_num_new_time_sample (STAT_NUM *sn, float sample, float time) {
 }
 
 double stat_num_calc_confidence_interval (STAT_NUM *sn, double confidence) {
-  double c = get_normal_pvalue(confidence);
+  double c = get_normal_pvalue((confidence + 1)/2);
   return c*sn->var/sqrt(sn->num_samples);
 }
 

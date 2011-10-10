@@ -47,41 +47,42 @@
      ARRIVAL_LOADFROM = 263,
      QUEUE_KIND = 264,
      Q_FIFO = 265,
-     QUEUE_MAXLENGTH = 266,
-     QUEUE_SERVERS = 267,
-     SERVICE_TYPE = 268,
-     SERVICE_LAMBDA = 269,
-     SERVICE_TO = 270,
-     SERVICE_FROM = 271,
-     SERVICE_SAVETO = 272,
-     SERVICE_LOADFROM = 273,
-     DEPARTURE_SAVETO = 274,
-     STOP_MAXTIME = 275,
-     STOP_MAXARRIVAL = 276,
-     STOP_QUEUEZERO = 277,
-     NTHREADS = 278,
-     NODETYPE = 279,
-     PROTOCOL = 280,
-     PROTO_ONE_QUEUE = 281,
-     LIBS_RANDOM = 282,
-     LIB_RAND_IRAND = 283,
-     LIB_RAND_RANDLIB = 284,
-     R_MARKOV = 285,
-     R_UNF = 286,
-     R_FILE = 287,
-     R_MMPP = 288,
-     R_MMPP_R = 289,
-     R_OTHER = 290,
-     DEBUG_ERROR = 291,
-     DEBUG_WARNING = 292,
-     DEBUG_INFO = 293,
-     YES = 294,
-     NO = 295,
-     EQ = 296,
-     ENDLINE = 297,
-     REALNUM = 298,
-     INTNUM = 299,
-     STRING = 300
+     Q_RR = 266,
+     QUEUE_MAXLENGTH = 267,
+     QUEUE_SERVERS = 268,
+     SERVICE_TYPE = 269,
+     SERVICE_LAMBDA = 270,
+     SERVICE_TO = 271,
+     SERVICE_FROM = 272,
+     SERVICE_SAVETO = 273,
+     SERVICE_LOADFROM = 274,
+     DEPARTURE_SAVETO = 275,
+     STOP_MAXTIME = 276,
+     STOP_MAXARRIVAL = 277,
+     STOP_QUEUEZERO = 278,
+     NTHREADS = 279,
+     NODETYPE = 280,
+     PROTOCOL = 281,
+     PROTO_ONE_QUEUE = 282,
+     LIBS_RANDOM = 283,
+     LIB_RAND_IRAND = 284,
+     LIB_RAND_RANDLIB = 285,
+     R_MARKOV = 286,
+     R_UNF = 287,
+     R_FILE = 288,
+     R_MMPP = 289,
+     R_MMPP_R = 290,
+     R_OTHER = 291,
+     DEBUG_ERROR = 292,
+     DEBUG_WARNING = 293,
+     DEBUG_INFO = 294,
+     YES = 295,
+     NO = 296,
+     EQ = 297,
+     ENDLINE = 298,
+     REALNUM = 299,
+     INTNUM = 300,
+     STRING = 301
    };
 #endif
 /* Tokens.  */
@@ -93,41 +94,42 @@
 #define ARRIVAL_LOADFROM 263
 #define QUEUE_KIND 264
 #define Q_FIFO 265
-#define QUEUE_MAXLENGTH 266
-#define QUEUE_SERVERS 267
-#define SERVICE_TYPE 268
-#define SERVICE_LAMBDA 269
-#define SERVICE_TO 270
-#define SERVICE_FROM 271
-#define SERVICE_SAVETO 272
-#define SERVICE_LOADFROM 273
-#define DEPARTURE_SAVETO 274
-#define STOP_MAXTIME 275
-#define STOP_MAXARRIVAL 276
-#define STOP_QUEUEZERO 277
-#define NTHREADS 278
-#define NODETYPE 279
-#define PROTOCOL 280
-#define PROTO_ONE_QUEUE 281
-#define LIBS_RANDOM 282
-#define LIB_RAND_IRAND 283
-#define LIB_RAND_RANDLIB 284
-#define R_MARKOV 285
-#define R_UNF 286
-#define R_FILE 287
-#define R_MMPP 288
-#define R_MMPP_R 289
-#define R_OTHER 290
-#define DEBUG_ERROR 291
-#define DEBUG_WARNING 292
-#define DEBUG_INFO 293
-#define YES 294
-#define NO 295
-#define EQ 296
-#define ENDLINE 297
-#define REALNUM 298
-#define INTNUM 299
-#define STRING 300
+#define Q_RR 266
+#define QUEUE_MAXLENGTH 267
+#define QUEUE_SERVERS 268
+#define SERVICE_TYPE 269
+#define SERVICE_LAMBDA 270
+#define SERVICE_TO 271
+#define SERVICE_FROM 272
+#define SERVICE_SAVETO 273
+#define SERVICE_LOADFROM 274
+#define DEPARTURE_SAVETO 275
+#define STOP_MAXTIME 276
+#define STOP_MAXARRIVAL 277
+#define STOP_QUEUEZERO 278
+#define NTHREADS 279
+#define NODETYPE 280
+#define PROTOCOL 281
+#define PROTO_ONE_QUEUE 282
+#define LIBS_RANDOM 283
+#define LIB_RAND_IRAND 284
+#define LIB_RAND_RANDLIB 285
+#define R_MARKOV 286
+#define R_UNF 287
+#define R_FILE 288
+#define R_MMPP 289
+#define R_MMPP_R 290
+#define R_OTHER 291
+#define DEBUG_ERROR 292
+#define DEBUG_WARNING 293
+#define DEBUG_INFO 294
+#define YES 295
+#define NO 296
+#define EQ 297
+#define ENDLINE 298
+#define REALNUM 299
+#define INTNUM 300
+#define STRING 301
 
 
 
@@ -142,7 +144,7 @@ char* str; int ival; double dval;
 
 
 /* Line 1676 of yacc.c  */
-#line 146 "parser.h"
+#line 148 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

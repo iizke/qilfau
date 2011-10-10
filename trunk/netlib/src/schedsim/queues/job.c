@@ -147,9 +147,9 @@ int test_job_list_new_job () {
  * @return Error code (see more in def.h and error.h)
  */
 int smeasurement_self_collect_data (JOB *p) {
-  QUEUE_TYPE *qt = NULL;
+  SQUEUE_TYPE *qt = NULL;
   double curr_time;
-  MEASURES *m = NULL;
+  SCHED_MEASURES *m = NULL;
   //check_null_pointer(p);
   //check_null_pointer(m);
   qt = p->queue;

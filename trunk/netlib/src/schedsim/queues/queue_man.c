@@ -2,7 +2,7 @@
  * @file queue_man.c
  * Implementation of essential queue operations.
  *
- * @date Created on: Apr 16, 2011
+ * @date Created on: Oct 7, 2011
  * @author iizke
  */
 
@@ -15,7 +15,7 @@
  * @param qm : queue manager
  * @return Error code (defined in def.h and libs/error.h)
  */
-int squeue_man_init (QUEUE_MAN *qm) {
+int squeue_man_init (SQUEUE_MAN *qm) {
   check_null_pointer(qm);
   qm->curr_queue = NULL;
   linked_list_man_init_conf(&qm->list, LL_CONF_STORE_ENTRY);
@@ -28,12 +28,12 @@ int squeue_man_init (QUEUE_MAN *qm) {
  * @param type : queue type needs to be checked
  * @return Negative number if error in input. Return 1 if existing type in Queue manager. Otherwise return 0.
  */
-static int queue_man_match_type (QUEUE_MAN *qm, int type) {
+static int queue_man_match_type (SQUEUE_MAN *qm, int type) {
   LINKED_LIST *next = NULL;
   check_null_pointer(qm);
   next = qm->list.entries.next;
   while (next != &qm->list.entries) {
-    QUEUE_TYPE *qt = container_of(next, QUEUE_TYPE, list_node);
+    SQUEUE_TYPE *qt = container_of(next, SQUEUE_TYPE, list_node);
     if (qt->type == type) {
       return 1;
     }
@@ -48,7 +48,7 @@ static int queue_man_match_type (QUEUE_MAN *qm, int type) {
  * @param qi : queue type
  * @return Error code (defined in def.h and libs/error.h)
  */
-int squeue_man_register_new_type (QUEUE_MAN *qm, QUEUE_TYPE *qi) {
+int squeue_man_register_new_type (SQUEUE_MAN *qm, SQUEUE_TYPE *qi) {
   check_null_pointer(qm);
   check_null_pointer(qi);
   while (queue_man_match_type(qm, qi->type)) {
@@ -67,7 +67,7 @@ int squeue_man_register_new_type (QUEUE_MAN *qm, QUEUE_TYPE *qi) {
  * @param qi : queue type
  * @return Error code (defined in def.h and libs/error.h)
  */
-int squeue_man_unregister_type (QUEUE_MAN *qm, QUEUE_TYPE *qi) {
+int squeue_man_unregister_type (SQUEUE_MAN *qm, SQUEUE_TYPE *qi) {
   check_null_pointer(qm);
   check_null_pointer(qi);
   try ( linked_list_man_remove(&qm->list, &qi->list_node) );
@@ -80,12 +80,12 @@ int squeue_man_unregister_type (QUEUE_MAN *qm, QUEUE_TYPE *qi) {
  * @param type : queue type
  * @return Error code (defined in def.h and libs/error.h)
  */
-int squeue_man_activate_type (QUEUE_MAN *qm, int type) {
+int squeue_man_activate_type (SQUEUE_MAN *qm, int type) {
   LINKED_LIST *next = NULL;
   check_null_pointer(qm);
   next = qm->list.entries.next;
   while (next != &qm->list.entries) {
-    QUEUE_TYPE *qt = container_of(next, QUEUE_TYPE, list_node);
+    SQUEUE_TYPE *qt = container_of(next, SQUEUE_TYPE, list_node);
     if (qt->type == type) {
       // activate this queue_type
       qm->curr_queue = qt;

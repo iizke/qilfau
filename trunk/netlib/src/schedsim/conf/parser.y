@@ -7,7 +7,7 @@
 #include "error.h"
 #include "../queues/queue_man.h"
 //long debug = 0;
-CONFIG conf;
+SCHED_CONFIG conf;
 %}
 
 %locations
@@ -24,6 +24,7 @@ CONFIG conf;
 
 %token QUEUE_KIND
 %token Q_FIFO
+%token Q_RR
 %token QUEUE_MAXLENGTH
 %token QUEUE_SERVERS
 
@@ -95,6 +96,7 @@ exp:      ARRIVAL_TYPE EQ INTNUM { conf.arrival_conf.type = $3; }
 		| QUEUE_MAXLENGTH EQ INTNUM { conf.queue_conf.max_waiters = $3; }
 		| QUEUE_KIND EQ INTNUM { conf.queue_conf.type = $3; }
 		| QUEUE_KIND EQ Q_FIFO { conf.queue_conf.type = QUEUE_FIFO; }
+		| QUEUE_KIND EQ Q_RR { conf.queue_conf.type = QUEUE_ROUND_ROBIN; }
 		| QUEUE_SERVERS EQ INTNUM { conf.queue_conf.num_servers = $3; }
 		| SERVICE_TYPE EQ INTNUM {conf.service_conf.type = $3; }
 		| SERVICE_TYPE EQ R_MARKOV {conf.service_conf.type = RANDOM_MARKOVIAN; }

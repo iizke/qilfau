@@ -45,17 +45,21 @@ static double chisqr_pvalues[][11] =
 /// Pvalue (quantile) of standard normal distribution
 static double normal_pvalues[] =
 {
-//   0.9      0.95    0.975    0.99    0.995   0.999
+/* P value:
+ *  0.9      0.95     0.975    0.99    0.995   0.999
+ * Confident level:
+ *  0.8      0.9      0.95     0.98    0.99    0.998
+ */
     1.282,   1.645,   1.960,   2.326,  2.576,  3.090
 };
 
+
 #define pvalue_normal_id(p_value)   \
-  ((p_value == 0.9)? 0 : \
-  ((p_value == 0.95)? 1 : \
-  ((p_value == 0.975)? 2 : \
-  ((p_value == 0.99)? 3 : \
-  ((p_value == 0.995)? 4 : \
-  ((p_value == 0.999)? 5 : (-1)) \
+  ((p_value < (0.9 + 0.95)/2)? 0 : \
+  ((p_value < (0.95 + 0.975)/2)? 1 : \
+  ((p_value < (0.975 + 0.99)/2)? 2 : \
+  ((p_value < (0.99 + 0.995)/2)? 3 : \
+  ((p_value < (0.995 + 0.999)/2)? 4 : 5 \
   )))))
 
 #define get_normal_pvalue(_p)  (normal_pvalues[pvalue_normal_id(_p)])

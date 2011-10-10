@@ -14,10 +14,17 @@
 #include "netsim/conf/config.h"
 #include "netsim/conf/channelparser.h"
 #include "netsim/netqueue.h"
+#include "schedsim/schedsim.h"
 
 int check_netsim () {
   //netsim_start_thread("src/netsim/conf/test.conf");
   netsim_start("src/netsim/conf/test.conf");
+  return 0;
+}
+
+int check_schedsim () {
+  //netsim_start_thread("src/netsim/conf/test.conf");
+  schedsim_start("src/schedsim/conf/test.conf");
   return 0;
 }
 
@@ -53,6 +60,7 @@ int main (int nargs, char** args) {
 
   //main_markov_parser(nargs, args);
   check_netsim();
+  //check_schedsim();
   //main_graph(nargs, args);
   //main_rwa(nargs, args);
   //check_matrix();
