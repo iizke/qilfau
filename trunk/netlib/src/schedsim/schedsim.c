@@ -53,25 +53,25 @@ int pisas_do_sched (void *conf, SCHED_STATE_OPS *sys_ops) {
   check_null_pointer(conf);
   check_null_pointer(sys_ops);
 
-  while (sys_ops->allow_continue(conf, sys_ops)) {
+  while (sys_ops->allow_continue(sys_ops, conf)) {
     // assume that event_list support sorting follow time
     SEVENT *e = NULL;
     sys_ops->get_next_event(sys_ops, &e);
 
-    if (!e) {
-      // There is no event, we need one
-      sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
-      //sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
-      continue;
-    }
+//    if (!e) {
+//      // There is no event, we need one
+//      sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
+//      //sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
+//      continue;
+//    }
 
     iprint (LEVEL_INFO, "Get event type %d at %f \n", e->type, e->time);
-    sys_ops->process_event(e, conf, sys_ops);
+    sys_ops->process_event(sys_ops, conf, e);
     _save_event(e,conf);
     //sevent_list_remove_event(&future_events, e);
     sys_ops->remove_event(sys_ops, e);
   }
-  sys_ops->clean(conf, sys_ops);
+  sys_ops->clean(sys_ops, conf);
   return SUCCESS;
 }
 
@@ -83,7 +83,7 @@ static void schedsim_print_result(SCHED_CONFIG *conf) {
   ONEQ_STATE *sys_state;
   switch (conf->protocol) {
     case PROTOCOL_ONE_QUEUE:
-      sys_state = get_sys_state_from_ops(((SCHED_STATE_OPS*)conf->runtime_state));
+      sys_state = get_oneq_state_from_ops(((SCHED_STATE_OPS*)conf->runtime_state));
       print_smeasurement(&sys_state->measurement);
       //print_smeasurement(&((QUEUE_FF*)(sys_state->queues.curr_queue->info))->measurement);
       break;
@@ -166,7 +166,8 @@ static void schedsim_print_theorical_mm1k (double ar, double sr, int maxlen) {
   double qlen = 0;
   if (ro != 1) {
     p0 = (1-ro)/(1-pow(ro,maxlen+1));
-    slen = ro*(1 - (maxlen+1)*pow(ro, maxlen) + maxlen*pow(ro, maxlen+1)) / ((1-ro)*(1-pow(ro,maxlen+1)));
+    slen = ro*(1 - (maxlen+1)*pow(ro, maxlen) +
+                maxlen*pow(ro, maxlen+1)) / ((1-ro)*(1-pow(ro,maxlen+1)));
   } else {
     p0 = 1/(maxlen+1);
     slen = maxlen/2;
@@ -206,7 +207,7 @@ static void schedsim_print_theorical_result (SCHED_CONFIG *conf) {
 static void netsim_sig_handler(int n) {
   schedsim_print_result(&conf);
   schedsim_print_theorical_result(&conf);
-  ((SCHED_STATE_OPS*)conf.runtime_state)->clean(&conf, conf.runtime_state);
+  ((SCHED_STATE_OPS*)conf.runtime_state)->clean(conf.runtime_state, &conf);
   exit(1);
 }
 

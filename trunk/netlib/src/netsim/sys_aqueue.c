@@ -193,7 +193,7 @@ int _process_arrival (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
 
   _generate_arrival(conf, state);
 
-  if ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) >= 1))
+  while ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) > 0))
     _process_packet(conf, state);
 
   return SUCCESS;
