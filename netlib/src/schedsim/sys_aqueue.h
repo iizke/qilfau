@@ -13,6 +13,7 @@
 #include "queues/queue_man.h"
 #include "event.h"
 #include "schedsim.h"
+#include "conf/config.h"
 
 /**
  * Structure representing the system state in simulation.
@@ -32,7 +33,16 @@ typedef struct onequeue_state {
   JOB_LIST free_packets;
 } ONEQ_STATE;
 
-#define get_sys_state_from_ops(_ops) (container_of(_ops, ONEQ_STATE, ops))
+#define get_oneq_state_from_ops(_ops) (container_of(_ops, ONEQ_STATE, ops))
+
+typedef struct sevent_oneq {
+  SEVENT event;
+  JOB *packet;
+//  ONEQ_STATE *state;
+//  RANDOM_SCONF *conf;
+} SEVENT_ONEQ;
+
+#define event_oneq_from_event(e) (container_of(e, SEVENT_ONEQ, event))
 
 int sched_sys_state_init (ONEQ_STATE *state, SCHED_CONFIG *conf);
 int oneq_set_ops (ONEQ_STATE *state) ;
@@ -40,7 +50,5 @@ int oneq_set_ops (ONEQ_STATE *state) ;
 int oneq_new_packet (ONEQ_STATE *state, JOB **p);
 int oneq_free_packet (ONEQ_STATE *state, JOB *p);
 int oneq_update_time (ONEQ_STATE *state, double time);
-SEVENT* oneq_generate_arrival (ONEQ_STATE *state, SCHED_CONFIG *conf);
-SEVENT* oneq_generate_end_service (ONEQ_STATE *state, JOB *p, SCHED_CONFIG *conf);
 
 #endif /* SYS_AQUEUE_H_ */

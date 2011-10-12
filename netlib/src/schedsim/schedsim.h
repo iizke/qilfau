@@ -21,13 +21,13 @@ struct schedsim_state_operations {
   /// Remove an event out of event list
   int (*remove_event) (SCHED_STATE_OPS *, SEVENT *e);
   /// Check whether the program is stopped (from user configuration)
-  int (*allow_continue) (SCHED_CONFIG*, SCHED_STATE_OPS*);
+  int (*allow_continue) (SCHED_STATE_OPS*, SCHED_CONFIG*);
   /// Generate new event
-  SEVENT* (*generate_event) (int type, JOB*, SCHED_CONFIG*, SCHED_STATE_OPS*);
+  //SEVENT* (*generate_event) (int type, JOB*, SCHED_CONFIG*, SCHED_STATE_OPS*);
   /// Process an event
-  int (*process_event) (SEVENT *e, SCHED_CONFIG*, SCHED_STATE_OPS*);
+  int (*process_event) (SCHED_STATE_OPS*, SCHED_CONFIG*, SEVENT *e);
   /// Clean the simulated system (when finishing simulation)
-  int (*clean) (SCHED_CONFIG*, SCHED_STATE_OPS*);
+  int (*clean) (SCHED_STATE_OPS*, SCHED_CONFIG*);
 };
 
 int schedsim_start (char *conf_file);

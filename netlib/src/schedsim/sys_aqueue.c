@@ -56,40 +56,27 @@ int oneq_update_time (ONEQ_STATE *state, double time) {
   return SUCCESS;
 }
 
-/**
- * Generate arrival event
- * @param conf : user configuration
- * @param state : system state
- * @return new event (already added in Event list)
- */
-SEVENT* oneq_generate_arrival (ONEQ_STATE *state, SCHED_CONFIG *conf) {
+SEVENT* oneq_generate_event (ONEQ_STATE *state, int type, RANDOM_SCONF *conf, JOB*job) {
   SEVENT *e = NULL;
+  SEVENT_ONEQ *ex = NULL;
   int error_code = SUCCESS;
-  sevent_list_new_event(&state->future_events, &e);
-  e->type = EVENT_ARRIVAL;
-  error_code = sevent_setup(e, &conf->arrival_conf, state->curr_time);
-  if (error_code < 0) {
-    free_gc (e);
-    return NULL;
-  }
-  sevent_list_insert_event(&state->future_events, e);
-  return e;
-}
+  sevent_list_new_event_info(&state->future_events, sizeof(SEVENT_ONEQ), &e);
+  ex = event_oneq_from_event(e);
 
-/**
- * Generate new end-service event.
- * @param p : Processing packet (for this event)
- * @param conf : user configuration
- * @param state : System state
- * @return New event (already added in the event list)
- */
-SEVENT* oneq_generate_end_service (ONEQ_STATE *state, JOB *p, SCHED_CONFIG *conf) {
-  SEVENT *e = NULL;
-  sevent_list_new_event(&state->future_events, &e);
-  e->type = EVENT_END_SERVICE;
-  sevent_setup(e, &conf->service_conf, state->curr_time);
-  event_get_event_info(e)->packet = p;
-  sevent_list_insert_event(&state->future_events, e);
+  e->type = type;
+  error_code = sevent_setup(e, conf, state->curr_time);
+//  if (error_code < 0) {
+//    free_gc (e);
+//    return NULL;
+//  }
+  if (!job) { // job is null, mean that it is arrival job
+    oneq_new_packet(state, &job);
+    job->atime = e->time;
+    job->state = JOB_STATE_IN;
+  }
+  ex->packet = job;
+  if (error_code == SUCCESS)
+    sevent_list_insert_event(&state->future_events, e);
   return e;
 }
 
@@ -99,8 +86,8 @@ SEVENT* oneq_generate_end_service (ONEQ_STATE *state, JOB *p, SCHED_CONFIG *conf
  * @param ops : Abstract system operators
  * @return 0 if system should be stopped, 1 otherwise.
  */
-static int _allow_continue (SCHED_CONFIG *conf, SCHED_STATE_OPS *ops) {
-  ONEQ_STATE *state = get_sys_state_from_ops(ops);
+static int _allow_continue (SCHED_STATE_OPS* ops, SCHED_CONFIG *conf) {
+  ONEQ_STATE *state = get_oneq_state_from_ops(ops);
 
   STOP_SCONF *stop_conf = &conf->stop_conf;
   if ((stop_conf->max_time > 0 && state->curr_time > stop_conf->max_time) ||
@@ -128,7 +115,7 @@ static int _allow_continue (SCHED_CONFIG *conf, SCHED_STATE_OPS *ops) {
  * @param state : system state
  * @return Error code (see more in def.h and error.h)
  */
-static int _process_packet (SCHED_CONFIG *conf, ONEQ_STATE *state) {
+static int _process_packet (ONEQ_STATE *state, SCHED_CONFIG *conf) {
   SQUEUE_TYPE *qt = state->queues.curr_queue;
   SEVENT *e = NULL;
   JOB *p = NULL;
@@ -137,35 +124,10 @@ static int _process_packet (SCHED_CONFIG *conf, ONEQ_STATE *state) {
   p->stime = state->curr_time;
   qt->process_packet(qt, p);
   smeasurement_collect_data(&state->measurement, p, state->curr_time);
-  e = oneq_generate_end_service (state, p, conf);
+  e = oneq_generate_event(state, EVENT_END_SERVICE, &conf->service_conf, p);
   if (!e) {
     iprint(LEVEL_WARNING, "Cannot generate end service event \n");
     return ERR_POINTER_NULL;
-  }
-  return SUCCESS;
-}
-
-/**
- * Setup time and type of packet extracted from an event
- * @param e : Event
- * @param p : Packet
- * @return Error code (see more in def.h and error.h)
- */
-static int _packet_from_event (SEVENT *e, JOB *p) {
-  switch (e->type) {
-  case EVENT_ARRIVAL:
-    p->atime = e->time;
-    p->state = JOB_STATE_IN;
-    //e->data = p;
-    break;
-  case EVENT_END_SERVICE:
-    p->etime = e->time;
-    p->state = JOB_STATE_OUT;
-    break;
-  default:
-    iprint(LEVEL_WARNING, "Event Type not supported \n");
-    return ERR_EVENT_TYPE_FAIL;
-    break;
   }
   return SUCCESS;
 }
@@ -177,23 +139,29 @@ static int _packet_from_event (SEVENT *e, JOB *p) {
  * @param state : system state
  * @return Error code (see more in def.h and libs/error.h)
  */
-static int _process_arrival (SEVENT *e, SCHED_CONFIG *conf, ONEQ_STATE *state) {
-  JOB *packet = NULL;
-  SQUEUE_TYPE *qt = state->queues.curr_queue;
+static int _process_arrival (SEVENT *e, ONEQ_STATE *state, SCHED_CONFIG *conf) {
+  check_null_pointer(e);
+  SEVENT_ONEQ *ex = event_oneq_from_event(e);
+  JOB *packet = ex->packet;
+  SQUEUE_TYPE *qt = packet->queue;
+
+  if (e->type != EVENT_ARRIVAL)
+    return ERR_EVENT_TYPE_FAIL;
 
   try ( oneq_update_time(state, e->time) );
-  try ( oneq_new_packet(state, &packet) );
-  _packet_from_event (e, packet);
+  packet->atime = e->time;
+  packet->state = JOB_STATE_IN;
   smeasurement_collect_data(&state->measurement, packet, state->curr_time);
   qt->push_packet(qt, packet);
   smeasurement_collect_data(&state->measurement, packet, state->curr_time);
   if (packet->state == JOB_STATE_DROPPED)
     oneq_free_packet(state, packet);
 
-  oneq_generate_arrival(state, conf);
+  //oneq_generate_arrival(state, conf);
+  oneq_generate_event(state, EVENT_ARRIVAL, &conf->arrival_conf, NULL);
 
-  if ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) >= 1))
-    _process_packet(conf, state);
+  while ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) >= 1))
+    _process_packet(state, conf);
 
   return SUCCESS;
 }
@@ -205,18 +173,24 @@ static int _process_arrival (SEVENT *e, SCHED_CONFIG *conf, ONEQ_STATE *state) {
  * @param state : system state
  * @return Error code (see more in def.h and error.h)
  */
-static int _process_end_service (SEVENT *e, SCHED_CONFIG *conf, ONEQ_STATE *state) {
-  JOB *packet = event_get_event_info(e)->packet;
-  SQUEUE_TYPE *qt = state->queues.curr_queue;
+static int _process_end_service (SEVENT *e, ONEQ_STATE *state, SCHED_CONFIG *conf) {
+  check_null_pointer(e);
+  SEVENT_ONEQ *ex = event_oneq_from_event(e);
+  JOB *packet = ex->packet;
+  SQUEUE_TYPE *qt = packet->queue;
+
+  if (e->type != EVENT_END_SERVICE)
+    return ERR_EVENT_TYPE_FAIL;
 
   try ( oneq_update_time(state, e->time) );
-  _packet_from_event(e, packet);
+  packet->etime = e->time;
+  packet->state = JOB_STATE_OUT;
   qt->finish_packet(qt, packet);
   smeasurement_collect_data(&state->measurement, packet, state->curr_time);
   try ( oneq_free_packet(state, packet) );
 
   while (qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0))
-    _process_packet(conf, state);
+    _process_packet(state, conf);
 
   return SUCCESS;
 }
@@ -227,52 +201,13 @@ static int _process_end_service (SEVENT *e, SCHED_CONFIG *conf, ONEQ_STATE *stat
  * @param ops  : Abstract system operations
  * @return Error code (see more in def.h and error.h)
  */
-static int _system_clean (SCHED_CONFIG *conf, SCHED_STATE_OPS *ops) {
-  //ONEQ_STATE *state = get_sys_state_from_ops(ops);
-
+static int _system_clean (SCHED_STATE_OPS* ops, SCHED_CONFIG *conf) {
   if (conf->arrival_conf.to_file)
     fclose(conf->arrival_conf.to_file);
-  //if (state->departure_file)
-  //fclose(state->departure_file);
   if (conf->queue_conf.out_file)
     fclose(conf->queue_conf.out_file);
 
-  //This part of code is supported by Garbage collector -> comment these codes
-//  while (state->free_packets.size > 0) {
-//    // free packet
-//    JOB *p = NULL;
-//    job_list_get_first(&state->free_packets, &p);
-//    linked_list_remove(&p->list_node);
-//    free(p);
-//  }
-//  free(state->queues.curr_queue);
   return SUCCESS;
-}
-
-/**
- * Generate new event.
- * @param type : type of event
- * @param p : Packet related to this new event
- * @param conf : user configuration
- * @param ops : Abstract system operations
- * @return New event
- */
-static SEVENT * _generate_event(int type, JOB *p, SCHED_CONFIG *conf, SCHED_STATE_OPS *ops) {
-  ONEQ_STATE *state = get_sys_state_from_ops(ops);
-  SEVENT *e = NULL;
-
-  switch (type) {
-  case EVENT_ARRIVAL:
-    e = oneq_generate_arrival(state, conf);
-    break;
-  case EVENT_END_SERVICE:
-    e = oneq_generate_end_service(state, p, conf);
-    break;
-  default:
-    iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", type);
-    break;
-  }
-  return e;
 }
 
 /**
@@ -282,19 +217,12 @@ static SEVENT * _generate_event(int type, JOB *p, SCHED_CONFIG *conf, SCHED_STAT
  * @param ops :Abstract system operations
  * @return Error code (more in def.h and error.h)
  */
-static int _process_event (SEVENT *e, SCHED_CONFIG *conf, SCHED_STATE_OPS *ops) {
-  ONEQ_STATE *state = get_sys_state_from_ops(ops);
-  switch (e->type) {
-  case EVENT_ARRIVAL:
-    _process_arrival(e, conf, state);
-    break;
-  case EVENT_END_SERVICE:
-    _process_end_service(e, conf, state);
-    break;
-  default:
-    iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", e->type);
-    break;
-  }
+static int _process_event (SCHED_STATE_OPS *ops, SCHED_CONFIG *conf, SEVENT *e) {
+  ONEQ_STATE *state = get_oneq_state_from_ops(ops);
+  int (*func)(void*,void*,void*) = NULL;
+  check_null_pointer(e);
+  func = state->future_events.process[e->type];
+  func(e, state, conf);
   return SUCCESS;
 }
 
@@ -305,7 +233,7 @@ static int _process_event (SEVENT *e, SCHED_CONFIG *conf, SCHED_STATE_OPS *ops) 
  * @return Error code (more in def.h and error.h)
  */
 static int _get_next_event (SCHED_STATE_OPS *ops, SEVENT **e) {
-  ONEQ_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_oneq_state_from_ops(ops);
   sevent_list_get_first(&state->future_events, e);
   return SUCCESS;
 }
@@ -317,7 +245,7 @@ static int _get_next_event (SCHED_STATE_OPS *ops, SEVENT **e) {
  * @return Error code (more in def.h and error.h)
  */
 static int _remove_event (SCHED_STATE_OPS *ops, SEVENT *e) {
-  ONEQ_STATE *state = get_sys_state_from_ops(ops);
+  ONEQ_STATE *state = get_oneq_state_from_ops(ops);
   try (sevent_list_remove_event(&state->future_events, e) );
   return SUCCESS;
 }
@@ -326,12 +254,12 @@ int oneq_set_ops (ONEQ_STATE *state) {
   check_null_pointer(state);
   state->ops.allow_continue = _allow_continue;
   state->ops.clean = _system_clean;
-  state->ops.generate_event = _generate_event;
   state->ops.get_next_event = _get_next_event;
   state->ops.process_event = _process_event;
   state->ops.remove_event = _remove_event;
   return SUCCESS;
 }
+
 /**
  * Initialize system state of one-queue system
  * @param state : system state
@@ -344,7 +272,11 @@ int sched_sys_state_init (ONEQ_STATE *state, SCHED_CONFIG *conf) {
 
   state->curr_time = 0;
   job_list_init(&state->free_packets, LL_CONF_STORE_FREE);
-  sevent_list_init(&state->future_events);
+
+  sevent_list_init(&state->future_events, 2);
+  sevent_list_reg_processing_func(&state->future_events, EVENT_ARRIVAL, _process_arrival);
+  sevent_list_reg_processing_func(&state->future_events, EVENT_END_SERVICE, _process_end_service);
+
   smeasures_init (&state->measurement);
   squeue_man_init(&state->queues);
 
@@ -355,6 +287,8 @@ int sched_sys_state_init (ONEQ_STATE *state, SCHED_CONFIG *conf) {
   squeue_man_activate_type(&state->queues, conf->queue_conf.type);
 
   oneq_set_ops(state);
+
+  oneq_generate_event(state, EVENT_ARRIVAL, &conf->arrival_conf, NULL);
 
   return SUCCESS;
 }

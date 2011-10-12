@@ -15,12 +15,19 @@
  * @param el : pointer to SEVENT_LIST
  * @return Error-code (normal SUCCESS)
  */
-int sevent_list_init (SEVENT_LIST *el) {
+int sevent_list_init (SEVENT_LIST *el, int num_types) {
   check_null_pointer(el);
   try ( linked_list_man_init(&el->list) );
   sem_init(&el->mutex, 0, 1);
   stat_num_init(&el->snum_events);
   el->num_events = 0;
+  el->process = malloc_gc(sizeof(void*)*num_types);
+  return SUCCESS;
+}
+
+int sevent_list_reg_processing_func(SEVENT_LIST* list, int type, int (*func)(void*,void*,void*)) {
+  check_null_pointer(list);
+  list->process[type] = func;
   return SUCCESS;
 }
 
@@ -31,14 +38,15 @@ int sevent_list_init (SEVENT_LIST *el) {
  * @param e : output -> New event
  * @return Error-code (defined in def.h and libs/error.h)
  */
-int sevent_list_new_event (SEVENT_LIST *el, SEVENT **e){
+int sevent_list_new_event_info (SEVENT_LIST *el, int size, SEVENT **e){
   LINKED_LIST *l = NULL;
   check_null_pointer(el);
   try (linked_list_man_get_free_entry(&el->list, &l) );
   if (l)
     *e = container_of(l, SEVENT, list_node);
   else
-    *e = malloc_gc(sizeof(SEVENT));
+    *e = malloc_gc(size);
+
   if(! *e)
     return ERR_MALLOC_FAIL;
 
@@ -46,10 +54,10 @@ int sevent_list_new_event (SEVENT_LIST *el, SEVENT **e){
   return SUCCESS;
 }
 
-int sevent_list_new_event_mutex (SEVENT_LIST *el, SEVENT **e){
+int sevent_list_new_event_mutex (SEVENT_LIST *el, int size, SEVENT **e){
   int err = SUCCESS;
   sem_wait(&el->mutex);
-  err = sevent_list_new_event(el, e);
+  err = sevent_list_new_event_info(el, size, e);
   sem_post(&el->mutex);
   return err;
 }
@@ -215,6 +223,9 @@ int sevent_setup (SEVENT *e, RANDOM_SCONF *fc, double curr_time) {
   int type;
   double etime;
   struct mmpp_params *p = NULL;
+  check_null_pointer(e);
+  check_null_pointer(fc);
+
   switch (fc->type) {
   case RANDOM_FILE:
     fscanf(fc->from_file, "%f %d %f", &time, &type, &etime);
@@ -247,7 +258,7 @@ int sevent_setup (SEVENT *e, RANDOM_SCONF *fc, double curr_time) {
 int test_sevent_list_insert () {
   SEVENT_LIST l;
   SEVENT e1, e2, e3, e4, e5;
-  sevent_list_init(&l);
+  sevent_list_init(&l,2);
   sevent_init(&e1);
   sevent_init(&e2);
   sevent_init(&e3);
