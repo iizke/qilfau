@@ -259,6 +259,7 @@ double irand_gen_mmpp_0(struct mmpp_params * p) {
   double curr_rate = 0;
   double state_rate;
   double mint = 999999999;
+  double last = p->last_time;
   int i;
 
   while (curr_rate == 0) {
@@ -288,7 +289,7 @@ double irand_gen_mmpp_0(struct mmpp_params * p) {
       // regenerate random value
     }
   }
-  return (p->last_time);
+  return (p->last_time - last);
 }
 
 double irand_gen_mmpp_1(struct mmpp_params * p) {
@@ -296,6 +297,7 @@ double irand_gen_mmpp_1(struct mmpp_params * p) {
   double state_rate;
   double prob = 0;
   double range = 0;
+  double last = p->last_time;
   int i;
 
   while (curr_rate == 0) {
@@ -326,7 +328,7 @@ double irand_gen_mmpp_1(struct mmpp_params * p) {
       // regenerate random value
     }
   }
-  return (p->last_time);
+  return (p->last_time - last);
 }
 
 double irand_gen_mmpp(struct mmpp_params * p) {
@@ -334,6 +336,7 @@ double irand_gen_mmpp(struct mmpp_params * p) {
   double state_rate;
   double prob = 0;
   double range = 0;
+  double last = p->last_time;
   int i;
 
   while (curr_rate == 0) {
@@ -366,7 +369,7 @@ double irand_gen_mmpp(struct mmpp_params * p) {
     }
   }
 
-  return (p->last_time);
+  return (p->last_time - last);
 }
 
 int test_gen_distribution () {
