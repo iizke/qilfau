@@ -1,0 +1,341 @@
+\documentclass[a4paper]{article}
+
+\setlength{\oddsidemargin}{-4mm}
+\addtolength{\topmargin}{-1in}
+\addtolength{\footskip}{+0.5in}
+\addtolength{\textwidth}{+1.5in}
+\addtolength{\textheight}{+1in}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{subfig}
+\usepackage{hyperref}
+\hypersetup{linktocpage}
+\renewcommand{\familydefault}{cmr}
+
+\title{Q & A \\
+Operation Research Course}
+\author{Hong-Nam Hoang}
+\date{\today}
+
+\begin{document}
+  \maketitle
+%  \tableofcontents
+%  \newpage
+
+  \definecolor{stringcolor}{rgb}{0.20,0.50,0.20}
+  \definecolor{commentcolor}{rgb}{0.40,0.40,0.40}
+  \definecolor{keywordcolor}{rgb}{0.50,0.10,0.10}
+  \definecolor{idcolor}{rgb}{0.10,0.10,0.50}
+  \definecolor{bg}{rgb}{0.95,0.95,0.95}  
+  \lstdefinestyle{iizke}{basicstyle=\ttfamily,
+                          keywordstyle=*\color{keywordcolor}\bfseries,
+                          identifierstyle=\color{idcolor},
+                          commentstyle={\color{black}\it},
+                          stringstyle={\color{stringcolor}\ttfamily},
+                          showstringspaces=false,
+                          breaklines=true,
+                          numbers=left,
+                          numbersep=10pt,
+                          stepnumber=1,
+                          numberstyle=\small,
+                          frame=single,
+                          }
+
+  \lstdefinelanguage[]{Click}[]{SQL}{
+    morekeywords={elementclass, Counter, InfiniteSource, RateSource, Print, Paint, PaintSwitch, Script}}
+
+\begin{enumerate}
+\item Define CAPEX and OPEX \\
+\textbf{Answer:} CAPEX (CAPital EXpenditures): all costs you have to consider when you start to deploy the network (establish the topology)\\
+OPEX means OPerational EXPenditures, they include all costs for running the network (cost of people managing it, cost of renting and so on).
+
+\item Consider the problem of routing traffic in  a  telecommunication network. Discuss  the  possible  objective  functions that  can  be  considered  as optimization goal.\\
+\textbf{Answer:}
+shortest path\\
+minimize power consumption\\
+min cost flow\\
+matching problem\\
+Logical topology design: find the best logical topology with a given node-node traffic and physical topology\\
+Routing & Wavelength Assignment: minimize total number of wavelengths, minimize power consumption\\
+Green optimization: minimize power consumption by turning on/off nodes/links in network
+Maximal covering location (used in wireless network)\\
+Minimize the total delay, or minimize the maximum delay suffered by traffic\\
+
+\item Consider the  problem  of  routing  traffic  in  a  telecommunication  network.  Provide a  LP  formulation  of  the  problem  which  aims  at  minimizing  the   maximum  traffic  a  link  will  carry.  Assume  traffic  can  be  split  among   multiple  paths.\\
+\textbf{Answer:}\\
+\begin{math}
+\min{Y} \\
+Y \ge F_{ij} \\
+F_{ij} = \displaystyle\sum\limits_{s,d} {f_{ij}^{sd}} \le c_{ij}\\
+\displaystyle\sum\limits_{j} {\alpha_{ji}^{sd}} - \displaystyle\sum\limits_{j} {\alpha_{ij}^{sd}} =
+  \begin{cases}
+  0, &\text{if $i \neq s, d$}\\
+  -t^{sd}, &\text{if $i = s$}\\
+  t^{sd}, &\text{if $i = d$}
+  \end{cases} \\
+\end{math}
+Number of constraints: $O(N^3)$ \\
+Number of variables: $O(N^4)$
+\item Consider the problem of routing traffic in a telecommunication network. Provide a LP formulation of the problem which aims at minimizing the average traffic carried by links. Assume traffic can be split among multiple paths. \\
+\textbf{Answer:}\\
+\begin{math}
+\min{\displaystyle\sum\limits_{i,j} F_{ij}} \\
+f_{ij}^{sd} = \alpha_{ji}^{sd} t^{sd}\\
+F_{ij} = \displaystyle\sum\limits_{s,d} {f_{ij}^{sd}} \le c_{ij}\\
+\displaystyle\sum\limits_{j} {\alpha_{ji}^{sd}} - \displaystyle\sum\limits_{j} {\alpha_{ij}^{sd}} =
+  \begin{cases}
+  0, &\text{if $i \neq s, d$}\\
+  -1, &\text{if $i = s$}\\
+  1, &\text{if $i = d$}
+  \end{cases} \\
+\alpha_{ji}^{sd} \in [0,1] \\
+\end{math}
+
+\item Consider the problem of routing traffic in a telecommunication network. Provide a LP formulation of the problem, which aims at minimizing the maximum traffic a link will carry. Assume traffic must be routed on a single route for each source/destination pair.\\
+\textbf{Answer:}\\
+The same as the previous one, but consider $\alpha_{ij}^{sd}$ as a binary number, not a real number.
+
+\item Provide  a  LP  formulation  of  the  problem,  which  aims  at  minimizing  the   maximum  traffic  a  link  will  carry.  Assume  traffic  can  be  split  among   multiple  paths.  Discuss  how  it  could  be  possible  to  reduce  the  complexity   of  the  formulation  by  using  aggregate  flow  variables  $f_{ij}^{s}$. Which  information   is  missing  compared  to  the  formulation  that  involves $f_{ij}^{sd}$.\\
+\textbf{Answer:}\\
+\begin{math}
+\min{Y} \\
+Y \ge F_{ij} \\
+F_{ij} = \displaystyle\sum\limits_{s} {f_{ij}^{s}} \le c_{ij} \\
+\displaystyle\sum\limits_{j} {f_{ji}^{s}} - \displaystyle\sum\limits_{j} {f_{ij}^{s}} =
+  \begin{cases}
+  t^{si}, &\text{if $i \neq s$}\\
+  -t^{s}, &\text{if $i = s$}
+  \end{cases} \\
+\end{math}
+Reduce complexity: number of variables $O(N^3)$, number of constraints $O(N^2)$. \\
+Missing information: Understand which links are used to carry traffic for source node $s$, but do not know destinations of traffic (cannot quantity how much traffic on each link for each destination).
+
+\item Consider a bidirectional ring of $N$ nodes ($N$  odd) in which $t^{sd} = t$ is the traffic node $s$ sends to node $d$ for all (s,d). Compute the link load for each link versus the number of node.\\
+\textbf{Answer:}\\
+Min link load is $\frac{(N^2 - 1)}{4}$
+\item Same  as  above,  but  consider  a  bidirectional  ring  in  which  traffic  is  routed along the  shortest  path.\\
+\textbf{Answer:}\\
+Link load is $\frac{(N^2 - 1)}{4}$
+\item Provide a LP formulation of the problem, which aims at minimizing  the total  energy consumed by network elements (links and nodes). Assume the energy  consumed by a link/node  can  be  modeled with a constant cost plus a  variable part that is proportional to the link load\\
+\textbf{Answer:} Given a traffic and topology, we have LP problem:\\
+\begin{math}
+\min{\displaystyle\sum\limits_{i,j} ({PL_{ij}f_{ij} + x_{ij}P_{ij}^0)} + \displaystyle\sum\limits_{i} y_i{PN_{i}}} \\
+f_{ij} = \displaystyle\sum\limits_{s,d} {f_{ij}^{sd}} \le \alpha c_{ij}x_{ij} \\
+\displaystyle\sum\limits_{j} {x_{ji}} + \displaystyle\sum\limits_{j} {x_{ij}} < My_{i}\\
+\displaystyle\sum\limits_{j} {f_{ji}^{sd}} - \displaystyle\sum\limits_{j} {f_{ij}^{sd}} =
+  \begin{cases}
+  0, &\text{if $i \neq s, d$}\\
+  t^{sd}, &\text{if $i = d$}\\
+  -t^{sd}, &\text{if $i = s$}
+  \end{cases} \\
+\text{$x_{ij}$ and $y_i$ are binary variables}
+\end{math}
+
+\item Same as 8., but consider the case in which the energy cost is modeled by a simple constant factor. How the problem degenerates?\\
+\textbf{Answer:} LP problem becomes simpler like that:\\
+\begin{math}
+\min{\displaystyle\sum\limits_{i,j} {x_{ij}P_{ij}^0} + \displaystyle\sum\limits_{i} y_i{PN_{i}}} \\
+f_{ij} = \displaystyle\sum\limits_{s,d} {f_{ij}^{sd}} \le \alpha c_{ij}x_{ij} \\
+\displaystyle\sum\limits_{j} {x_{ji}} + \displaystyle\sum\limits_{j} {x_{ij}} < My_{i}\\
+\displaystyle\sum\limits_{j} {f_{ji}^{sd}} - \displaystyle\sum\limits_{j} {f_{ij}^{sd}} =
+  \begin{cases}
+  0, &\text{if $i \neq s, d$}\\
+  t^{sd}, &\text{if $i = d$}\\
+  -t^{sd}, &\text{if $i = s$}
+  \end{cases} \\
+\text{$x_{ij}$ and $y_i$ are binary variables}\\
+\end{math}
+No much degeneration because of the same complexity of number of constraints and number of variables.
+\item Same  as  8.  but  consider  the  case  in  which  the  energy  cost  is  modeled  by  a   pure  variable  cost  (constant  cost  equal  0).  What  happens  in  this  case? \\
+\textbf{Answer:} \\
+\begin{math}
+\min{\displaystyle\sum\limits_{i,j} {PL_{ij}f_{ij}}}  \\
+f_{ij} = \displaystyle\sum\limits_{s,d} {f_{ij}^{sd}} \le \alpha c_{ij} \\
+\displaystyle\sum\limits_{j} {f_{ji}^{sd}} - \displaystyle\sum\limits_{j} {f_{ij}^{sd}} =
+  \begin{cases}
+  0, &\text{if $i \neq s, d$}\\
+  t^{sd}, &\text{if $i = d$}\\
+  -t^{sd}, &\text{if $i = s$}
+  \end{cases} \\
+\end{math}
+This problem is the LP problem, not NP-Complete, then be feasible to find the optimal solution.
+
+\item Consider the Logical Topology Design problem. Discuss possible objective functions that can be considered as optimization targets.\\
+\textbf{Answer:}\\
+minimize the number of links \\
+minimize the average path length\\
+maximize the throughput available\\
+minimize the congestion\\
+minimize the delay\\
+minimize the packet loss probability
+\item Consider the Logical Topology Design problem in which the objective is to minimize the maximum link load on lightpaths. Provide an ILP formulation of the problem and discuss its complexity.
+\textbf{Answer:}\\
+Given: Physical topology, traffic node-node, number of Tx and Rx\\
+Objective: minimize maximum link load on lighpath\\
+ILP formulation:\\
+\begin{math}
+\min f_{max} \\
+f_{max} \ge f_{ij} \\
+f_{ij} = \displaystyle\sum\limits_{s} {f_{ij}^{s}} \le c_{ij} \\
+\displaystyle\sum\limits_{j} {f_{ji}^{s}} - \displaystyle\sum\limits_{j} {f_{ij}^{s}} =
+  \begin{cases}
+  -t^{s}, &\text{if $i = s$}\\
+  t^{si}, &\text{if $i \neq s$}
+  \end{cases} \\
+f_{ij}^{s} \le b_{ij}t^{s}\\
+\displaystyle\sum\limits_{j} {b_{ji}} \le \sigma_{I}^{i} \\
+\displaystyle\sum\limits_{j} {b_{ij}} \le \sigma_{O}^{i} \\
+b_{ij} \in \{0,1\}.
+\end{math}\\
+Assumptions:
+\begin{itemize}
+	\item There is only maximum one link connected each pair of nodes.
+	\item Traffic splitting.
+\end{itemize}
+Complexity of number of constraints: $O(N^3)$ \\
+Complexity of number of variables: $O(N^3)$ 
+
+\item Consider the Logical Topology Design problem in which the objective is to minimize the maximum length of multi-­hop paths. Provide an ILP formulation of the problem and discuss its complexity.\\
+\textbf{Answer:}\\
+Given: Physical topology, traffic node-node, number of Tx and Rx\\
+Objective: minimize maximum length of multi-hop paths\\
+ILP formulation:\\
+\begin{math}
+\min l_{max} \\
+l_{max} \ge l^{sd} \\
+l^{sd} = \displaystyle\sum\limits_{i,j} {b_{ij}^{sd}l_{ij}}\\
+\displaystyle\sum\limits_{j} {f_{ji}^{sd}} - \displaystyle\sum\limits_{j} {f_{ij}^{sd}} =
+  \begin{cases}
+  0, &\text{if $i \neq s, d$}\\
+  -t^{sd}, &\text{if $i = s$}\\
+  t^{sd}, &\text{if $i = d$}
+  \end{cases} \\
+f_{ij}^{sd} \le b_{ij}^{sd}t^{sd}\\
+\displaystyle\sum\limits_{j,s,d} {b_{ji}^{sd}} \le \sigma_{I}^{i} \\
+\displaystyle\sum\limits_{j,s,d} {b_{ij}^{sd}} \le \sigma_{O}^{i} \\
+b_{ij}^{sd} \in \{0,1\}.
+\end{math}\\
+Complexity of number of constraints: $O(N^4)$ \\
+Complexity of number of variables: $O(N^4)$ 
+
+\item Consider the LTD problem in which the objective is to minimize the maximum link load on lightpaths. Provide an ILP formulation of the problem and discuss its complexity. Modify the problem formulation so that the constraints  on  the  number  of   transmitters/receivers  per  node  becomes  a  constraint on  the  total   availability  of  transmitters/receiver  in  the  network. Compare the solution that  can  be  obtained  considering  a  uniform  traffic  matrix  ($t^{sd}=t$  for all (s,d))\\
+\textbf{Answer:}\\
+\begin{math}
+f_{ij}^{s} = n_{ij}^st\\
+t^s = mt\\
+\min n_{max}\\
+n_{max} \ge n_{ij} \\
+n_{ij} = \displaystyle\sum\limits_{s} {n_{ij}^{s}} \le c_{ij}/t \\
+\displaystyle\sum\limits_{j} {n_{ji}^{s}} - \displaystyle\sum\limits_{j} {n_{ij}^{s}} =
+  \begin{cases}
+  -m, &\text{if $i = s$}\\
+  1, &\text{if $i \neq s$}
+  \end{cases} \\
+n_{ij}^{s} \le b_{ij}m\\
+\displaystyle\sum\limits_{i,j} {b_{ij}} \le \Delta \\
+b_{ij} \in \{0,1\}, n_{ij}^s \in N.
+\end{math}
+
+\item Consider  the  LTD  problem, objective to minimize  the  maximum  link  load  on  lightpaths.  Provide  an  ILP   formulation  of the problem  and  discuss  its  complexity.  Modify  the   problem  formulation  so  that the constraints on  the  number  of   transmitters/receivers  per  node  becomes  a  constraint on  the  total   availability  of  transmitters/receiver  in  the  network.  Compare  the solution   that  can  be  obtained  considering  a  $t^{1d}=t$  for  all  $d$,  $t^{sd}=0$  for  $s>1$)\\
+\textbf{Answer:}\\
+\begin{math}
+t^1 = mt\\
+f_{ij}^1 = n_{ij}^1t\\
+\min n_{max} \\
+n_{max} \ge n_{ij}^1 \\
+\displaystyle\sum\limits_{j} {n_{ji}^{1}} - \displaystyle\sum\limits_{j} {n_{ij}^{1}} =
+  \begin{cases}
+  -m, &\text{if $i = 1$}\\
+  1, &\text{if $i \neq 1$}\\
+  \end{cases} \\
+n_{ij}^{1} \le c_{ij}/t \\
+n_{ij}^{1} \le b_{ij}m\\
+\displaystyle\sum\limits_{i,j} {b_{ij}} \le \Delta \\
+n_{ij}^{s} = 0, \forall s>1\\ 
+b_{ij} \in \{0,1\}, n_{ij}^1 \in N.
+\end{math}\\
+
+\item Consider the LTD problem to minimize the maximum link load on lightpaths. Consider the case in which the number of transmitter and receiver per node is equal to 1. Which topologies are possible solution of the problem? How many of those are possible considering N nodes? What happens if the constraint on the number of transmitters/receivers per node becomes a constraint  on the number of transmitters/receivers available in the network?\\
+\textbf{Answer:}\\
+Possible topology is Ring (not depended on traffic), Line (depended on traffic). \\
+Number of possible ring solution: $(N-1)!$\\
+%The total number of available transmitters/receivers in the network must be greater or equal to $n$. Solution topologies are ring (n), line (n-1), star (n-1), tree (n-1) and mesh 
+
+\item Describe some heuristic to solve the LTD problem in which random topologies are considered. Provide the pseudo code of the algorithm. \\ 
+\textbf{Answer:}
+
+\item Describe some heuristic to solve the LTD problem in which lightpaths are added between links that exchange the largest amount of traffic (maximization of single hop traffic approach). Provide  the pseudo code  of the algorithm. Which are the benefits of this approach compared to the case in which random topologies are considered? \\
+\textbf{Answer:}
+
+\item Describe  some  heuristic  to  solve  the  LTD  problem  which  follows  a  “route and remove” approach.  Provide  the  pseudo  code  of  the  algorithm.  Which   are  the benefits  of  this  approach  compared  to  the  case  in  which  random   topologies  are considered?\\
+\textbf{Answer:}
+
+\item Describe  some  lower  bounds  for  the  LTD  problem.\\
+\textbf{Answer:}
+\begin{itemize}
+	\item 0
+	\item $\max({t^{s}/\sigma_o^{s}})$, where $t^{s}$ is the traffic generated by the source $s$ and $\sigma_o^{s}$ is the number of output transmitters owned by the source s
+	\item $\max{(t^d/\sigma_i^d)}$, where $t^{d}$ is the traffic received  by the destination $d$ and $\sigma_i^d$ is the number of input transmitters owned by the destination $d$
+	\item $T= \sum_{s,d} {t^{sd}}$;
+	$LB= \frac{T} { \min{ (\sum_{i}{\sigma_O^i} , \sum_{i} {\sigma_I^i} ) }}$ 
+\end{itemize}
+
+\item Describe  the  steepest  descent  meta-­heuristic  algorithm.\\
+\textbf{Answer:}\\
+The steepest descent approach forecast that, to select the next solution to visit, the best one is chosen within the entire neighborhood.
+
+\item Describe  the  first  improvement  meta‐heuristic  algorithm.\\
+\textbf{Answer:}\\
+The first improvement approach forecast that, every time a move allows to have a better solution than the current one, that solution is the one visited. This algorithm does not ensure that the all neighborhood is visited.
+
+\item Describe the Simulated Annealing meta­‐heuristic algorithm.\\
+\textbf{Answer:}\\
+Select two nodes at random and perform an arc exchange
+\begin{itemize}
+	\item  Keep the neighbor if the obtained topology is better
+	\item Otherwise keep it with a probability which evolves as $p = e^{-(iteration)/kT}$, where T models a “temperature” and decreases with time, simulating the annealing process.
+\end{itemize}
+For increasing times, it behaves as first improvement.
+
+\item Describe the Taboo search meta-­heuristic algorithm.\\
+\textbf{Answer:}\\
+Given the current solution, generate all the neighboring solutions (obtained by a deterministic modification of the current solution). Keep the best within the neighborhood. Use a “tabu-list” to avoid local minimum entrapment.\\
+A general meta-heuristic algorithm:
+\begin{itemize}
+	\item Start from an admisible solution.
+	\item Define "move": a set of different solutions from the current solution. The one set of solution that are generated by applying all possible moves is called "neighborhood".
+	\item Visit a part of neighborhood and move to the best one based on some criterias.
+\end{itemize}
+Taboo search algorithm: 
+\begin{itemize}
+	\item Store forbidden moves (not the solutions): Excludes from the neighborhood the already visited solutions by forbidding “back” moves
+	\item Consider the LTD problem: 
+	\begin{itemize}
+		\item "Move" is arc exchange (avoid to visit not admisible solutions by enforcing the connectivity degree constraints). 
+		\item Neighborhood is all the topologies obtained by performing all possible arc exchange.
+		\item Select the steepest descent. 
+	\end{itemize}
+\end{itemize}
+
+\item Describe  the  genetic  algorithm  meta‐heuristic  approach.\\
+\textbf{Answer:}
+
+\item Describe a possible move that can be used to implement a local search optimization algorithm for the LTD problem in case the number of transmitter/receiver per node is equal to 1.\\
+\textbf{Answer:}\\
+Initial solution is a Ring.\\
+Move: swap two nodes (node 1 with others $\rightarrow (n-1)$ solutions)
+\item Describe a possible move that can be used to implement a local search optimization algorithm for the LTD problem in case the number of transmitter or receiver per node is larger than 1. Discuss the possibility that the move can lead to unfeasible solutions.\\
+\textbf{Answer:}\\
+Start with a random ring.\\
+Move = branch exchange
+
+\end{enumerate}
+\end{document}

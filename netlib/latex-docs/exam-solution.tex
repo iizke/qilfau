@@ -1,0 +1,184 @@
+\documentclass[a4paper]{article}
+
+\setlength{\oddsidemargin}{-4mm}
+\addtolength{\topmargin}{-1in}
+\addtolength{\footskip}{+0.5in}
+\addtolength{\textwidth}{+1.5in}
+\addtolength{\textheight}{+1in}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{subfig}
+\usepackage{hyperref}
+\hypersetup{linktocpage}
+\renewcommand{\familydefault}{cmr}
+
+\title{Exam solutions \\
+Operation Research Course}
+\author{Hong-Nam Hoang}
+\date{\today}
+
+\begin{document}
+  \maketitle
+  \tableofcontents
+  \newpage
+
+  \definecolor{stringcolor}{rgb}{0.20,0.50,0.20}
+  \definecolor{commentcolor}{rgb}{0.40,0.40,0.40}
+  \definecolor{keywordcolor}{rgb}{0.50,0.10,0.10}
+  \definecolor{idcolor}{rgb}{0.10,0.10,0.50}
+  \definecolor{bg}{rgb}{0.95,0.95,0.95}  
+  \lstdefinestyle{iizke}{basicstyle=\ttfamily,
+                          keywordstyle=*\color{keywordcolor}\bfseries,
+                          identifierstyle=\color{idcolor},
+                          commentstyle={\color{black}\it},
+                          stringstyle={\color{stringcolor}\ttfamily},
+                          showstringspaces=false,
+                          breaklines=true,
+                          numbers=left,
+                          numbersep=10pt,
+                          stepnumber=1,
+                          numberstyle=\small,
+                          frame=single,
+                          }
+
+  \lstdefinelanguage[]{Click}[]{SQL}{
+    morekeywords={elementclass, Counter, InfiniteSource, RateSource, Print, Paint, PaintSwitch, Script}}
+
+\section{File 110218}
+\subsection{Ex1}
+i: industry \\
+d: depot \\
+c: customer \\
+\begin{math}
+\min{ \displaystyle\sum\limit_{i,d} {(c_{id}x_{id})} + 
+\displaystyle\sum\limit_{c,d} {(c_{dc}x_{dc})} + 
+\displaystyle\sum\limit_{d} {(y_{d}f_{d})}} \\
+\displaystyle\sum\limit_{d} {x_{id}} = a_i \\
+\displaystyle\sum\limit_{d} {x_{dc}} = b_c \\
+\displaystyle\sum\limit_{i} {x_{id}} = \displaystyle\sum\limit_{c} {x_{dc}} \\
+\displaystyle\sum\limit_{i} {x_{id}} \le My_d \\
+\text{$y_d$ is binary}\\
+\end{math}
+Constraint: depot h and k cannot be both open: $y_h + y_k \le 1$
+\subsection{Ex3}
+P0: s \rightarrow 1 \rightarrow 4 \rightarrow d: \epsilon = 3\\
+P1: s \rightarrow 2 \rightarrow 6 \rightarrow d: \epsilon = 3\\
+\subsection{Ex4}
+Features of Min Cost Flow problem:
+\begin{itemize}
+	\item General problem of shortest path, matching or max-flow problem
+\end{itemize}
+
+\section{File 110304}
+\subsection{Ex1}
+\begin{math}
+\text{Assume:}\\
+s_i : \text{supply}\\
+d_j : \text{demand} \\
+P < N\\
+\text{All demands are satisfied}\\
+\min{
+  \displaystyle\sum\limit_{i\in N,j\in M} {c_{ij} x_i }
+    }\\
+\displaystyle\sum\limit_{j \in M} {x_{ij}} \le a_{i}\\
+\displaystyle\sum\limit_{i \in N} {x_{ij}} = d_{j}\\
+\displaystyle\sum\limit_{i \in N} {y_{pi}} = 1 \\
+\displaystyle\sum\limit_{k \in P} {y_{ki}} \le 1 \\
+a_i = \displaystyle\sum\limit_{k \in P} {s_k y_{ki}}\\
+y_{pn}: \text{binary values}
+\end{math}
+\subsection{Ex2}
+\begin{math}
+Ax=b\\
+\Rightarrow (B,D)(x_B,x_D)= b\\
+\Rightarrow Bx_B + Dx_D = b\\
+\Rightarrow x_B = B^{-1}b - B^{-1}Dx_D  \\
+\Rightarrow z = c^T_Bx_B + c^T_Dx_D = c^T_B B^{-1}b + (c^T_D - c^T_B B^{-1}D)x_D\\
+\Rightarrow r_D = c^T_D - c^T_B B^{-1}D
+\end{math}
+\subsection{Ex3}
+Min Cost Flow algorithm
+
+\section{File 081111}
+\subsection{Ex1}
+\begin{math}
+x_i: \text{demand point}\\
+y_j: \text{antennas}\\
+\min{
+  \displaystyle\sum\limit_{j\in A} {y_j }
+    }\\
+\displaystyle\sum\limit_{j \in A} {d_{ij}y_j} \le S\\
+\displaystyle\sum\limit_{j \in A} {d_{ij}y_j} > 0\\
+y_{pn}: \text{binary values}
+\end{math}
+\subsection{Ex5}
+Current cost = $4+48+48+13+42 = 155$ \\
+	$\omega_5 = 0, \omega_4 = 4, \omega_2 = 5, \omega_1 = 6,	\omega_6 = 0, \omega_3 = 3$\\
+	$r_{23} = 3, r_{25} = -3, r_{46} = -3  \Rightarrow$ Use link (2,5)
+
+\section{File 20100208}
+\subsection{Ex1}
+\begin{math}
+p_{ij}: \text{person $i$ experts at matter $j$, given boolean value}\\
+e_{kj}: \text{team $k$ has experience of matter $j$, boolean variable}\\
+x_{ik}: \text{person $i$ belongs to group $k$, boolean variable}\\
+E_k: \text{experience of group $k$}\\
+\min{\max_{k,l} {(E_k-E_l,E_l-E_k) }}\\
+\displaystyle\sum\limit_{k} {x_{ik}} = 1 \\
+\displaystyle\sum\limit_{i} {x_{ik}} = 4\\
+e_{kj} \ge x_{ik} p_{ij} \\
+E_k = \displaystyle\sum\limit_{j} {e_{kj}} 
+\end{math}
+
+\section{File 101126}
+\subsection{Ex1}
+$PC_i$: purchasing cost unit of source $S_i$ \\
+$TC_i$: transporting cost unit of source $S_i$ \\
+$FC_i$: fixed cost of source $i$\\
+$D_j$: demand of production plant $P_j$\\
+$S_i$: maximum supply of source $S_i$\\
+$x_{ij}$: product from $S_i$ to $P_j$\\
+$a_i$: source $S_i$ is used (1) or not (0)\\
+Objective function: $\min{(\displaystyle\sum\limit_{i,j} {(PC_i + TC_{ij})x_{ij}} + \displaystyle\sum\limit_{i}{s_iFC_i})}$ \\
+Demand constraint:  \\ $\displaystyle\sum\limit_{i}x_{ij} = D_j$ \\
+Source limitation constraint: \\ $\displaystyle\sum\limit_{j}x_{ij} \le S_j$\\
+$\displaystyle\sum\limit_{j}x_{ij} \le S_ia_i $ \\
+Other constraints:\\
+$x_{i3} \le 0.5D_3$\\
+$a_2 \le 1-a_3$\\
+$a_2 \le a_1$
+
+\section{File 20090211}
+\subsection{Ex1}
+$x_{ij}$: flow from $i \rightarrow j$\\
+$C_{i}$: fixed energy if node $i$ on\\
+$t_{i}$: traffic to/from node $i$ (positive/negative)\\
+$\max \min_{i} E_i$\\
+$E_i = C_iy_i + \displaystyle\sum\limit_{j}{x_{ji}c_i}$\\
+\displaystyle\sum\limit_{i}{x_{ij}} \le My_i\\
+\displaystyle\sum\limit_{j}{x_{ji}} - \displaystyle\sum\limit_{j}{x_{ij}} = 
+  \begin{cases}
+  0, &\text{if $i$ is transit node}\\
+  t^i, &\text{if $i$ is source or sink}
+  \end{cases} \\
+(b) \displaystyle\sum\limit_{i}x_{i4} \ge 0.3 \displaystyle\sum\limit_{i \neq 4, j}x_{ij}\\
+(c) y_2 + y_4 \le 1
+\section{Notes}
+\subsection{Max Flow problem}
+Show that: in min-cut, forward arcs are saturated, backward arcs are empty\\
+$v = \sum_{i,j \in Fs}{x_{ij}} - \sum_{i,j \in Bs}{x_{ij}}$\\
+In min-cut, first part goes maximum, second part comes to 0.
+\subsection{Min Cost Flow problem}
+Degeneration case: $r_{13} < 0$ (reduced cost), then link(1,3) should enter to basic, but with cost 0.
+
+\newpage
+
+\end{document}

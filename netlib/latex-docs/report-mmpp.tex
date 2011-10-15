@@ -1,0 +1,122 @@
+\documentclass[a4paper]{article}
+
+\setlength{\oddsidemargin}{-4mm}
+\addtolength{\topmargin}{-1in}
+\addtolength{\footskip}{+0.5in}
+\addtolength{\textwidth}{+1.5in}
+\addtolength{\textheight}{+1in}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{color}
+%\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{subfig}
+\usepackage{hyperref}
+\hypersetup{linktocpage}
+\renewcommand{\familydefault}{cmr}
+
+\title{Assignment report: MMPP/G/1 simulation \\
+Networking and Simulation Course}
+\author{Hong-Nam HOANG, Manh-Ha Nguyen and Xuan-Thu Thi Le}
+\date{\today}
+
+\begin{document}
+  \maketitle
+%  \tableofcontents
+%  \newpage
+
+  \definecolor{stringcolor}{rgb}{0.20,0.50,0.20}
+  \definecolor{commentcolor}{rgb}{0.40,0.40,0.40}
+  \definecolor{keywordcolor}{rgb}{0.50,0.10,0.10}
+  \definecolor{idcolor}{rgb}{0.10,0.10,0.50}
+  \definecolor{bg}{rgb}{0.95,0.95,0.95}  
+  \lstdefinestyle{iizke}{basicstyle=\ttfamily,
+                          keywordstyle=*\color{keywordcolor}\bfseries,
+                          identifierstyle=\color{idcolor},
+                          commentstyle={\color{black}\it},
+                          stringstyle={\color{stringcolor}\ttfamily},
+                          showstringspaces=false,
+                          breaklines=true,
+                          numbers=left,
+                          numbersep=10pt,
+                          stepnumber=1,
+                          numberstyle=\small,
+                          frame=single,
+                          }
+
+  \lstdefinelanguage[]{Click}[]{SQL}{
+    morekeywords={elementclass, Counter, InfiniteSource, RateSource, Print, Paint, PaintSwitch, Script}}
+
+\section{Markov Modulated Poisson Process (MMPP)}
+\subsection{Definitions}
+MMPP is a process according to which customers arrive at the queue according to a Poisson process at rate $\lambda_i$, where the rate $\lambda_i$ is driven by the dynamics of a  Markov Chain (rate $\lambda_i$ are associated to different states of a Markov chain that represents the generator dynamics).
+The MMPP is said to be in state $J(t) = i$ and arrivals are generated according to a Poisson process with rate $\lambda_i$.
+MMPP  is  fully characterized by the following parameters:
+\begin{itemize}
+	\item  The transition-rate matrix (also known as the infinitesimal generator Q) of the underlying modulating Markov process: 
+	  $Q = \begin{bmatrix}
+  -q_1 & q_{12} & ... & q_{1m}\\
+  q_{21} & -q_{2} & ... & q_{2m}\\
+   ... &  &  & \\
+  q_{m1} & q_{m2} & ... & -q_m
+ \end{bmatrix} $
+ where $q_i = \displaystyle\sum_{j = 1;j \neq i}^{m} q_{ij}$
+ \item The Poisson arrival rate at each state $\lambda_1$, $\lambda_2$,..., $\lambda_m$. We define a diagonal matrix $\Lambda$  and a vector $\lambda$ as
+   $\Lambda = \begin{bmatrix}
+  \lambda_1 & 0 & ... & 0\\
+  0 & \lambda_2 & ... & 0\\
+   ... &  &  & \\
+  0 & 0 & ... & \lambda_m
+ \end{bmatrix} $
+ 
+ $\lambda = [\lambda_1, \lambda_2,..., \lambda_m]^T$
+ \item The initial state (initial probability vector) of the MMPP, i.e.: 
+ $\phi = P[J(t=0) = i]$ and $\displaystyle\sum_{i}{\phi_i} = 1$
+ 
+\end{itemize}
+Depending on the initial vector chosen, we have
+\begin{itemize}
+	\item An interval-stationary MMPP that starts at an "arbitrary" arrival epoch if the initial vector is chosen as
+$$\phi = \frac{\pi\Lambda}{\pi\lambda}$$
+  \item  An environment stationary MMPP whose initial probability vector is chosen as $\pi$, which is the stationary vector of $Q$. Now the origin of time is not an arrival epoch, but is chosen so that the environmental Markov process is stationary.
+\end{itemize}
+\subsection{Distribution  of  the  interarrival time of an MMPP}
+Let $X_k$ as the time between $(k-1)$ arrival and $k$ arrival, and $J_k$ the state of the underlying Markov process at the time of the $k^{th}$ arrival, then the sequence \{$(J_k,X_k), k \ge 0$\} is a Markov renewal sequence with a transition probability distribution matrix given by
+$$F(x) = \int_0^x e^{(Q-\Lambda)u}du\Lambda = (I - e^{(Q-\Lambda)x})(\Lambda - Q)^{-1}\Lambda$$
+$F(x)$ is the matrix where $$F_{ij}(x) = P\{J_k = j, X_k \le x | J_{k-1} = i\}$$
+The transition probability density matrix is $$ f(x) = \frac{dF(x)}{dx} = e^{(Q-\Lambda)x}\Lambda$$
+Let $N(t)$ be a number of arrival in $(0, t)$. Define $P(n,t)$ a matrix whose $(i,j)$ entry is 
+$$P_{ij}(n,t) = P[N(t) = n, J(t) = j | N(t=0)=0, J(t=0)=i] $$
+This matrix satisfies the Chapman-Kolmogorov equation. 
+\subsection {Case study: Two state MMPP}
+Given $Q$ and $\Lambda$, we have $$\pi = \frac{1}{q_1 + q_2}\begin{bmatrix} q_2 & q_1 \end{bmatrix} $$
+\section{MMPP/G/1 queue}
+This is a queueing system where customers arrive according to an MMPP and are served by a single server with a general service time distribution $x(t)$. The
+waiting queue is infinite and customers are served according to their order of arrival.
+The MMPP is characterized by the matrices $Q$ \& $\Lambda$, and the service time distribution has a mean $1/\mu$.
+Expected arrival rate is $$\bar{\lambda} = \pi\lambda $$
+The utilization of the system is $$ \rho = \frac{\bar{\lambda}}{\mu} = \frac{\pi_1\lambda_1 + \pi_2\lambda_2 + ... + \pi_m\lambda_m}{\mu}$$
+
+\section{Simulation of MMPP/G/1 queue}
+\subsection{How to simulate Continuous Time Markov Chains (CTMC)}
+CTMC could be represented by:
+\begin{itemize}
+	\item Transition rate matrix $Q$, or
+	\item Transition probability matrix $P$ and state transistion rates $v$. 
+\end{itemize}
+At each state of CTMC, there are two properties: the remaining time $R_i$ and the next state $n$.
+\begin{enumerate}
+	\item Assume we are at state $i$. Generate remaining time $R_i$ ~ $exp(v_i)$
+	\item Find next state which is a random variable of empirical discrete distribution, defined at row $i$ of transition probability matrix $P$
+\end{enumerate}
+
+\subsection{Generate random variable of MMPP distribution}
+\subsection{Using discrete-time event scheduling simulator}
+\subsection{Practical results}
+\section{References}
+\end{document}
