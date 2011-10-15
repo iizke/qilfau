@@ -80,7 +80,7 @@ CONFIG conf;
 %token <str> STRING;
 
 %% /* Grammar rules and actions follow */
-input:    /* empty */
+input:    /* empty here*/
         | input line
 ;
 
