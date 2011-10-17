@@ -1,6 +1,11 @@
 #!/bin/bash
 #rm lexer.c lexer.h parser.c parser.h channellexer.c channellexer.c channelparser.c channelparser.h
 
+CUR_DIR=`pwd`
+_NAME=$BASH_SOURCE
+_FILEDIR=`dirname $(which  $_NAME)`
+cd ${_FILEDIR}
+
 bison -y --defines=parser.h -o parser.c -k parser.y
 #bison --d parser.y
 flex --8bit --bison-bridge --header-file=lexer.h -o lexer.c lexer.l
@@ -13,3 +18,4 @@ bison -p mp -y --defines=markov_parser.h -o markov_parser.c -k markov_parser.y
 flex -P mp --8bit --bison-bridge --header-file=markov_lexer.h -o markov_lexer.c markov_lexer.l
 #gcc  -o markov_parser markov_parser.c markov_lexer.c 
 
+cd $CUR_DIR

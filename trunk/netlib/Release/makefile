@@ -37,7 +37,10 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: netlib
+all: pre-build main-build
+
+# Main-build Target
+main-build: netlib
 
 # Tool invocations
 netlib: $(OBJS) $(USER_OBJS)
@@ -52,7 +55,12 @@ clean:
 	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) netlib
 	-@echo ' '
 
+pre-build:
+	-@echo 'Create config files from Bison/flex'
+	-bash /home/iizke/workspace/netlib/src/netsim/conf/makeparser.sh; bash /home/iizke/workspace/netlib/src/schedsim/conf/makeparser.sh
+	-@echo ' '
+
 .PHONY: all clean dependents
-.SECONDARY:
+.SECONDARY: main-build pre-build
 
 -include ../makefile.targets
