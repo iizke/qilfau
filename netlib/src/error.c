@@ -79,7 +79,7 @@ void gc_free (void *p) {
 int trash_clean () {
   GARBAGE *g = container_of(trash.garbage_list.prev, GARBAGE, list_node);
 
-  while (g->list_node.prev != g->list_node.next) {
+  while (g->list_node.prev != &g->list_node) {
     linked_list_remove(&g->list_node);
     free(g);
     g = container_of(trash.garbage_list.prev, GARBAGE, list_node);
