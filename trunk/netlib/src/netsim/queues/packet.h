@@ -28,6 +28,8 @@ typedef struct packet_info {
   int to_queue;
   /// State of packet: IN, WAITING, DROPPED, PROCESSING, OUT
   int state;
+  /// burst, weight -> used for BABS queue
+  int burst;
   // Service time of packet
   //float service_time;
   /// Arrival time
@@ -58,6 +60,8 @@ typedef struct packet_list {
   LINKED_LIST_MAN list;
   /// Size of list
   int size;
+  /// total burst
+  int total_burst;
   /// Port type (no used now)
   int port_type;
   /// Port (no used now)

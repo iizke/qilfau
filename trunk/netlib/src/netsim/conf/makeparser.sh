@@ -18,4 +18,7 @@ bison -p mp -y --defines=markov_parser.h -o markov_parser.c -k markov_parser.y
 flex -P mp --8bit --bison-bridge --header-file=markov_lexer.h -o markov_lexer.c markov_lexer.l
 #gcc  -o markov_parser markov_parser.c markov_lexer.c 
 
+bison -p babs -y --defines=babs_parser.h -o babs_parser.c -k babs_parser.y
+flex -P babs --8bit --bison-bridge --header-file=babs_lexer.h -o babs_lexer.c babs_lexer.l
+
 cd $CUR_DIR

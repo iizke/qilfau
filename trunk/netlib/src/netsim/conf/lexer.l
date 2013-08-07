@@ -15,10 +15,10 @@ FCHAR						({CHAR}|{POINT}|{DIGIT})
 %% 
 \/\/[^\n]*\n				; 
 
-nodetype					return NODETYPE;
-SOURCE						return SOURCE;
-SINK						return SINK;
-TRANSIT						return TRANSIT;
+nodetype                                        return NODETYPE;
+SOURCE                                          return SOURCE;
+SINK                                            return SINK;
+TRANSIT                                         return TRANSIT;
 
 RANDOM_MARKOV				return R_MARKOV;
 RANDOM_UNIFORM				return R_UNF;

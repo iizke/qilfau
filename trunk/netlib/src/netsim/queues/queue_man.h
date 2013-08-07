@@ -14,7 +14,7 @@
 
 /// Queue type FIFO
 #define QUEUE_FIFO            1
-
+#define QUEUE_BURST_FIFO      2
 /// An alias of struct queue_type
 //typedef struct queue_type QUEUE_TYPE;
 

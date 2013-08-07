@@ -6,7 +6,13 @@
 #include "config.h"
 #include "error.h"
 #include "../queues/queue_man.h"
+
+#ifndef DEF_DEBUG
+#define DEF_DEBUG
 long debug = 0;
+#else
+extern long debug;
+#endif
 CONFIG conf;
 %}
 

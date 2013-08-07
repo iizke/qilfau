@@ -71,5 +71,5 @@ typedef struct netqueue_all_state {
 #define get_netq_one_state_from_ops(_ops) (container_of((get_sys_state_from_ops(_ops)), NETQ_ONE_STATE, qstate))
 
 int netq_state_init (NETQ_STATE *state, NET_CONFIG *netconf);
-
+int netq_run(char *f);
 #endif /* NETQUEUE_H_ */

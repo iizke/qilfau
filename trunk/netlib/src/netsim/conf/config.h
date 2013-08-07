@@ -29,6 +29,7 @@
 #define PROTOCOL_CSMA             0
 #define PROTOCOL_ONE_QUEUE        1
 #define PROTOCOL_NET_QUEUE        2
+#define PROTOCOL_BABSQ            3
 
 #define STOP_QUEUE_ZERO           0
 #define STOP_QUEUE_NONZERO        1

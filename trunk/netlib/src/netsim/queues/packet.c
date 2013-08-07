@@ -73,6 +73,7 @@ int packet_list_insert_packet (PACKET_LIST *pf, PACKET *p) {
   check_null_pointer(p);
   try ( linked_list_man_insert(&pf->list, &p->list_node) );
   pf->size++;
+  pf->total_burst+= p->info.burst;
   return SUCCESS;
 }
 
@@ -87,6 +88,7 @@ int packet_list_remove_packet (PACKET_LIST *pf, PACKET *p) {
   check_null_pointer(p);
   try ( linked_list_man_remove(&pf->list, &p->list_node) );
   pf->size--;
+  pf->total_burst-=p->info.burst;
   return SUCCESS;
 }
 

@@ -51,6 +51,7 @@ static int _save_event (EVENT *e, CONFIG *conf) {
  * @return Error code (defined in libs/error.h and def.h)
  */
 int pisas_sched (void *conf, SYS_STATE_OPS *sys_ops) {
+  int errcode = SUCCESS;
   check_null_pointer(conf);
   check_null_pointer(sys_ops);
 
@@ -67,7 +68,7 @@ int pisas_sched (void *conf, SYS_STATE_OPS *sys_ops) {
     }
 
     iprint (LEVEL_INFO, "Get event type %d at %f \n", e->info.type, e->info.time.real);
-    sys_ops->process_event(e, conf, sys_ops);
+    errcode = sys_ops->process_event(e, conf, sys_ops);
     _save_event(e,conf);
     //event_list_remove_event(&future_events, e);
     sys_ops->remove_event(sys_ops, e);
