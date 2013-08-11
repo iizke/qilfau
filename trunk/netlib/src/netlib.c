@@ -15,6 +15,7 @@
 #include "netsim/conf/channelparser.h"
 #include "netsim/netqueue.h"
 #include "schedsim/schedsim.h"
+#include "netsimv2/onequeue/onequeue.h"
 
 int check_netsim () {
   //netsim_start_thread("src/netsim/conf/test.conf");
@@ -57,9 +58,10 @@ int check_net_queue() {
 int main (int nargs, char** args) {
   trash_init();
   random_init();
-
   //main_markov_parser(nargs, args);
+
   check_netsim();
+
   //check_schedsim();
   //main_graph(nargs, args);
   //main_rwa(nargs, args);
@@ -67,7 +69,6 @@ int main (int nargs, char** args) {
   //check_graph();
   //check_net_queue();
   //test_gen_distribution();
-
   trash_clean();
   return SUCCESS;
 }
