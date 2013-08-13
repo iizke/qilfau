@@ -25,12 +25,16 @@ RANDOM_MMPP_RULES			return R_MMPP_R;
 arrival.type				return ARRIVAL_TYPE;
 arrival.lambda				return ARRIVAL_LAMBDA;
 arrival.from				return ARRIVAL_FROM;
-arrival.to				return ARRIVAL_TO;
-arrival.burst.type			return ARRIVAL_BURST_TYPE;
-arrival.burst.from			return ARRIVAL_BURST_FROM;
-arrival.burst.to			return ARRIVAL_BURST_TO;
+arrival.to					return ARRIVAL_TO;
 arrival.saveto				return ARRIVAL_SAVETO;
 arrival.loadfrom			return ARRIVAL_LOADFROM;
+
+burst.type					return BURST_TYPE;
+burst.lambda				return BURST_LAMBDA;
+burst.from					return BURST_FROM;
+burst.to					return BURST_TO;
+burst.saveto				return BURST_SAVETO;
+burst.loadfrom				return BURST_LOADFROM;
 
 queue.maxlength				return QUEUE_MAXLENGTH;
 queue.servers				return QUEUE_SERVERS;

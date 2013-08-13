@@ -37,9 +37,13 @@ static int bff_queue_init (QUEUE_TYPE *q) {
  */
 static int bff_is_idle (QUEUE_TYPE *q) {
   BURST_FIFO_QINFO *fq = NULL;
+  PACKET *p = NULL;
+  int burst = 0;
   check_null_pointer(q);
   fq = (BURST_FIFO_QINFO*)q->info;
-  return  (fq->max_executing < 0) ? 1 : ((fq->executing_packets.total_burst < fq->max_executing) ? 1 : 0);
+  packet_list_get_first(&fq->waiting_packets, &p);
+  if (p) burst = p->info.burst;
+  return  (fq->max_executing < 0) ? 1 : (((fq->executing_packets.total_burst + burst) <= fq->max_executing) ? 1 : 0);
 }
 
 /**

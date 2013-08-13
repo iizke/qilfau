@@ -28,9 +28,13 @@ BABSQ_CONFIG babs_conf;
 %token ARRIVAL_LAMBDA
 %token ARRIVAL_SAVETO
 %token ARRIVAL_LOADFROM
-%token ARRIVAL_BURST_TYPE;
-%token ARRIVAL_BURST_FROM;
-%token ARRIVAL_BURST_TO;
+
+%token BURST_TYPE
+%token BURST_FROM
+%token BURST_TO
+%token BURST_LAMBDA
+%token BURST_SAVETO
+%token BURST_LOADFROM
 
 %token QUEUE_KIND
 %token BURST_FIFO_QUEUE
@@ -100,14 +104,18 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| ARRIVAL_SAVETO EQ STRING { babs_conf.arrival_conf.to_file = fopen($3, "w+"); }
 		| ARRIVAL_LOADFROM EQ STRING { babs_conf.arrival_conf.from_file = fopen($3, "r"); }
 
-		| ARRIVAL_BURST_TYPE EQ R_MARKOV { babs_conf.burst_conf.type = RANDOM_MARKOVIAN; }
-                | ARRIVAL_BURST_TYPE EQ R_UNF { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
-                | ARRIVAL_BURST_TYPE EQ R_FILE { babs_conf.burst_conf.type = RANDOM_FILE; }
-                | ARRIVAL_BURST_TYPE EQ R_MMPP { babs_conf.burst_conf.type = RANDOM_MMPP; }
-                | ARRIVAL_BURST_TYPE EQ R_MMPP_R { babs_conf.burst_conf.type = RANDOM_MMPP_R; }
-                | ARRIVAL_BURST_TYPE EQ R_OTHER { babs_conf.burst_conf.type = RANDOM_OTHER; }
-                | ARRIVAL_BURST_FROM EQ INTNUM { babs_conf.burst_conf.from = $3; }
-                | ARRIVAL_BURST_TO EQ INTNUM { babs_conf.burst_conf.to = $3; }
+		| BURST_TYPE EQ R_MARKOV { babs_conf.burst_conf.type = RANDOM_MARKOVIAN; }
+        | BURST_TYPE EQ R_UNF { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
+        | BURST_TYPE EQ R_FILE { babs_conf.burst_conf.type = RANDOM_FILE; }
+        | BURST_TYPE EQ R_MMPP { babs_conf.burst_conf.type = RANDOM_MMPP; }
+        | BURST_TYPE EQ R_MMPP_R { babs_conf.burst_conf.type = RANDOM_MMPP_R; }
+        | BURST_TYPE EQ R_OTHER { babs_conf.burst_conf.type = RANDOM_OTHER; }
+        | BURST_FROM EQ INTNUM { babs_conf.burst_conf.from = $3; }
+        | BURST_TO EQ INTNUM { babs_conf.burst_conf.to = $3; }
+		| BURST_LAMBDA EQ REALNUM { babs_conf.burst_conf.lambda = $3; }
+		| BURST_LAMBDA EQ INTNUM { babs_conf.burst_conf.lambda = $3; }
+		| BURST_SAVETO EQ STRING { babs_conf.burst_conf.to_file = fopen($3, "w+"); }
+		| BURST_LOADFROM EQ STRING { babs_conf.burst_conf.from_file = fopen($3, "r"); }
 	
 		| QUEUE_MAXLENGTH EQ INTNUM { babs_conf.queue_conf.max_waiters = $3; }
 		| QUEUE_KIND EQ INTNUM { babs_conf.queue_conf.type = $3; }
