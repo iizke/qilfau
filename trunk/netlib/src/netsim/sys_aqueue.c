@@ -107,14 +107,15 @@ int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
   if ((stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time) ||
       (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) ||
       ((conf->arrival_conf.type == RANDOM_FILE) && (conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))) {
+
+    conf->arrival_conf.type = RANDOM_OTHER;
+    conf->arrival_conf.distribution.gen = NULL;
     if (conf->stop_conf.queue_zero == STOP_QUEUE_ZERO) {
       QUEUE_TYPE *qt = NULL;
       qt = state->queues.curr_queue;
       if (qt->get_waiting_length(qt) > 0)
         return 1;
     } else {
-      conf->arrival_conf.type = RANDOM_OTHER;
-      conf->arrival_conf.distribution.gen = NULL;
       if (!event_list_is_empty(&state->future_events))
         return 1;
     }
@@ -277,6 +278,24 @@ EVENT * _generate_event(int type, PACKET *p, CONFIG *conf, SYS_STATE_OPS *ops) {
 }
 
 /**
+ * Do save an event into file.
+ * @param e : Event
+ * @param conf : Configuration
+ * @return Error code (see more in def.h and error.h)
+ */
+static int _save_event (EVENT *e, CONFIG *conf) {
+  switch (e->info.type) {
+  case EVENT_ARRIVAL:
+    event_save(e, conf->arrival_conf.to_file);
+    break;
+  case EVENT_END_SERVICE:
+    event_save(e, conf->queue_conf.out_file);
+    break;
+  }
+  return SUCCESS;
+}
+
+/**
  * Process an event.
  * @param e : Event
  * @param conf : User configuration
@@ -296,6 +315,8 @@ int _process_event (EVENT *e, CONFIG *conf, SYS_STATE_OPS *ops) {
     iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", e->info.type);
     break;
   }
+  _save_event(e,conf);
+
   return SUCCESS;
 }
 

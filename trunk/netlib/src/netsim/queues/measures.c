@@ -30,10 +30,12 @@ int measures_init (MEASURES *m) {
  */
 int print_measurement (MEASURES *m) {
   check_null_pointer(m);
-  print_statistical_value("#customers in queue", &m->queue_len, 0.9);
-  print_statistical_value("Queue response time", &m->waittime, 0.9);
-  print_statistical_value("service time", &m->servtime, 0.9);
-  print_statistical_value("inter-arrival time", &m->interarrival_time, 0.9);
+  print_statistical_value("#customers in queue", &m->queue_len, 0.999);
+  print_statistical_value("Queue response time", &m->waittime, 0.999);
+  print_statistical_value("service time", &m->servtime, 0.999);
+  print_statistical_value("inter-arrival time", &m->interarrival_time, 0.999);
+  print_statistical_value("Burst", &m->burst, 0.999);
+
   printf("%20s : %d \n", "total arrival",(int)m->total_arrivals);
   printf("%20s : %d \n","total departure", (int)m->total_departures);
   printf("%20s : %d \n", "total dropped", (int)m->total_dropped);
@@ -72,6 +74,7 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
   case PACKET_STATE_IN:
     m->total_arrivals++;
     stat_num_new_sample(&m->interarrival_time, curr_time.real - m->last_arrival_time);
+    stat_num_new_sample(&m->burst, (float)p->info.burst);
     m->last_arrival_time = curr_time.real;
     break;
   case PACKET_STATE_OUT:

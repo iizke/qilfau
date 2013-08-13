@@ -26,24 +26,6 @@ extern long debug;
 //long debug = LEVEL_EWI; // print all Info message
 
 /**
- * Do save an event into file.
- * @param e : Event
- * @param conf : Configuration
- * @return Error code (see more in def.h and error.h)
- */
-static int _save_event (EVENT *e, CONFIG *conf) {
-  switch (e->info.type) {
-  case EVENT_ARRIVAL:
-    event_save(e, conf->arrival_conf.to_file);
-    break;
-  case EVENT_END_SERVICE:
-    event_save(e, conf->queue_conf.out_file);
-    break;
-  }
-  return SUCCESS;
-}
-
-/**
  * Scheduling events while simulating.
  * @param conf : Configuration from user, including: arrival distribution,
  * execution distribution, waiting line, ...
@@ -51,7 +33,6 @@ static int _save_event (EVENT *e, CONFIG *conf) {
  * @return Error code (defined in libs/error.h and def.h)
  */
 int pisas_sched (void *conf, SYS_STATE_OPS *sys_ops) {
-  int errcode = SUCCESS;
   check_null_pointer(conf);
   check_null_pointer(sys_ops);
 
@@ -63,13 +44,12 @@ int pisas_sched (void *conf, SYS_STATE_OPS *sys_ops) {
     if (!e) {
       // There is no event, we need one
       sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
-      //sys_ops->generate_event(EVENT_ARRIVAL, NULL, conf, sys_ops);
       continue;
     }
 
     iprint (LEVEL_INFO, "Get event type %d at %f \n", e->info.type, e->info.time.real);
-    errcode = sys_ops->process_event(e, conf, sys_ops);
-    _save_event(e,conf);
+    sys_ops->process_event(e, conf, sys_ops);
+    //_save_event(e,conf);
     //event_list_remove_event(&future_events, e);
     sys_ops->remove_event(sys_ops, e);
   }
@@ -214,8 +194,8 @@ static void netsim_print_theorical_result (CONFIG *conf) {
  * @param n : interrupt number (no use)
  */
 static void netsim_sig_handler(int n) {
-  netsim_print_result(&conf);
   netsim_print_theorical_result(&conf);
+  netsim_print_result(&conf);
   ((SYS_STATE_OPS*)conf.runtime_state)->clean(&conf, conf.runtime_state);
   exit(1);
 }
@@ -273,6 +253,8 @@ int netsim_start (char *conf_file) {
 
   random_init();
   try( config_parse_file (conf_file) );
+  printf("Theoretical results ------------------\n");
+  netsim_print_theorical_result(&conf);
 
   switch (conf.protocol) {
   case PROTOCOL_CSMA:
@@ -290,8 +272,8 @@ int netsim_start (char *conf_file) {
   conf.runtime_state = ops;
   pisas_sched(&conf, ops);
 
+  printf("Simulation results ------------------\n");
   netsim_print_result(&conf);
-  netsim_print_theorical_result(&conf);
   return SUCCESS;
 }
 

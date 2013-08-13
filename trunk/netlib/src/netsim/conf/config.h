@@ -162,4 +162,6 @@ int netconfig_traverse_arrival(NET_CONFIG *conf, int *qid);
 int netconfig_parse_nodes(char * f);
 int netconfig_parse_channels(char * f);
 
+int config_parse_babs_file (char *file);
+
 #endif /* MYCONFIG_H_ */

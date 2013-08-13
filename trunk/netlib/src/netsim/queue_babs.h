@@ -61,6 +61,7 @@ typedef struct queue_babs_state {
 #define get_babs_state_from_ops(_ops) (container_of(_ops, BABSQ_STATE, ops))
 
 int babs_state_init (BABSQ_STATE *state, BABSQ_CONFIG *conf);
+int babs_start (char *conf_file);
 
 #endif /* QUEUE_BABS_H_ */
 

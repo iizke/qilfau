@@ -127,45 +127,48 @@ BABSQ_CONFIG babs_conf;
      ARRIVAL_LAMBDA = 261,
      ARRIVAL_SAVETO = 262,
      ARRIVAL_LOADFROM = 263,
-     ARRIVAL_BURST_TYPE = 264,
-     ARRIVAL_BURST_FROM = 265,
-     ARRIVAL_BURST_TO = 266,
-     QUEUE_KIND = 267,
-     BURST_FIFO_QUEUE = 268,
-     QUEUE_MAXLENGTH = 269,
-     QUEUE_SERVERS = 270,
-     SERVICE_TYPE = 271,
-     SERVICE_LAMBDA = 272,
-     SERVICE_TO = 273,
-     SERVICE_FROM = 274,
-     SERVICE_SAVETO = 275,
-     SERVICE_LOADFROM = 276,
-     DEPARTURE_SAVETO = 277,
-     STOP_MAXTIME = 278,
-     STOP_MAXARRIVAL = 279,
-     STOP_QUEUEZERO = 280,
-     NTHREADS = 281,
-     PROTOCOL = 282,
-     PROTO_BABSQ = 283,
-     LIBS_RANDOM = 284,
-     LIB_RAND_IRAND = 285,
-     LIB_RAND_RANDLIB = 286,
-     R_MARKOV = 287,
-     R_UNF = 288,
-     R_FILE = 289,
-     R_MMPP = 290,
-     R_MMPP_R = 291,
-     R_OTHER = 292,
-     DEBUG_ERROR = 293,
-     DEBUG_WARNING = 294,
-     DEBUG_INFO = 295,
-     YES = 296,
-     NO = 297,
-     EQ = 298,
-     ENDLINE = 299,
-     REALNUM = 300,
-     INTNUM = 301,
-     STRING = 302
+     BURST_TYPE = 264,
+     BURST_FROM = 265,
+     BURST_TO = 266,
+     BURST_LAMBDA = 267,
+     BURST_SAVETO = 268,
+     BURST_LOADFROM = 269,
+     QUEUE_KIND = 270,
+     BURST_FIFO_QUEUE = 271,
+     QUEUE_MAXLENGTH = 272,
+     QUEUE_SERVERS = 273,
+     SERVICE_TYPE = 274,
+     SERVICE_LAMBDA = 275,
+     SERVICE_TO = 276,
+     SERVICE_FROM = 277,
+     SERVICE_SAVETO = 278,
+     SERVICE_LOADFROM = 279,
+     DEPARTURE_SAVETO = 280,
+     STOP_MAXTIME = 281,
+     STOP_MAXARRIVAL = 282,
+     STOP_QUEUEZERO = 283,
+     NTHREADS = 284,
+     PROTOCOL = 285,
+     PROTO_BABSQ = 286,
+     LIBS_RANDOM = 287,
+     LIB_RAND_IRAND = 288,
+     LIB_RAND_RANDLIB = 289,
+     R_MARKOV = 290,
+     R_UNF = 291,
+     R_FILE = 292,
+     R_MMPP = 293,
+     R_MMPP_R = 294,
+     R_OTHER = 295,
+     DEBUG_ERROR = 296,
+     DEBUG_WARNING = 297,
+     DEBUG_INFO = 298,
+     YES = 299,
+     NO = 300,
+     EQ = 301,
+     ENDLINE = 302,
+     REALNUM = 303,
+     INTNUM = 304,
+     STRING = 305
    };
 #endif
 /* Tokens.  */
@@ -175,45 +178,48 @@ BABSQ_CONFIG babs_conf;
 #define ARRIVAL_LAMBDA 261
 #define ARRIVAL_SAVETO 262
 #define ARRIVAL_LOADFROM 263
-#define ARRIVAL_BURST_TYPE 264
-#define ARRIVAL_BURST_FROM 265
-#define ARRIVAL_BURST_TO 266
-#define QUEUE_KIND 267
-#define BURST_FIFO_QUEUE 268
-#define QUEUE_MAXLENGTH 269
-#define QUEUE_SERVERS 270
-#define SERVICE_TYPE 271
-#define SERVICE_LAMBDA 272
-#define SERVICE_TO 273
-#define SERVICE_FROM 274
-#define SERVICE_SAVETO 275
-#define SERVICE_LOADFROM 276
-#define DEPARTURE_SAVETO 277
-#define STOP_MAXTIME 278
-#define STOP_MAXARRIVAL 279
-#define STOP_QUEUEZERO 280
-#define NTHREADS 281
-#define PROTOCOL 282
-#define PROTO_BABSQ 283
-#define LIBS_RANDOM 284
-#define LIB_RAND_IRAND 285
-#define LIB_RAND_RANDLIB 286
-#define R_MARKOV 287
-#define R_UNF 288
-#define R_FILE 289
-#define R_MMPP 290
-#define R_MMPP_R 291
-#define R_OTHER 292
-#define DEBUG_ERROR 293
-#define DEBUG_WARNING 294
-#define DEBUG_INFO 295
-#define YES 296
-#define NO 297
-#define EQ 298
-#define ENDLINE 299
-#define REALNUM 300
-#define INTNUM 301
-#define STRING 302
+#define BURST_TYPE 264
+#define BURST_FROM 265
+#define BURST_TO 266
+#define BURST_LAMBDA 267
+#define BURST_SAVETO 268
+#define BURST_LOADFROM 269
+#define QUEUE_KIND 270
+#define BURST_FIFO_QUEUE 271
+#define QUEUE_MAXLENGTH 272
+#define QUEUE_SERVERS 273
+#define SERVICE_TYPE 274
+#define SERVICE_LAMBDA 275
+#define SERVICE_TO 276
+#define SERVICE_FROM 277
+#define SERVICE_SAVETO 278
+#define SERVICE_LOADFROM 279
+#define DEPARTURE_SAVETO 280
+#define STOP_MAXTIME 281
+#define STOP_MAXARRIVAL 282
+#define STOP_QUEUEZERO 283
+#define NTHREADS 284
+#define PROTOCOL 285
+#define PROTO_BABSQ 286
+#define LIBS_RANDOM 287
+#define LIB_RAND_IRAND 288
+#define LIB_RAND_RANDLIB 289
+#define R_MARKOV 290
+#define R_UNF 291
+#define R_FILE 292
+#define R_MMPP 293
+#define R_MMPP_R 294
+#define R_OTHER 295
+#define DEBUG_ERROR 296
+#define DEBUG_WARNING 297
+#define DEBUG_INFO 298
+#define YES 299
+#define NO 300
+#define EQ 301
+#define ENDLINE 302
+#define REALNUM 303
+#define INTNUM 304
+#define STRING 305
 
 
 
@@ -228,7 +234,7 @@ char* str; int ival; double dval;
 
 
 /* Line 293 of yacc.c  */
-#line 232 "babs_parser.c"
+#line 238 "babs_parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -253,7 +259,7 @@ typedef struct YYLTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 257 "babs_parser.c"
+#line 263 "babs_parser.c"
 
 #ifdef short
 # undef short
@@ -474,20 +480,20 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   117
+#define YYLAST   128
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  48
+#define YYNTOKENS  51
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  59
+#define YYNRULES  63
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  117
+#define YYNSTATES  127
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   302
+#define YYMAXUTOK   305
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -525,7 +531,7 @@ static const yytype_uint8 yytranslate[] =
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,    47
+      45,    46,    47,    48,    49,    50
 };
 
 #if YYDEBUG
@@ -538,46 +544,50 @@ static const yytype_uint8 yyprhs[] =
       68,    72,    76,    80,    84,    88,    92,    96,   100,   104,
      108,   112,   116,   120,   124,   128,   132,   136,   140,   144,
      148,   152,   156,   160,   164,   168,   172,   176,   180,   184,
-     188,   192,   196,   200,   204,   208,   212,   216,   220,   224
+     188,   192,   196,   200,   204,   208,   212,   216,   220,   224,
+     228,   232,   236,   240
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      49,     0,    -1,    -1,    49,    50,    -1,    51,    44,    -1,
-      44,    -1,     3,    43,    46,    -1,     3,    43,    32,    -1,
-       3,    43,    33,    -1,     3,    43,    34,    -1,     3,    43,
-      35,    -1,     3,    43,    36,    -1,     3,    43,    37,    -1,
-       4,    43,    46,    -1,     5,    43,    46,    -1,     6,    43,
-      45,    -1,     6,    43,    46,    -1,     7,    43,    47,    -1,
-       8,    43,    47,    -1,     9,    43,    32,    -1,     9,    43,
-      33,    -1,     9,    43,    34,    -1,     9,    43,    35,    -1,
-       9,    43,    36,    -1,     9,    43,    37,    -1,    10,    43,
-      46,    -1,    11,    43,    46,    -1,    14,    43,    46,    -1,
-      12,    43,    46,    -1,    12,    43,    13,    -1,    15,    43,
-      46,    -1,    16,    43,    46,    -1,    16,    43,    32,    -1,
-      16,    43,    35,    -1,    16,    43,    36,    -1,    16,    43,
-      33,    -1,    16,    43,    37,    -1,    19,    43,    45,    -1,
-      18,    43,    45,    -1,    19,    43,    46,    -1,    18,    43,
-      46,    -1,    17,    43,    45,    -1,    17,    43,    46,    -1,
-      20,    43,    47,    -1,    21,    43,    47,    -1,    22,    43,
-      47,    -1,    23,    43,    46,    -1,    24,    43,    46,    -1,
-      25,    43,    41,    -1,    25,    43,    42,    -1,    29,    43,
-      30,    -1,    29,    43,    31,    -1,    38,    43,    41,    -1,
-      38,    43,    42,    -1,    39,    43,    41,    -1,    39,    43,
-      42,    -1,    40,    43,    41,    -1,    40,    43,    42,    -1,
-      27,    43,    28,    -1,    26,    43,    46,    -1
+      52,     0,    -1,    -1,    52,    53,    -1,    54,    47,    -1,
+      47,    -1,     3,    46,    49,    -1,     3,    46,    35,    -1,
+       3,    46,    36,    -1,     3,    46,    37,    -1,     3,    46,
+      38,    -1,     3,    46,    39,    -1,     3,    46,    40,    -1,
+       4,    46,    49,    -1,     5,    46,    49,    -1,     6,    46,
+      48,    -1,     6,    46,    49,    -1,     7,    46,    50,    -1,
+       8,    46,    50,    -1,     9,    46,    35,    -1,     9,    46,
+      36,    -1,     9,    46,    37,    -1,     9,    46,    38,    -1,
+       9,    46,    39,    -1,     9,    46,    40,    -1,    10,    46,
+      49,    -1,    11,    46,    49,    -1,    12,    46,    48,    -1,
+      12,    46,    49,    -1,    13,    46,    50,    -1,    14,    46,
+      50,    -1,    17,    46,    49,    -1,    15,    46,    49,    -1,
+      15,    46,    16,    -1,    18,    46,    49,    -1,    19,    46,
+      49,    -1,    19,    46,    35,    -1,    19,    46,    38,    -1,
+      19,    46,    39,    -1,    19,    46,    36,    -1,    19,    46,
+      40,    -1,    22,    46,    48,    -1,    21,    46,    48,    -1,
+      22,    46,    49,    -1,    21,    46,    49,    -1,    20,    46,
+      48,    -1,    20,    46,    49,    -1,    23,    46,    50,    -1,
+      24,    46,    50,    -1,    25,    46,    50,    -1,    26,    46,
+      49,    -1,    27,    46,    49,    -1,    28,    46,    44,    -1,
+      28,    46,    45,    -1,    32,    46,    33,    -1,    32,    46,
+      34,    -1,    41,    46,    44,    -1,    41,    46,    45,    -1,
+      42,    46,    44,    -1,    42,    46,    45,    -1,    43,    46,
+      44,    -1,    43,    46,    45,    -1,    30,    46,    31,    -1,
+      29,    46,    49,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    81,    81,    82,    85,    86,    89,    90,    91,    92,
-      93,    94,    95,    96,    97,    98,    99,   100,   101,   103,
-     104,   105,   106,   107,   108,   109,   110,   112,   113,   114,
-     115,   116,   117,   118,   119,   120,   121,   122,   123,   124,
-     125,   126,   127,   128,   129,   131,   132,   133,   134,   135,
-     137,   138,   140,   141,   142,   143,   144,   145,   147,   149
+       0,    85,    85,    86,    89,    90,    93,    94,    95,    96,
+      97,    98,    99,   100,   101,   102,   103,   104,   105,   107,
+     108,   109,   110,   111,   112,   113,   114,   115,   116,   117,
+     118,   120,   121,   122,   123,   124,   125,   126,   127,   128,
+     129,   130,   131,   132,   133,   134,   135,   136,   137,   139,
+     140,   141,   142,   143,   145,   146,   148,   149,   150,   151,
+     152,   153,   155,   157
 };
 #endif
 
@@ -588,16 +598,16 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "ARRIVAL_TYPE", "ARRIVAL_FROM",
   "ARRIVAL_TO", "ARRIVAL_LAMBDA", "ARRIVAL_SAVETO", "ARRIVAL_LOADFROM",
-  "ARRIVAL_BURST_TYPE", "ARRIVAL_BURST_FROM", "ARRIVAL_BURST_TO",
-  "QUEUE_KIND", "BURST_FIFO_QUEUE", "QUEUE_MAXLENGTH", "QUEUE_SERVERS",
-  "SERVICE_TYPE", "SERVICE_LAMBDA", "SERVICE_TO", "SERVICE_FROM",
-  "SERVICE_SAVETO", "SERVICE_LOADFROM", "DEPARTURE_SAVETO", "STOP_MAXTIME",
-  "STOP_MAXARRIVAL", "STOP_QUEUEZERO", "NTHREADS", "PROTOCOL",
-  "PROTO_BABSQ", "LIBS_RANDOM", "LIB_RAND_IRAND", "LIB_RAND_RANDLIB",
-  "R_MARKOV", "R_UNF", "R_FILE", "R_MMPP", "R_MMPP_R", "R_OTHER",
-  "DEBUG_ERROR", "DEBUG_WARNING", "DEBUG_INFO", "YES", "NO", "EQ",
-  "ENDLINE", "REALNUM", "INTNUM", "STRING", "$accept", "input", "line",
-  "exp", 0
+  "BURST_TYPE", "BURST_FROM", "BURST_TO", "BURST_LAMBDA", "BURST_SAVETO",
+  "BURST_LOADFROM", "QUEUE_KIND", "BURST_FIFO_QUEUE", "QUEUE_MAXLENGTH",
+  "QUEUE_SERVERS", "SERVICE_TYPE", "SERVICE_LAMBDA", "SERVICE_TO",
+  "SERVICE_FROM", "SERVICE_SAVETO", "SERVICE_LOADFROM", "DEPARTURE_SAVETO",
+  "STOP_MAXTIME", "STOP_MAXARRIVAL", "STOP_QUEUEZERO", "NTHREADS",
+  "PROTOCOL", "PROTO_BABSQ", "LIBS_RANDOM", "LIB_RAND_IRAND",
+  "LIB_RAND_RANDLIB", "R_MARKOV", "R_UNF", "R_FILE", "R_MMPP", "R_MMPP_R",
+  "R_OTHER", "DEBUG_ERROR", "DEBUG_WARNING", "DEBUG_INFO", "YES", "NO",
+  "EQ", "ENDLINE", "REALNUM", "INTNUM", "STRING", "$accept", "input",
+  "line", "exp", 0
 };
 #endif
 
@@ -610,19 +620,21 @@ static const yytype_uint16 yytoknum[] =
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,   297,   298,   299,   300,   301,   302
+     295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
+     305
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    48,    49,    49,    50,    50,    51,    51,    51,    51,
-      51,    51,    51,    51,    51,    51,    51,    51,    51,    51,
-      51,    51,    51,    51,    51,    51,    51,    51,    51,    51,
-      51,    51,    51,    51,    51,    51,    51,    51,    51,    51,
-      51,    51,    51,    51,    51,    51,    51,    51,    51,    51,
-      51,    51,    51,    51,    51,    51,    51,    51,    51,    51
+       0,    51,    52,    52,    53,    53,    54,    54,    54,    54,
+      54,    54,    54,    54,    54,    54,    54,    54,    54,    54,
+      54,    54,    54,    54,    54,    54,    54,    54,    54,    54,
+      54,    54,    54,    54,    54,    54,    54,    54,    54,    54,
+      54,    54,    54,    54,    54,    54,    54,    54,    54,    54,
+      54,    54,    54,    54,    54,    54,    54,    54,    54,    54,
+      54,    54,    54,    54
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -633,7 +645,8 @@ static const yytype_uint8 yyr2[] =
        3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     3,     3,     3,     3
+       3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
+       3,     3,     3,     3
 };
 
 /* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
@@ -644,46 +657,48 @@ static const yytype_uint8 yydefact[] =
        2,     0,     1,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     5,     3,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     5,     3,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     4,     7,     8,     9,    10,    11,    12,     6,
-      13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    29,    28,    27,    30,    32,    35,
-      33,    34,    36,    31,    41,    42,    38,    40,    37,    39,
-      43,    44,    45,    46,    47,    48,    49,    59,    58,    50,
-      51,    52,    53,    54,    55,    56,    57
+       0,     0,     0,     0,     0,     0,     0,     0,     4,     7,
+       8,     9,    10,    11,    12,     6,    13,    14,    15,    16,
+      17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,    33,    32,    31,    34,    36,    39,
+      37,    38,    40,    35,    45,    46,    42,    44,    41,    43,
+      47,    48,    49,    50,    51,    52,    53,    63,    62,    54,
+      55,    56,    57,    58,    59,    60,    61
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,    32,    33
+      -1,     1,    35,    36
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -42
+#define YYPACT_NINF -45
 static const yytype_int8 yypact[] =
 {
-     -42,     0,   -42,   -41,   -30,    -6,    10,    35,    36,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
-      48,    49,    50,    51,    52,    53,    54,    55,    56,    57,
-      58,   -42,   -42,   -16,    13,    -3,    18,   -15,    29,    59,
-      34,    61,    62,   -12,    63,    64,    19,   -13,   -10,    -4,
-      65,    66,    67,    69,    70,    16,    71,    74,    30,    21,
-      31,    33,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,
-     -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,
-     -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,
-     -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,
-     -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,   -42,
-     -42,   -42,   -42,   -42,   -42,   -42,   -42
+     -45,     0,   -45,   -44,   -30,    10,    17,    32,    38,    39,
+      40,    41,    42,    43,    44,    45,    46,    47,    48,    49,
+      50,    51,    52,    53,    54,    55,    56,    57,    58,    59,
+      60,    61,    62,    63,   -45,   -45,   -16,    13,    -3,    28,
+     -13,   -17,    64,    34,    66,    67,   -11,    68,    69,   -15,
+      71,    72,    19,    -9,    -4,    12,    73,    74,    75,    77,
+      78,    20,    79,    80,    33,    31,    35,    37,   -45,   -45,
+     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
+     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
+     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
+     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
+     -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
+     -45,   -45,   -45,   -45,   -45,   -45,   -45
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -42,   -42,   -42,   -42
+     -45,   -45,   -45,   -45
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -692,58 +707,61 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-       2,    84,    34,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    35,    13,    14,    15,    16,    17,    18,
-      19,    20,    21,    22,    23,    24,    25,    26,    62,    27,
-      72,    73,    94,    95,    85,    96,    97,    36,    28,    29,
-      30,    98,    99,    70,    31,    63,    64,    65,    66,    67,
-      68,    88,    89,    37,    90,    91,    92,   105,   106,    69,
-     109,   110,   111,   112,    71,    93,    76,    77,    78,    79,
-      80,    81,   113,   114,   115,   116,    74,     0,    38,    39,
-      40,    41,    42,    43,    44,    45,    46,    47,    48,    49,
-      50,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,   108,     0,     0,     0,    75,    82,    83,    86,
-      87,     0,   100,   101,   102,   103,   104,   107
+       2,    94,    37,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    13,    14,    15,    38,    16,    17,    18,
+      19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
+      29,    68,    30,    80,    95,    78,    79,    90,    91,   104,
+     105,    31,    32,    33,   106,   107,    76,    34,    69,    70,
+      71,    72,    73,    74,    98,    99,    39,   100,   101,   102,
+     108,   109,    75,    40,   115,   116,   119,   120,   103,    82,
+      83,    84,    85,    86,    87,   121,   122,    77,    41,   123,
+     124,   125,   126,     0,    42,    43,    44,    45,    46,    47,
+      48,    49,    50,    51,    52,    53,    54,    55,    56,    57,
+      58,    59,    60,    61,    62,    63,    64,    65,    66,    67,
+       0,   118,     0,     0,    81,    88,    89,     0,    92,    93,
+      96,    97,     0,   110,   111,   112,   113,   114,   117
 };
 
 #define yypact_value_is_default(yystate) \
-  ((yystate) == (-42))
+  ((yystate) == (-45))
 
 #define yytable_value_is_error(yytable_value) \
   YYID (0)
 
 static const yytype_int8 yycheck[] =
 {
-       0,    13,    43,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    43,    14,    15,    16,    17,    18,    19,
-      20,    21,    22,    23,    24,    25,    26,    27,    44,    29,
-      45,    46,    45,    46,    46,    45,    46,    43,    38,    39,
-      40,    45,    46,    46,    44,    32,    33,    34,    35,    36,
-      37,    32,    33,    43,    35,    36,    37,    41,    42,    46,
-      30,    31,    41,    42,    46,    46,    32,    33,    34,    35,
-      36,    37,    41,    42,    41,    42,    47,    -1,    43,    43,
-      43,    43,    43,    43,    43,    43,    43,    43,    43,    43,
-      43,    43,    43,    43,    43,    43,    43,    43,    43,    43,
-      43,    43,    28,    -1,    -1,    -1,    47,    46,    46,    46,
-      46,    -1,    47,    47,    47,    46,    46,    46
+       0,    16,    46,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    13,    14,    15,    46,    17,    18,    19,
+      20,    21,    22,    23,    24,    25,    26,    27,    28,    29,
+      30,    47,    32,    50,    49,    48,    49,    48,    49,    48,
+      49,    41,    42,    43,    48,    49,    49,    47,    35,    36,
+      37,    38,    39,    40,    35,    36,    46,    38,    39,    40,
+      48,    49,    49,    46,    44,    45,    33,    34,    49,    35,
+      36,    37,    38,    39,    40,    44,    45,    49,    46,    44,
+      45,    44,    45,    -1,    46,    46,    46,    46,    46,    46,
+      46,    46,    46,    46,    46,    46,    46,    46,    46,    46,
+      46,    46,    46,    46,    46,    46,    46,    46,    46,    46,
+      -1,    31,    -1,    -1,    50,    49,    49,    -1,    50,    50,
+      49,    49,    -1,    50,    50,    50,    49,    49,    49
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    49,     0,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    14,    15,    16,    17,    18,    19,    20,
-      21,    22,    23,    24,    25,    26,    27,    29,    38,    39,
-      40,    44,    50,    51,    43,    43,    43,    43,    43,    43,
-      43,    43,    43,    43,    43,    43,    43,    43,    43,    43,
-      43,    43,    43,    43,    43,    43,    43,    43,    43,    43,
-      43,    43,    44,    32,    33,    34,    35,    36,    37,    46,
-      46,    46,    45,    46,    47,    47,    32,    33,    34,    35,
-      36,    37,    46,    46,    13,    46,    46,    46,    32,    33,
-      35,    36,    37,    46,    45,    46,    45,    46,    45,    46,
-      47,    47,    47,    46,    46,    41,    42,    46,    28,    30,
-      31,    41,    42,    41,    42,    41,    42
+       0,    52,     0,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    13,    14,    15,    17,    18,    19,    20,
+      21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      32,    41,    42,    43,    47,    53,    54,    46,    46,    46,
+      46,    46,    46,    46,    46,    46,    46,    46,    46,    46,
+      46,    46,    46,    46,    46,    46,    46,    46,    46,    46,
+      46,    46,    46,    46,    46,    46,    46,    46,    47,    35,
+      36,    37,    38,    39,    40,    49,    49,    49,    48,    49,
+      50,    50,    35,    36,    37,    38,    39,    40,    49,    49,
+      48,    49,    50,    50,    16,    49,    49,    49,    35,    36,
+      38,    39,    40,    49,    48,    49,    48,    49,    48,    49,
+      50,    50,    50,    49,    49,    44,    45,    49,    31,    33,
+      34,    44,    45,    44,    45,    44,    45
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1623,385 +1641,413 @@ yyreduce:
         case 6:
 
 /* Line 1806 of yacc.c  */
-#line 89 "babs_parser.y"
+#line 93 "babs_parser.y"
     { babs_conf.arrival_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 90 "babs_parser.y"
+#line 94 "babs_parser.y"
     { babs_conf.arrival_conf.type = RANDOM_MARKOVIAN; }
     break;
 
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 91 "babs_parser.y"
+#line 95 "babs_parser.y"
     { babs_conf.arrival_conf.type = RANDOM_UNIFORM; }
     break;
 
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 92 "babs_parser.y"
+#line 96 "babs_parser.y"
     { babs_conf.arrival_conf.type = RANDOM_FILE; }
     break;
 
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 93 "babs_parser.y"
+#line 97 "babs_parser.y"
     { babs_conf.arrival_conf.type = RANDOM_MMPP; }
     break;
 
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 94 "babs_parser.y"
+#line 98 "babs_parser.y"
     { babs_conf.arrival_conf.type = RANDOM_MMPP_R; }
     break;
 
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 95 "babs_parser.y"
+#line 99 "babs_parser.y"
     { babs_conf.arrival_conf.type = RANDOM_OTHER; }
     break;
 
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 96 "babs_parser.y"
+#line 100 "babs_parser.y"
     { babs_conf.arrival_conf.from = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 14:
 
 /* Line 1806 of yacc.c  */
-#line 97 "babs_parser.y"
+#line 101 "babs_parser.y"
     { babs_conf.arrival_conf.to = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 15:
 
 /* Line 1806 of yacc.c  */
-#line 98 "babs_parser.y"
+#line 102 "babs_parser.y"
     { babs_conf.arrival_conf.lambda = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 16:
 
 /* Line 1806 of yacc.c  */
-#line 99 "babs_parser.y"
+#line 103 "babs_parser.y"
     { babs_conf.arrival_conf.lambda = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 17:
 
 /* Line 1806 of yacc.c  */
-#line 100 "babs_parser.y"
+#line 104 "babs_parser.y"
     { babs_conf.arrival_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+"); }
     break;
 
   case 18:
 
 /* Line 1806 of yacc.c  */
-#line 101 "babs_parser.y"
+#line 105 "babs_parser.y"
     { babs_conf.arrival_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r"); }
     break;
 
   case 19:
 
 /* Line 1806 of yacc.c  */
-#line 103 "babs_parser.y"
+#line 107 "babs_parser.y"
     { babs_conf.burst_conf.type = RANDOM_MARKOVIAN; }
     break;
 
   case 20:
 
 /* Line 1806 of yacc.c  */
-#line 104 "babs_parser.y"
+#line 108 "babs_parser.y"
     { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
     break;
 
   case 21:
 
 /* Line 1806 of yacc.c  */
-#line 105 "babs_parser.y"
+#line 109 "babs_parser.y"
     { babs_conf.burst_conf.type = RANDOM_FILE; }
     break;
 
   case 22:
 
 /* Line 1806 of yacc.c  */
-#line 106 "babs_parser.y"
+#line 110 "babs_parser.y"
     { babs_conf.burst_conf.type = RANDOM_MMPP; }
     break;
 
   case 23:
 
 /* Line 1806 of yacc.c  */
-#line 107 "babs_parser.y"
+#line 111 "babs_parser.y"
     { babs_conf.burst_conf.type = RANDOM_MMPP_R; }
     break;
 
   case 24:
 
 /* Line 1806 of yacc.c  */
-#line 108 "babs_parser.y"
+#line 112 "babs_parser.y"
     { babs_conf.burst_conf.type = RANDOM_OTHER; }
     break;
 
   case 25:
 
 /* Line 1806 of yacc.c  */
-#line 109 "babs_parser.y"
+#line 113 "babs_parser.y"
     { babs_conf.burst_conf.from = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 26:
 
 /* Line 1806 of yacc.c  */
-#line 110 "babs_parser.y"
+#line 114 "babs_parser.y"
     { babs_conf.burst_conf.to = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 27:
 
 /* Line 1806 of yacc.c  */
-#line 112 "babs_parser.y"
-    { babs_conf.queue_conf.max_waiters = (yyvsp[(3) - (3)].ival); }
+#line 115 "babs_parser.y"
+    { babs_conf.burst_conf.lambda = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 113 "babs_parser.y"
-    { babs_conf.queue_conf.type = (yyvsp[(3) - (3)].ival); }
+#line 116 "babs_parser.y"
+    { babs_conf.burst_conf.lambda = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 114 "babs_parser.y"
-    { babs_conf.queue_conf.type = QUEUE_BURST_FIFO; }
+#line 117 "babs_parser.y"
+    { babs_conf.burst_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+"); }
     break;
 
   case 30:
 
 /* Line 1806 of yacc.c  */
-#line 115 "babs_parser.y"
-    { babs_conf.queue_conf.num_servers = (yyvsp[(3) - (3)].ival); }
+#line 118 "babs_parser.y"
+    { babs_conf.burst_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r"); }
     break;
 
   case 31:
 
 /* Line 1806 of yacc.c  */
-#line 116 "babs_parser.y"
-    { babs_conf.service_conf.type = (yyvsp[(3) - (3)].ival); }
+#line 120 "babs_parser.y"
+    { babs_conf.queue_conf.max_waiters = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 117 "babs_parser.y"
-    {babs_conf.service_conf.type = RANDOM_MARKOVIAN; }
+#line 121 "babs_parser.y"
+    { babs_conf.queue_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 33:
 
 /* Line 1806 of yacc.c  */
-#line 118 "babs_parser.y"
-    {babs_conf.service_conf.type = RANDOM_MMPP; }
+#line 122 "babs_parser.y"
+    { babs_conf.queue_conf.type = QUEUE_BURST_FIFO; }
     break;
 
   case 34:
 
 /* Line 1806 of yacc.c  */
-#line 119 "babs_parser.y"
-    {babs_conf.service_conf.type = RANDOM_MMPP_R; }
+#line 123 "babs_parser.y"
+    { babs_conf.queue_conf.num_servers = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 35:
 
 /* Line 1806 of yacc.c  */
-#line 120 "babs_parser.y"
-    {babs_conf.service_conf.type = RANDOM_UNIFORM; }
+#line 124 "babs_parser.y"
+    { babs_conf.service_conf.type = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 36:
 
 /* Line 1806 of yacc.c  */
-#line 121 "babs_parser.y"
-    {babs_conf.service_conf.type = RANDOM_OTHER; }
+#line 125 "babs_parser.y"
+    {babs_conf.service_conf.type = RANDOM_MARKOVIAN; }
     break;
 
   case 37:
 
 /* Line 1806 of yacc.c  */
-#line 122 "babs_parser.y"
-    { babs_conf.service_conf.from = (yyvsp[(3) - (3)].dval); }
+#line 126 "babs_parser.y"
+    {babs_conf.service_conf.type = RANDOM_MMPP; }
     break;
 
   case 38:
 
 /* Line 1806 of yacc.c  */
-#line 123 "babs_parser.y"
-    { babs_conf.service_conf.to = (yyvsp[(3) - (3)].dval); }
+#line 127 "babs_parser.y"
+    {babs_conf.service_conf.type = RANDOM_MMPP_R; }
     break;
 
   case 39:
 
 /* Line 1806 of yacc.c  */
-#line 124 "babs_parser.y"
-    { babs_conf.service_conf.from = (yyvsp[(3) - (3)].ival); }
+#line 128 "babs_parser.y"
+    {babs_conf.service_conf.type = RANDOM_UNIFORM; }
     break;
 
   case 40:
 
 /* Line 1806 of yacc.c  */
-#line 125 "babs_parser.y"
-    { babs_conf.service_conf.to = (yyvsp[(3) - (3)].ival); }
+#line 129 "babs_parser.y"
+    {babs_conf.service_conf.type = RANDOM_OTHER; }
     break;
 
   case 41:
 
 /* Line 1806 of yacc.c  */
-#line 126 "babs_parser.y"
-    { babs_conf.service_conf.lambda = (yyvsp[(3) - (3)].dval); }
+#line 130 "babs_parser.y"
+    { babs_conf.service_conf.from = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 42:
 
 /* Line 1806 of yacc.c  */
-#line 127 "babs_parser.y"
-    { babs_conf.service_conf.lambda = (yyvsp[(3) - (3)].ival); }
+#line 131 "babs_parser.y"
+    { babs_conf.service_conf.to = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 43:
 
 /* Line 1806 of yacc.c  */
-#line 128 "babs_parser.y"
-    {babs_conf.service_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+");}
+#line 132 "babs_parser.y"
+    { babs_conf.service_conf.from = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 44:
 
 /* Line 1806 of yacc.c  */
-#line 129 "babs_parser.y"
-    {babs_conf.service_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r");}
+#line 133 "babs_parser.y"
+    { babs_conf.service_conf.to = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 45:
 
 /* Line 1806 of yacc.c  */
-#line 131 "babs_parser.y"
-    { babs_conf.queue_conf.out_file = fopen((yyvsp[(3) - (3)].str), "w+");}
+#line 134 "babs_parser.y"
+    { babs_conf.service_conf.lambda = (yyvsp[(3) - (3)].dval); }
     break;
 
   case 46:
 
 /* Line 1806 of yacc.c  */
-#line 132 "babs_parser.y"
-    { babs_conf.stop_conf.max_time = (yyvsp[(3) - (3)].ival); }
+#line 135 "babs_parser.y"
+    { babs_conf.service_conf.lambda = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 47:
 
 /* Line 1806 of yacc.c  */
-#line 133 "babs_parser.y"
-    { babs_conf.stop_conf.max_arrival = (yyvsp[(3) - (3)].ival); }
+#line 136 "babs_parser.y"
+    {babs_conf.service_conf.to_file = fopen((yyvsp[(3) - (3)].str), "w+");}
     break;
 
   case 48:
 
 /* Line 1806 of yacc.c  */
-#line 134 "babs_parser.y"
-    {babs_conf.stop_conf.queue_zero = STOP_QUEUE_ZERO; }
+#line 137 "babs_parser.y"
+    {babs_conf.service_conf.from_file = fopen((yyvsp[(3) - (3)].str), "r");}
     break;
 
   case 49:
 
 /* Line 1806 of yacc.c  */
-#line 135 "babs_parser.y"
-    {babs_conf.stop_conf.queue_zero = STOP_QUEUE_NONZERO; }
+#line 139 "babs_parser.y"
+    { babs_conf.queue_conf.out_file = fopen((yyvsp[(3) - (3)].str), "w+");}
     break;
 
   case 50:
 
 /* Line 1806 of yacc.c  */
-#line 137 "babs_parser.y"
-    {babs_conf.random_lib = LIB_RANDOM_IRAND; }
+#line 140 "babs_parser.y"
+    { babs_conf.stop_conf.max_time = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 51:
 
 /* Line 1806 of yacc.c  */
-#line 138 "babs_parser.y"
-    {babs_conf.random_lib = LIB_RANDOM_RANDLIB; }
+#line 141 "babs_parser.y"
+    { babs_conf.stop_conf.max_arrival = (yyvsp[(3) - (3)].ival); }
     break;
 
   case 52:
 
 /* Line 1806 of yacc.c  */
-#line 140 "babs_parser.y"
-    {debug |= LEVEL_ERROR; }
+#line 142 "babs_parser.y"
+    {babs_conf.stop_conf.queue_zero = STOP_QUEUE_ZERO; }
     break;
 
   case 53:
 
 /* Line 1806 of yacc.c  */
-#line 141 "babs_parser.y"
-    {debug &= ~LEVEL_ERROR;}
+#line 143 "babs_parser.y"
+    {babs_conf.stop_conf.queue_zero = STOP_QUEUE_NONZERO; }
     break;
 
   case 54:
 
 /* Line 1806 of yacc.c  */
-#line 142 "babs_parser.y"
-    {debug |= LEVEL_WARNING;}
+#line 145 "babs_parser.y"
+    {babs_conf.random_lib = LIB_RANDOM_IRAND; }
     break;
 
   case 55:
 
 /* Line 1806 of yacc.c  */
-#line 143 "babs_parser.y"
-    {debug &= ~LEVEL_WARNING;}
+#line 146 "babs_parser.y"
+    {babs_conf.random_lib = LIB_RANDOM_RANDLIB; }
     break;
 
   case 56:
 
 /* Line 1806 of yacc.c  */
-#line 144 "babs_parser.y"
-    {debug |= LEVEL_INFO;}
+#line 148 "babs_parser.y"
+    {debug |= LEVEL_ERROR; }
     break;
 
   case 57:
 
 /* Line 1806 of yacc.c  */
-#line 145 "babs_parser.y"
-    {debug &= ~LEVEL_INFO;}
+#line 149 "babs_parser.y"
+    {debug &= ~LEVEL_ERROR;}
     break;
 
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 147 "babs_parser.y"
-    {babs_conf.protocol = PROTOCOL_BABSQ; }
+#line 150 "babs_parser.y"
+    {debug |= LEVEL_WARNING;}
     break;
 
   case 59:
 
 /* Line 1806 of yacc.c  */
-#line 149 "babs_parser.y"
+#line 151 "babs_parser.y"
+    {debug &= ~LEVEL_WARNING;}
+    break;
+
+  case 60:
+
+/* Line 1806 of yacc.c  */
+#line 152 "babs_parser.y"
+    {debug |= LEVEL_INFO;}
+    break;
+
+  case 61:
+
+/* Line 1806 of yacc.c  */
+#line 153 "babs_parser.y"
+    {debug &= ~LEVEL_INFO;}
+    break;
+
+  case 62:
+
+/* Line 1806 of yacc.c  */
+#line 155 "babs_parser.y"
+    {babs_conf.protocol = PROTOCOL_BABSQ; }
+    break;
+
+  case 63:
+
+/* Line 1806 of yacc.c  */
+#line 157 "babs_parser.y"
     { babs_conf.nthreads = (yyvsp[(3) - (3)].ival); }
     break;
 
 
 
 /* Line 1806 of yacc.c  */
-#line 2005 "babs_parser.c"
+#line 2051 "babs_parser.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2239,7 +2285,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 151 "babs_parser.y"
+#line 159 "babs_parser.y"
 
 
 int babserror (char *s)  /* Called by yyparse on error */

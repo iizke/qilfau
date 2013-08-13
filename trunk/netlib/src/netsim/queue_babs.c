@@ -9,9 +9,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
+
 #include "error.h"
 #include "queues/fifo.h"
 #include "queue_babs.h"
+
+extern BABSQ_CONFIG babs_conf;
 
 /**
  * Create new packet
@@ -107,17 +111,18 @@ int babs_allow_continue (BABSQ_CONFIG *conf, SYS_STATE_OPS *ops) {
   if ((stop_conf->max_time > 0 && state->curr_time.real > stop_conf->max_time) ||
       (stop_conf->max_arrival > 0 && state->measurement.total_arrivals > stop_conf->max_arrival) ||
       ((conf->arrival_conf.type == RANDOM_FILE) && (conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))) {
+
+    /** these commands stops the process of simulation
+     *  waiting for processing all events
+     */
+    conf->arrival_conf.type = RANDOM_OTHER;
+    conf->arrival_conf.distribution.gen = NULL;
     if (conf->stop_conf.queue_zero == STOP_QUEUE_ZERO) {
       QUEUE_TYPE *qt = NULL;
       qt = state->queues.curr_queue;
       if (qt->get_waiting_length(qt) > 0)
         return 1;
     } else {
-      /** these commands stops the process of simulation
-       *  waiting for processing all events
-       */
-      conf->arrival_conf.type = RANDOM_OTHER;
-      conf->arrival_conf.distribution.gen = NULL;
       if (!event_list_is_empty(&state->future_events))
         return 1;
     }
@@ -128,6 +133,7 @@ int babs_allow_continue (BABSQ_CONFIG *conf, SYS_STATE_OPS *ops) {
 
 static int babs_setup_burst (RANDOM_CONF *burst_conf) {
   int burst = 0;
+  double burstd = 0;
   switch (burst_conf->type) {
   case RANDOM_FILE:
     //iprint(LEVEL_INFO, "Burst values from file are not supported, assign constant value = 1\n");
@@ -136,10 +142,20 @@ static int babs_setup_burst (RANDOM_CONF *burst_conf) {
   default:
     if (burst_conf->distribution.gen == NULL) {
       iprint(LEVEL_WARNING, "Burst type is not supported \n");
-      burst = 0;
-    } else burst = (int)(burst_conf->distribution.gen(&burst_conf->distribution));
+      burst = 1;
+    } else {
+      if (burst_conf->type == RANDOM_MARKOVIAN)
+        burstd = 1/(burst_conf->distribution.gen(&burst_conf->distribution));
+      else
+        burstd = (burst_conf->distribution.gen(&burst_conf->distribution));
+
+      if (burstd < 1) burst = 1;
+      else burst = (int)burstd;
+    }
     break;
   }
+  //iprint(LEVEL_ERROR, "burst = %d | %f, type %d, lambda %f\n", burst, burstd, burst_conf->type, burst_conf->lambda);
+
   return burst;
 }
 
@@ -201,10 +217,13 @@ int babs_packet_from_event (EVENT *e, PACKET *p) {
 int babs_process_arrival (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) {
   PACKET *packet = NULL;
   QUEUE_TYPE *qt = state->queues.curr_queue;
+  int burst = 0;
 
   try ( babs_update_time(e, state) );
   try ( babs_new_packet(state, &packet) );
-  packet->info.burst = babs_setup_burst(&(conf->burst_conf));
+  burst = babs_setup_burst(&(conf->burst_conf));
+  if (burst > conf->queue_conf.num_servers) burst = conf->queue_conf.num_servers;
+  packet->info.burst = burst;
   babs_packet_from_event (e, packet);
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   qt->push_packet(qt, packet);
@@ -289,6 +308,24 @@ EVENT * babs_generate_event(int type, PACKET *p, BABSQ_CONFIG *conf, SYS_STATE_O
 }
 
 /**
+ * Do save an event into file.
+ * @param e : Event
+ * @param conf : Configuration
+ * @return Error code (see more in def.h and error.h)
+ */
+static int babs_save_event (EVENT *e, BABSQ_CONFIG *conf) {
+  switch (e->info.type) {
+  case EVENT_ARRIVAL:
+    event_save(e, conf->arrival_conf.to_file);
+    break;
+  case EVENT_END_SERVICE:
+    event_save(e, conf->queue_conf.out_file);
+    break;
+  }
+  return SUCCESS;
+}
+
+/**
  * Process an event.
  * @param e : Event
  * @param conf : User configuration
@@ -308,6 +345,7 @@ int babs_process_event (EVENT *e, BABSQ_CONFIG *conf, SYS_STATE_OPS *ops) {
     iprint(LEVEL_WARNING, "This kind of system does not support this event (%d)\n", e->info.type);
     break;
   }
+  babs_save_event(e, conf);
   return SUCCESS;
 }
 
@@ -365,3 +403,48 @@ int babs_state_init (BABSQ_STATE *state, BABSQ_CONFIG *conf) {
   state->ops.remove_event = babs_remove_event;
   return SUCCESS;
 }
+
+/**
+ * Signal handler (SIGINT and SIGTERM) used whenever main process is stopped by
+ * user (normally with Ctrl+C).
+ * @param n : interrupt number (no use)
+ */
+static void babs_sig_handler(int n) {
+  //netsim_print_result(&conf);
+  //netsim_print_theorical_result(&conf);
+  ((SYS_STATE_OPS*)babs_conf.runtime_state)->clean(&babs_conf, babs_conf.runtime_state);
+  exit(1);
+}
+
+/**
+ * Main program. Do parse user configuration file, and run a chosen simulation
+ * @param nargs : number of parameters
+ * @param args : parameters
+ * @return Error code (see more in def.h and error.h)
+ */
+int babs_start (char *conf_file) {
+  BABSQ_STATE babs_state;
+  SYS_STATE_OPS *ops = NULL;
+
+  signal(SIGINT, babs_sig_handler);
+  signal(SIGTERM, babs_sig_handler);
+
+  random_init();
+  try( config_parse_babs_file (conf_file) );
+  //return SUCCESS;
+  switch (babs_conf.protocol) {
+  case PROTOCOL_BABSQ:
+    babs_state_init (&babs_state, &babs_conf);
+    ops = &babs_state.ops;
+    break;
+  default:
+    iprint(LEVEL_WARNING, "This protocol is not supported right now \n");
+    return SUCCESS;
+  }
+  babs_conf.runtime_state = ops;
+  pisas_sched(&babs_conf, ops);
+
+  print_measurement(&babs_state.measurement);
+  return SUCCESS;
+}
+

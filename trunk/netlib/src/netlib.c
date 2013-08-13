@@ -6,6 +6,7 @@
  */
 
 //#include <stdio.h>
+#include <signal.h>
 #include "error.h"
 #include "netsim/netsim.h"
 #include "poligraph/main_graph.h"
@@ -19,7 +20,7 @@
 
 int check_netsim () {
   //netsim_start_thread("src/netsim/conf/test.conf");
-  netsim_start("src/netsim/conf/test.conf");
+  netsim_start("src/netsim/conf/test_onequeue.conf");
   return 0;
 }
 
@@ -55,12 +56,33 @@ int check_net_queue() {
   return SUCCESS;
 }
 
+int check_babsq () {
+  //netsim_start_thread("src/netsim/conf/test.conf");
+  babs_start("src/netsim/conf/test_babs.conf");
+  return 0;
+}
+
+/**
+ * Signal handler (SIGINT and SIGTERM) used whenever main process is stopped by
+ * user (normally with Ctrl+C).
+ * @param n : interrupt number (no use)
+ */
+static void main_sig_handler(int n) {
+  printf("Trash cleaning ... ");
+  trash_clean();
+  //printf("Terminated.");
+  exit(1);
+}
+
 int main (int nargs, char** args) {
   trash_init();
+  signal(SIGINT, main_sig_handler);
+  signal(SIGTERM, main_sig_handler);
   random_init();
   //main_markov_parser(nargs, args);
 
-  check_netsim();
+  //printf("CHECK ONE_QUEUE -------------------------\n");
+  //check_netsim();
 
   //check_schedsim();
   //main_graph(nargs, args);
@@ -69,6 +91,10 @@ int main (int nargs, char** args) {
   //check_graph();
   //check_net_queue();
   //test_gen_distribution();
+
+  printf("CHECK BABS_QUEUE -------------------------\n");
+  check_babsq();
+
   trash_clean();
   return SUCCESS;
 }

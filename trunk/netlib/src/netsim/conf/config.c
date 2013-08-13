@@ -13,9 +13,12 @@
 #include "parser.h"
 #include "config.h"
 #include "channelparser.h"
+#include "netsim/queue_babs.h"
+#include "babs_parser.h"
 
 extern CONFIG conf;
 extern NET_CONFIG netconf;
+extern BABSQ_CONFIG babs_conf;
 /**
  * Configure random distribution from parameters in RANDOM_CONFIG
  * @param rc : Random configuration
@@ -103,6 +106,86 @@ int config_parse_file(char * f) {
   yyparse();
   config_setup(&conf);
   fclose(yyin);
+  return SUCCESS;
+}
+
+/**
+ * Initialize the structure of CONFIG
+ * @param conf : configuration
+ * @return Error code (see more in def.h and error.h)
+ */
+int babs_config_init (BABSQ_CONFIG *conf) {
+  check_null_pointer(conf);
+  memset(conf, 0, sizeof(BABSQ_CONFIG));
+  conf->random_lib = LIB_RANDOM_IRAND;
+  conf->stop_conf.queue_zero = STOP_QUEUE_NONZERO;
+  return SUCCESS;
+}
+
+/**
+ * Configure random distribution in user configuration
+ * @param conf : User configuration
+ * @return Error code (see more in def.h and error.h)
+ */
+int babs_config_setup (BABSQ_CONFIG *conf) {
+  extern int librand;
+
+  config_random_conf(&conf->arrival_conf);
+  config_random_conf(&conf->service_conf);
+  config_random_conf(&conf->burst_conf);
+  librand = conf->random_lib;
+  return SUCCESS;
+}
+
+static int babsq_config_print (BABSQ_CONFIG *conf) {
+  check_null_pointer(conf);
+  printf("BABS CONFIG: #threads = %d\n", conf->nthreads);
+  printf("BABS CONFIG: protocol = %d - %d (BABSQ)\n", conf->protocol, PROTOCOL_BABSQ);
+  printf("BABS CONFIG: randomlib = %d - irand %d - randlib %d\n", conf->random_lib, LIB_RANDOM_IRAND, LIB_RANDOM_RANDLIB);
+  printf("BABS CONFIG: arrival_conf.type = %d\n", conf->arrival_conf.type);
+  printf("BABS CONFIG: arrival_conf.lambda = %f\n", conf->arrival_conf.lambda);
+  printf("BABS CONFIG: arrival_conf.from = %f\n", conf->arrival_conf.from);
+  printf("BABS CONFIG: arrival_conf.to = %f\n", conf->arrival_conf.to);
+  printf("BABS CONFIG: arrival_conf.prob = %f\n", conf->arrival_conf.prob);
+  printf("----------------------------------------------\n");
+  printf("BABS CONFIG: service_conf.type = %d\n", conf->service_conf.type);
+  printf("BABS CONFIG: service_conf.lambda = %f\n", conf->service_conf.lambda);
+  printf("BABS CONFIG: service_conf.from = %f\n", conf->service_conf.from);
+  printf("BABS CONFIG: service_conf.to = %f\n", conf->service_conf.to);
+  printf("BABS CONFIG: service_conf.prob = %f\n", conf->service_conf.prob);
+  printf("----------------------------------------------\n");
+  printf("BABS CONFIG: burst_conf.type = %d\n", conf->burst_conf.type);
+  printf("BABS CONFIG: burst_conf.lambda = %f\n", conf->burst_conf.lambda);
+  printf("BABS CONFIG: burst_conf.from = %f\n", conf->burst_conf.from);
+  printf("BABS CONFIG: burst_conf.to = %f\n", conf->burst_conf.to);
+  printf("BABS CONFIG: burst_conf.prob = %f\n", conf->burst_conf.prob);
+  printf("----------------------------------------------\n");
+  printf("BABS CONFIG: queue_conf.max_waiters = %d\n", conf->queue_conf.max_waiters);
+  printf("BABS CONFIG: queue_conf.num_servers = %d\n", conf->queue_conf.num_servers);
+  printf("BABS CONFIG: queue_conf.type = %d - BABSQ %d\n", conf->queue_conf.type, QUEUE_BURST_FIFO);
+  printf("----------------------------------------------\n");
+  printf("BABS CONFIG: stop_conf.max_arrival = %d\n", conf->stop_conf.max_arrival);
+  printf("BABS CONFIG: stop_conf.max_time = %f\n", conf->stop_conf.max_time);
+  printf("BABS CONFIG: stop_conf.queue_zero = %d\n", conf->stop_conf.queue_zero);
+  return SUCCESS;
+}
+/**
+ * Parse the configuration file for BABS Queue (for example: test.conf)
+ * @param f : file name
+ * @return : Error code (see more in def.h and error.h)
+ */
+int config_parse_babs_file(char * f) {
+  extern FILE *babsin;
+  extern int babslex();
+  extern int babsparse();
+
+  babs_config_init(&babs_conf);
+  babsin = fopen(f, "r");
+  babsparse();
+  babs_config_setup(&babs_conf);
+  fclose(babsin);
+  // print out config structure
+  //babsq_config_print(&babs_conf);
   return SUCCESS;
 }
 
