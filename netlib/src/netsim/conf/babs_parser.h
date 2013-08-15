@@ -74,17 +74,18 @@
      R_FILE = 292,
      R_MMPP = 293,
      R_MMPP_R = 294,
-     R_OTHER = 295,
-     DEBUG_ERROR = 296,
-     DEBUG_WARNING = 297,
-     DEBUG_INFO = 298,
-     YES = 299,
-     NO = 300,
-     EQ = 301,
-     ENDLINE = 302,
-     REALNUM = 303,
-     INTNUM = 304,
-     STRING = 305
+     R_POISSON = 295,
+     R_OTHER = 296,
+     DEBUG_ERROR = 297,
+     DEBUG_WARNING = 298,
+     DEBUG_INFO = 299,
+     YES = 300,
+     NO = 301,
+     EQ = 302,
+     ENDLINE = 303,
+     REALNUM = 304,
+     INTNUM = 305,
+     STRING = 306
    };
 #endif
 /* Tokens.  */
@@ -125,17 +126,18 @@
 #define R_FILE 292
 #define R_MMPP 293
 #define R_MMPP_R 294
-#define R_OTHER 295
-#define DEBUG_ERROR 296
-#define DEBUG_WARNING 297
-#define DEBUG_INFO 298
-#define YES 299
-#define NO 300
-#define EQ 301
-#define ENDLINE 302
-#define REALNUM 303
-#define INTNUM 304
-#define STRING 305
+#define R_POISSON 295
+#define R_OTHER 296
+#define DEBUG_ERROR 297
+#define DEBUG_WARNING 298
+#define DEBUG_INFO 299
+#define YES 300
+#define NO 301
+#define EQ 302
+#define ENDLINE 303
+#define REALNUM 304
+#define INTNUM 305
+#define STRING 306
 
 
 
@@ -150,7 +152,7 @@ char* str; int ival; double dval;
 
 
 /* Line 2068 of yacc.c  */
-#line 154 "babs_parser.h"
+#line 156 "babs_parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

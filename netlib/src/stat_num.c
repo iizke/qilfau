@@ -33,7 +33,7 @@ int stat_num_new_sample (STAT_NUM *sn, float sample) {
   //sn->avg = calc_avg(sn->avg, sn->num_samples, sample);
   sn->avg = sn->tmpsum / sn->num_samples;
   if (sn->num_samples > 1)
-    sn->var = sqrtf((sn->tmpsumsqr - sn->tmpsum * sn->avg) / (sn->num_samples - 1));
+    sn->sdev = sqrtf((sn->tmpsumsqr - sn->tmpsum * sn->avg) / (sn->num_samples - 1));
   sn->min = min(sn->min, sample);
   sn->max = max(sn->max, sample);
   return SUCCESS;
@@ -56,7 +56,7 @@ int stat_num_new_time_sample (STAT_NUM *sn, float sample, float time) {
   sn->num_samples++;
   sn->all_time += duration;
   sn->avg = sn->tmpsum / sn->all_time;
-  sn->var = sqrtf((sn->tmpsumsqr - sn->tmpsum * sn->avg) / (sn->all_time));
+  sn->sdev = sqrtf((sn->tmpsumsqr - sn->tmpsum * sn->avg) / (sn->all_time));
   sn->min = min(sn->min, sample);
   sn->max = max(sn->max, sample);
   sn->last_time = time;
@@ -65,7 +65,7 @@ int stat_num_new_time_sample (STAT_NUM *sn, float sample, float time) {
 
 double stat_num_calc_confidence_interval (STAT_NUM *sn, double confidence) {
   double c = get_normal_pvalue((confidence + 1)/2);
-  return c*sn->var/sqrt(sn->num_samples);
+  return c*sn->sdev/sqrt(sn->num_samples);
 }
 
 int stat_num_merge(STAT_NUM *n1, STAT_NUM *n2) {
@@ -76,10 +76,10 @@ int stat_num_merge(STAT_NUM *n1, STAT_NUM *n2) {
  if (n1->all_time <= 0) {
    n1->avg = n1->tmpsum / n1->num_samples;
    if (n1->num_samples > 1)
-     n1->var = sqrtf((n1->tmpsumsqr - n1->tmpsum * n1->avg) / (n1->num_samples - 1));
+     n1->sdev = sqrtf((n1->tmpsumsqr - n1->tmpsum * n1->avg) / (n1->num_samples - 1));
  } else {
    n1->avg = n1->tmpsum / n1->all_time;
-   n1->var = sqrtf((n1->tmpsumsqr - n1->tmpsum * n1->avg) / (n1->all_time));
+   n1->sdev = sqrtf((n1->tmpsumsqr - n1->tmpsum * n1->avg) / (n1->all_time));
  }
 
  n1->min = min(n1->min, n2->min);

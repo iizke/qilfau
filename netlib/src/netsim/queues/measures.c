@@ -41,7 +41,8 @@ int print_measurement (MEASURES *m) {
   printf("%20s : %d \n", "total dropped", (int)m->total_dropped);
   printf("%20s : %.3f \n", "total time", m->total_time);
   printf("%20s : %4.5f \n","throughput", m->total_departures/m->total_time);
-  printf("%20s : %4.5f \n","utilization", (m->total_departures * m->servtime.avg / m->total_time));
+  printf("%20s : %4.5f \n","utilization", (m->busy_time / m->total_time));
+  //printf("%20s : %4.5f \n","utilization", (m->total_departures * m->servtime.avg / m->total_time));
   printf("%20s : %4.5f \n","drop probability", (float)m->total_dropped/(float)m->total_arrivals);
 
   return SUCCESS;
@@ -76,10 +77,16 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
     stat_num_new_sample(&m->interarrival_time, curr_time.real - m->last_arrival_time);
     stat_num_new_sample(&m->burst, (float)p->info.burst);
     m->last_arrival_time = curr_time.real;
+    if (! qt->is_processing(qt)) m->last_idle_time = curr_time.real;
     break;
   case PACKET_STATE_OUT:
     m->total_departures++;
     stat_num_new_sample(&m->servtime, p->info.etime.real - p->info.stime.real);
+    if (! qt->is_processing(qt)) {
+      m->busy_time += (curr_time.real - m->last_idle_time);
+      m->last_idle_time = curr_time.real;
+    }
+
     //stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) + 1, curr_time.real);
     //stat_num_new_sample(&m->waittime, curr_time.real - p->info.atime.real);
     break;
@@ -88,6 +95,7 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
     return ERR_PACKET_STATE_WRONG;
     break;
   }
+
   m->total_time = curr_time.real;
   return SUCCESS;
 }

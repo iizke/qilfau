@@ -194,7 +194,7 @@ int _process_arrival (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
 
   _generate_arrival(conf, state);
 
-  while ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) > 0))
+  while ((qt->is_servable(qt)) && (qt->get_waiting_length(qt) > 0))
     _process_packet(conf, state);
 
   return SUCCESS;
@@ -217,7 +217,7 @@ int _process_end_service (EVENT *e, CONFIG *conf, ONEQ_STATE *state) {
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   try ( _free_packet(state, packet) );
 
-  while (qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0))
+  while (qt->is_servable(qt) && (qt->get_waiting_length(qt) > 0))
     _process_packet(conf, state);
 
   return SUCCESS;

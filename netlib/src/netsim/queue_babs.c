@@ -12,7 +12,7 @@
 #include <signal.h>
 
 #include "error.h"
-#include "queues/fifo.h"
+#include "queues/burst_fifo.h"
 #include "queue_babs.h"
 
 extern BABSQ_CONFIG babs_conf;
@@ -95,6 +95,7 @@ EVENT* babs_generate_end_service (PACKET *p, BABSQ_CONFIG *conf, BABSQ_STATE *st
   event_setup(e, &conf->service_conf, state->curr_time);
   e->info.packet = p;
   event_list_insert_event(&state->future_events, e);
+  //state->measurement.busy_time += (e->info.time.real - state->curr_time.real);
   return e;
 }
 
@@ -131,29 +132,30 @@ int babs_allow_continue (BABSQ_CONFIG *conf, SYS_STATE_OPS *ops) {
   return 1;
 }
 
-static int babs_setup_burst (RANDOM_CONF *burst_conf) {
-  int burst = 0;
+static int babs_setup_burst (BABSQ_STATE *state, RANDOM_CONF *burst_conf) {
+  long burst = 0;
   double burstd = 0;
+  //iprint(LEVEL_ERROR, "burst-trace conf: type %d, lambda %f\n", burst_conf->type, burst_conf->lambda);
   switch (burst_conf->type) {
   case RANDOM_FILE:
     //iprint(LEVEL_INFO, "Burst values from file are not supported, assign constant value = 1\n");
-    burst = 1;
+    burstd = 1;
+    break;
+  case RANDOM_MARKOVIAN:
+    burstd = 1/(burst_conf->distribution.gen(&burst_conf->distribution));
     break;
   default:
     if (burst_conf->distribution.gen == NULL) {
       iprint(LEVEL_WARNING, "Burst type is not supported \n");
-      burst = 1;
-    } else {
-      if (burst_conf->type == RANDOM_MARKOVIAN)
-        burstd = 1/(burst_conf->distribution.gen(&burst_conf->distribution));
-      else
-        burstd = (burst_conf->distribution.gen(&burst_conf->distribution));
-
-      if (burstd < 1) burst = 1;
-      else burst = (int)burstd;
-    }
+      burstd = 1;
+    } else burstd = (burst_conf->distribution.gen(&burst_conf->distribution));
     break;
   }
+  // tracing burst generation
+  stat_num_new_sample(&state->burst_trace, burstd);
+
+  if (burstd < 1) burst = 1;
+  else burst = (long)burstd;
   //iprint(LEVEL_ERROR, "burst = %d | %f, type %d, lambda %f\n", burst, burstd, burst_conf->type, burst_conf->lambda);
 
   return burst;
@@ -221,7 +223,7 @@ int babs_process_arrival (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) {
 
   try ( babs_update_time(e, state) );
   try ( babs_new_packet(state, &packet) );
-  burst = babs_setup_burst(&(conf->burst_conf));
+  burst = babs_setup_burst(state, &(conf->burst_conf));
   if (burst > conf->queue_conf.num_servers) burst = conf->queue_conf.num_servers;
   packet->info.burst = burst;
   babs_packet_from_event (e, packet);
@@ -233,7 +235,7 @@ int babs_process_arrival (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) {
 
   babs_generate_arrival(conf, state);
 
-  while ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) > 0))
+  while ((qt->is_servable(qt)) && (qt->get_waiting_length(qt) > 0))
     babs_process_packet(conf, state);
 
   return SUCCESS;
@@ -256,7 +258,7 @@ int babs_process_end_service (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) 
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   try ( babs_free_packet(state, packet) );
 
-  while (qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0))
+  while (qt->is_servable(qt) && (qt->get_waiting_length(qt) > 0))
     babs_process_packet(conf, state);
 
   return SUCCESS;
@@ -388,6 +390,7 @@ int babs_state_init (BABSQ_STATE *state, BABSQ_CONFIG *conf) {
   event_list_init(&state->future_events);
   measures_init (&state->measurement);
   queue_man_init(&state->queues);
+  stat_num_init(&state->burst_trace);
 
   burst_fifo_init(&burst_fifo_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
   queue_man_register_new_type(&state->queues, burst_fifo_queue);
@@ -444,7 +447,11 @@ int babs_start (char *conf_file) {
   babs_conf.runtime_state = ops;
   pisas_sched(&babs_conf, ops);
 
+  if (babs_state.curr_time.real > babs_state.measurement.last_idle_time)
+    babs_state.measurement.busy_time += babs_state.curr_time.real - babs_state.measurement.last_idle_time;
+
   print_measurement(&babs_state.measurement);
+  print_statistical_value("Burst-trace", &babs_state.burst_trace, 0.999);
   return SUCCESS;
 }
 

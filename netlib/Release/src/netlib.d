@@ -27,7 +27,10 @@ src/netlib.d: ../src/netlib.c ../src/error.h ../src/list/linked_list.h \
  ../src/netsim/sys_aqueue.h ../src/schedsim/schedsim.h \
  ../src/schedsim/event.h ../src/schedsim/queues/job.h \
  ../src/schedsim/queues/queue_man.h ../src/schedsim/conf/config.h \
- ../src/schedsim/queues/measures.h ../src/schedsim/queues/job.h
+ ../src/schedsim/queues/measures.h ../src/schedsim/queues/job.h \
+ ../src/netsimv2/onequeue/onequeue.h \
+ /home/iizke/workspace/netlib/src/netsimv2/des.h \
+ /home/iizke/workspace/netlib/src/netsimv2/../netsim/conf/config.h
 
 ../src/error.h:
 
@@ -118,3 +121,9 @@ src/netlib.d: ../src/netlib.c ../src/error.h ../src/list/linked_list.h \
 ../src/schedsim/queues/measures.h:
 
 ../src/schedsim/queues/job.h:
+
+../src/netsimv2/onequeue/onequeue.h:
+
+/home/iizke/workspace/netlib/src/netsimv2/des.h:
+
+/home/iizke/workspace/netlib/src/netsimv2/../netsim/conf/config.h:

@@ -35,11 +35,18 @@ static int ff_queue_init (QUEUE_TYPE *q) {
  * @param q : FIFO queue type
  * @return 1 if this queue is ready to process a packet
  */
-static int ff_is_idle (QUEUE_TYPE *q) {
+static int ff_is_servable (QUEUE_TYPE *q) {
   FIFO_QINFO *fq = NULL;
   check_null_pointer(q);
   fq = (FIFO_QINFO*)q->info;
   return  (fq->max_executing < 0) ? 1 : ((fq->executing_packets.size < fq->max_executing) ? 1 : 0);
+}
+
+static int ff_is_processing (QUEUE_TYPE *q) {
+  FIFO_QINFO *fq = NULL;
+  check_null_pointer(q);
+  fq = (FIFO_QINFO*)q->info;
+  return (fq->executing_packets.size + fq->waiting_packets.size > 0);
 }
 
 /**
@@ -222,7 +229,8 @@ int fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   ff_queue_info->max_waiting = max_waiting;
   q_fifo->type = QUEUE_FIFO;
   q_fifo->init = ff_queue_init;
-  q_fifo->is_idle = ff_is_idle;
+  q_fifo->is_servable = ff_is_servable;
+  q_fifo->is_processing = ff_is_processing;
   q_fifo->process_packet = ff_process_packet;
   q_fifo->push_packet = ff_push_packet;
   q_fifo->finish_packet = ff_finish_packet;

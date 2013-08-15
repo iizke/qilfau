@@ -334,7 +334,7 @@ extern int babslex \
 #undef YY_DECL
 #endif
 
-#line 78 "babs_lexer.l"
+#line 79 "babs_lexer.l"
 
 
 #line 341 "babs_lexer.h"

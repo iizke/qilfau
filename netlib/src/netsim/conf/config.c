@@ -54,6 +54,9 @@ int config_random_conf (RANDOM_CONF *rc) {
     rc->distribution.params = p;
     random_dist_init_mmpp_r(&rc->distribution, p);
     break;
+  case RANDOM_POISSON:
+    random_dist_init_poisson(&rc->distribution, &rc->lambda);
+    break;
   default:
     iprint(LEVEL_ERROR, "This type (%d) of random type is not supported\n", rc->type);
     return ERR_RANDOM_TYPE_FAIL;

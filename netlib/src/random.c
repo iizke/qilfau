@@ -373,3 +373,31 @@ int random_dist_init_mmpp_r(RANDOM_DIST *rd, struct mmpp_r_params *p) {
   rd->params = p;
   return SUCCESS;
 }
+
+/**
+ * Generator of exponential distribution in an RANDOM_DIST
+ * @param rd : random distribution structure
+ * @return A real number followed the exponential distribution
+ */
+double random_dist_gen_poisson (RANDOM_DIST *rd) {
+  double *lambda = 0;
+  long ret = 0;
+  check_null_pointer(rd);
+  lambda = rd->params;
+  ret = gen_poisson((float)(*lambda));
+  return (double)ret;
+}
+
+/**
+ * Initialize random distribution structure of poisson distribution
+ * @param rd : Random distribution structure
+ * @param lambda : pointer of lambda value
+ * @return Error code (see more in def.h and error.h)
+ */
+int random_dist_init_poisson(RANDOM_DIST *rd, double *lambda) {
+  check_null_pointer(rd);
+  rd->gen = random_dist_gen_poisson;
+  rd->cdf = NULL;
+  rd->params = lambda;
+  return SUCCESS;
+}

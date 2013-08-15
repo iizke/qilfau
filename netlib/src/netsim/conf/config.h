@@ -25,6 +25,7 @@
 #define RANDOM_CONST              6
 #define RANDOM_MMPP               7
 #define RANDOM_MMPP_R             8
+#define RANDOM_POISSON            9
 
 #define PROTOCOL_CSMA             0
 #define PROTOCOL_ONE_QUEUE        1
