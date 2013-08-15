@@ -350,7 +350,7 @@ int nqthr_process_arrival (EVENT *e, CONFIG *conf, NETQ_ONE_STATE *state) {
   if (packet->info.state == PACKET_STATE_DROPPED)
     _free_packet(packet);
 
-  if ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) >= 1))
+  if ((qt->is_servable(qt)) && (qt->get_waiting_length(qt) >= 1))
     nqthr_process_packet(conf, state);
 
   return SUCCESS;
@@ -402,7 +402,7 @@ int nqthr_process_end_service (EVENT *e, CONFIG *cnf, NETQ_ONE_STATE *state) {
   if (cnf->nodetype == NODE_SOURCE)
     nqthr_process_packet(cnf, state);
   else
-    while ((qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0)))
+    while ((qt->is_servable(qt) && (qt->get_waiting_length(qt) > 0)))
       nqthr_process_packet(cnf, state);
 
   return SUCCESS;

@@ -19,8 +19,8 @@ typedef struct statistical_number {
   float max;
   /// Average value (mean)
   float avg;
-  /// Variance value
-  float var;
+  /// standard deviation value
+  float sdev;
   /// Time of observing this random process
   float all_time;
   /// Temporary value calculating sum of value

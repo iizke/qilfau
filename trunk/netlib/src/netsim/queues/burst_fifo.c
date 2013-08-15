@@ -35,7 +35,7 @@ static int bff_queue_init (QUEUE_TYPE *q) {
  * @param q : FIFO queue type
  * @return 1 if this queue is ready to process a packet
  */
-static int bff_is_idle (QUEUE_TYPE *q) {
+static int bff_is_servable (QUEUE_TYPE *q) {
   BURST_FIFO_QINFO *fq = NULL;
   PACKET *p = NULL;
   int burst = 0;
@@ -44,6 +44,13 @@ static int bff_is_idle (QUEUE_TYPE *q) {
   packet_list_get_first(&fq->waiting_packets, &p);
   if (p) burst = p->info.burst;
   return  (fq->max_executing < 0) ? 1 : (((fq->executing_packets.total_burst + burst) <= fq->max_executing) ? 1 : 0);
+}
+
+static int bff_is_processing (QUEUE_TYPE *q) {
+  BURST_FIFO_QINFO *fq = NULL;
+  check_null_pointer(q);
+  fq = (BURST_FIFO_QINFO*)q->info;
+  return (fq->executing_packets.size + fq->waiting_packets.size > 0);
 }
 
 /**
@@ -226,7 +233,8 @@ int burst_fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   bff_queue_info->max_waiting = max_waiting;
   q_fifo->type = QUEUE_BURST_FIFO;
   q_fifo->init = bff_queue_init;
-  q_fifo->is_idle = bff_is_idle;
+  q_fifo->is_servable = bff_is_servable;
+  q_fifo->is_processing = bff_is_processing;
   q_fifo->process_packet = bff_process_packet;
   q_fifo->push_packet = bff_push_packet;
   q_fifo->finish_packet = bff_finish_packet;

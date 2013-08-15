@@ -67,6 +67,7 @@ BABSQ_CONFIG babs_conf;
 %token R_FILE;
 %token R_MMPP;
 %token R_MMPP_R;
+%token R_POISSON;
 %token R_OTHER;
 
 %token DEBUG_ERROR;
@@ -104,7 +105,7 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| ARRIVAL_SAVETO EQ STRING { babs_conf.arrival_conf.to_file = fopen($3, "w+"); }
 		| ARRIVAL_LOADFROM EQ STRING { babs_conf.arrival_conf.from_file = fopen($3, "r"); }
 
-		| BURST_TYPE EQ R_MARKOV { babs_conf.burst_conf.type = RANDOM_MARKOVIAN; }
+		| BURST_TYPE EQ R_POISSON { babs_conf.burst_conf.type = RANDOM_POISSON; }
         | BURST_TYPE EQ R_UNF { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
         | BURST_TYPE EQ R_FILE { babs_conf.burst_conf.type = RANDOM_FILE; }
         | BURST_TYPE EQ R_MMPP { babs_conf.burst_conf.type = RANDOM_MMPP; }

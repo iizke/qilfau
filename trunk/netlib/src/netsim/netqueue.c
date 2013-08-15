@@ -190,7 +190,7 @@ int nq_process_arrival (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
   if (packet->info.state == PACKET_STATE_DROPPED)
     _free_packet(state, packet);
 
-  if ((qt->is_idle(qt)) && (qt->get_waiting_length(qt) >= 1))
+  if ((qt->is_servable(qt)) && (qt->get_waiting_length(qt) >= 1))
     nq_process_packet(netconf, state, qt);
 
   return SUCCESS;
@@ -234,7 +234,7 @@ int nq_process_end_service (EVENT *e, NET_CONFIG *netconf, NETQ_STATE *state) {
   if (cnf->nodetype == NODE_SOURCE)
     nq_process_packet(netconf, state, qt);
   else
-    while ((qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0)))
+    while ((qt->is_servable(qt) && (qt->get_waiting_length(qt) > 0)))
       nq_process_packet(netconf, state, qt);
 
   return SUCCESS;

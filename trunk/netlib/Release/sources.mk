@@ -21,6 +21,8 @@ src/schedsim/conf \
 src/ranlib \
 src/polirand \
 src/poligraph \
+src/netsimv2/onequeue \
+src/netsimv2 \
 src/netsim \
 src/netsim/queues \
 src/netsim/conf \

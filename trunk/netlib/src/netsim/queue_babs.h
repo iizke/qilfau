@@ -56,6 +56,8 @@ typedef struct queue_babs_state {
   MEASURES measurement;
   /// Free packet/request list (used to avoiding malloc operations
   PACKET_LIST free_packets;
+  /// Burst generation trace
+  STAT_NUM burst_trace;
 } BABSQ_STATE;
 
 #define get_babs_state_from_ops(_ops) (container_of(_ops, BABSQ_STATE, ops))

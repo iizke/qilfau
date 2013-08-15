@@ -8,22 +8,24 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include subdir.mk
--include src/subdir.mk
 -include src/tests/subdir.mk
--include src/schedsim/subdir.mk
 -include src/schedsim/queues/subdir.mk
 -include src/schedsim/conf/subdir.mk
+-include src/schedsim/subdir.mk
 -include src/ranlib/subdir.mk
 -include src/polirand/subdir.mk
 -include src/poligraph/subdir.mk
--include src/netsim/subdir.mk
+-include src/netsimv2/onequeue/subdir.mk
+-include src/netsimv2/subdir.mk
 -include src/netsim/queues/subdir.mk
 -include src/netsim/conf/subdir.mk
+-include src/netsim/subdir.mk
 -include src/matrix/subdir.mk
 -include src/list/subdir.mk
 -include src/irand/subdir.mk
 -include src/graph/subdir.mk
+-include src/subdir.mk
+-include subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -46,7 +48,7 @@ main-build: netlib
 netlib: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o"netlib" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o "netlib" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -24,7 +24,9 @@ typedef struct measures {
   /// Total number of dropped packets
   long total_dropped;
   /// Total time of simulation
-  float total_time;
+  double total_time;
+  /// Total service time or busy time
+  double busy_time;
   /// Statistical value of queue length
   STAT_NUM queue_len;
   /// Statistical value of service time
@@ -37,13 +39,14 @@ typedef struct measures {
   STAT_NUM burst;
   /// Last value of arrival time (temporary variable supporting to compute interarrival_time
   float last_arrival_time;
+  double last_idle_time;
 } MEASURES;
 
 #define print_statistical_value(_var_name,_var, _conf) { \
-    printf("%20s : mean %4.5f, var %4.5f, min %4.3f, max %4.3f, confidency %4.3f, nsamples %d\n", \
+    printf("%20s : mean %4.5f, sdev %4.5f, min %4.3f, max %4.3f, confidency %4.3f, nsamples %d\n", \
       _var_name, \
       (_var)->avg, \
-      (_var)->var, \
+      (_var)->sdev, \
       (_var)->min, \
       (_var)->max, \
       stat_num_calc_confidence_interval(_var, _conf), (_var)->num_samples); }

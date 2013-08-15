@@ -9,6 +9,7 @@ C_SRCS += \
 ../src/netsim/netqthread.c \
 ../src/netsim/netqueue.c \
 ../src/netsim/netsim.c \
+../src/netsim/queue_babs.c \
 ../src/netsim/sys_aqueue.c 
 
 OBJS += \
@@ -17,6 +18,7 @@ OBJS += \
 ./src/netsim/netqthread.o \
 ./src/netsim/netqueue.o \
 ./src/netsim/netsim.o \
+./src/netsim/queue_babs.o \
 ./src/netsim/sys_aqueue.o 
 
 C_DEPS += \
@@ -25,6 +27,7 @@ C_DEPS += \
 ./src/netsim/netqthread.d \
 ./src/netsim/netqueue.d \
 ./src/netsim/netsim.d \
+./src/netsim/queue_babs.d \
 ./src/netsim/sys_aqueue.d 
 
 
@@ -32,7 +35,7 @@ C_DEPS += \
 src/netsim/%.o: ../src/netsim/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	gcc -I"/home/iizke/workspace/netlib/src" -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -I"/home/iizke/workspace/netlib/src" -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

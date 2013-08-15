@@ -272,6 +272,8 @@ int netsim_start (char *conf_file) {
   conf.runtime_state = ops;
   pisas_sched(&conf, ops);
 
+  if (sys_state.curr_time.real > sys_state.measurement.last_idle_time)
+     sys_state.measurement.busy_time += sys_state.curr_time.real - sys_state.measurement.last_idle_time;
   printf("Simulation results ------------------\n");
   netsim_print_result(&conf);
   return SUCCESS;

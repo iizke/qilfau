@@ -277,7 +277,7 @@ int csma_process_arrival(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
     return SUCCESS;
   }
 
-  if ((qt->get_waiting_length(qt) == 1) && (qt->is_idle(qt))) {
+  if ((qt->get_waiting_length(qt) == 1) && (qt->is_servable(qt))) {
     // process packet
     //e->info.type = EVENT_ACCESS_CHANNEL;
     csma_process_access_event(e, conf, state);
@@ -370,7 +370,7 @@ int csma_process_end_service(EVENT *e, CONFIG *conf, CSMA_STATE *state) {
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   try ( csma_free_packet(state, packet) );
   ((FIFO_QINFO*)qt->info)->state = QUEUE_STATE_NOPERSISTENT;
-  if (qt->is_idle(qt) && (qt->get_waiting_length(qt) > 0))
+  if (qt->is_servable(qt) && (qt->get_waiting_length(qt) > 0))
     ((FIFO_QINFO*)qt->info)->state = QUEUE_STATE_PERSISTENT;
 
   csma_process_collision(NULL, conf, state);

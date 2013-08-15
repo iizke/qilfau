@@ -81,8 +81,8 @@ int main (int nargs, char** args) {
   random_init();
   //main_markov_parser(nargs, args);
 
-  //printf("CHECK ONE_QUEUE -------------------------\n");
-  //check_netsim();
+  printf("CHECK ONE_QUEUE -------------------------\n");
+  check_netsim();
 
   //check_schedsim();
   //main_graph(nargs, args);

@@ -30,8 +30,10 @@ struct queue_type {
   int type;
   /// Initialize queue type, include info in this structure
   int (*init) (QUEUE_TYPE *);
-  /// Check whether a queue is idle or not
-  int (*is_idle) (QUEUE_TYPE *);
+  /// Check whether a queue could do serve new requests or not
+    int (*is_servable) (QUEUE_TYPE *);
+  /// Check whether a queue is doing sth or not
+  int (*is_processing) (QUEUE_TYPE *);
   /// Push a packet into queue
   int (*push_packet) (QUEUE_TYPE*, PACKET *);
   /// Process packet getting from queue
