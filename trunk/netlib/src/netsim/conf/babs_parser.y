@@ -43,6 +43,7 @@ BABSQ_CONFIG babs_conf;
 
 %token QUEUE_KIND
 %token BURST_FIFO_QUEUE
+%token BURST_SCHED1_QUEUE
 %token QUEUE_MAXLENGTH
 %token QUEUE_SERVERS
 %token SERVICE_TYPE;
@@ -118,14 +119,14 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| ARRIVAL_SDEV EQ REALNUM { if (random_dist_normal_set_sdev(&babs_conf.arrival_conf.distribution, $3) < 0) exit(1); }
 		| ARRIVAL_SDEV EQ INTNUM { if (random_dist_normal_set_sdev(&babs_conf.arrival_conf.distribution, $3) < 0) exit(1); }
 		| BURST_TYPE EQ R_POISSON { babs_conf.burst_conf.type = RANDOM_POISSON; }
-	        | BURST_TYPE EQ R_UNF { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
-        	| BURST_TYPE EQ R_FILE { babs_conf.burst_conf.type = RANDOM_FILE; }
-	        | BURST_TYPE EQ R_MMPP { babs_conf.burst_conf.type = RANDOM_MMPP; }
-        	| BURST_TYPE EQ R_MMPP_R { babs_conf.burst_conf.type = RANDOM_MMPP_R; }
-	        | BURST_TYPE EQ R_OTHER { babs_conf.burst_conf.type = RANDOM_OTHER; }
+        | BURST_TYPE EQ R_UNF { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
+    	| BURST_TYPE EQ R_FILE { babs_conf.burst_conf.type = RANDOM_FILE; }
+        | BURST_TYPE EQ R_MMPP { babs_conf.burst_conf.type = RANDOM_MMPP; }
+    	| BURST_TYPE EQ R_MMPP_R { babs_conf.burst_conf.type = RANDOM_MMPP_R; }
+        | BURST_TYPE EQ R_OTHER { babs_conf.burst_conf.type = RANDOM_OTHER; }
 		| BURST_TYPE EQ R_NORMAL { babs_conf.burst_conf.type = RANDOM_NORMAL; random_dist_init_normal_empty(&babs_conf.burst_conf.distribution);}
-	        | BURST_FROM EQ INTNUM { babs_conf.burst_conf.from = $3; }
-        	| BURST_TO EQ INTNUM { babs_conf.burst_conf.to = $3; }
+        | BURST_FROM EQ INTNUM { babs_conf.burst_conf.from = $3; }
+    	| BURST_TO EQ INTNUM { babs_conf.burst_conf.to = $3; }
 		| BURST_LAMBDA EQ REALNUM { babs_conf.burst_conf.lambda = $3; }
 		| BURST_LAMBDA EQ INTNUM { babs_conf.burst_conf.lambda = $3; }
 		| BURST_SAVETO EQ STRING { babs_conf.burst_conf.to_file = fopen($3, "w+"); }
@@ -137,6 +138,7 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| QUEUE_MAXLENGTH EQ INTNUM { babs_conf.queue_conf.max_waiters = $3; }
 		| QUEUE_KIND EQ INTNUM { babs_conf.queue_conf.type = $3; }
 		| QUEUE_KIND EQ BURST_FIFO_QUEUE { babs_conf.queue_conf.type = QUEUE_BURST_FIFO; }
+		| QUEUE_KIND EQ BURST_SCHED1_QUEUE { babs_conf.queue_conf.type = QUEUE_BURST_SCHED1; }
 		| QUEUE_SERVERS EQ INTNUM { babs_conf.queue_conf.num_servers = $3; }
 		| SERVICE_TYPE EQ INTNUM { babs_conf.service_conf.type = $3; }
 		| SERVICE_TYPE EQ R_MARKOV {babs_conf.service_conf.type = RANDOM_MARKOVIAN; }

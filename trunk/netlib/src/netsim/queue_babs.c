@@ -12,7 +12,7 @@
 #include <signal.h>
 
 #include "error.h"
-#include "queues/burst_fifo.h"
+#include "queues/burst_queue.h"
 #include "queue_babs.h"
 
 extern BABSQ_CONFIG babs_conf;
@@ -271,7 +271,6 @@ int babs_process_end_service (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) 
  * @return Error code (see more in def.h and error.h)
  */
 static int babs_system_clean (BABSQ_CONFIG *conf, SYS_STATE_OPS *ops) {
-  //ONEQ_STATE *state = get_sys_state_from_ops(ops);
 
   if (conf->arrival_conf.to_file)
     fclose(conf->arrival_conf.to_file);
@@ -382,7 +381,7 @@ int babs_remove_event (SYS_STATE_OPS *ops, EVENT *e) {
  * @return Error code (more in def.h and error.h)
  */
 int babs_state_init (BABSQ_STATE *state, BABSQ_CONFIG *conf) {
-  QUEUE_TYPE *burst_fifo_queue = NULL;
+  QUEUE_TYPE *burst_queue = NULL;
   check_null_pointer(state);
 
   state->curr_time.real = 0;
@@ -392,9 +391,18 @@ int babs_state_init (BABSQ_STATE *state, BABSQ_CONFIG *conf) {
   queue_man_init(&state->queues);
   stat_num_init(&state->burst_trace);
 
-  burst_fifo_init(&burst_fifo_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
-  queue_man_register_new_type(&state->queues, burst_fifo_queue);
-  state->queues.curr_queue = burst_fifo_queue;
+  switch (conf->queue_conf.type){
+  case QUEUE_BURST_SCHED1:
+    burst_sched1_init(&burst_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
+    break;
+  case QUEUE_BURST_FIFO:
+  default:
+    burst_fifo_init(&burst_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
+    break;
+  }
+
+  queue_man_register_new_type(&state->queues, burst_queue);
+  state->queues.curr_queue = burst_queue;
   //printf("Config to use queue %d \n", conf.queue_conf.type);
   queue_man_activate_type(&state->queues, conf->queue_conf.type);
 

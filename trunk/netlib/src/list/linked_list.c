@@ -20,6 +20,7 @@ int linked_list_init (LINKED_LIST *l) {
   check_null_pointer(l);
   l->next = l;
   l->prev = l;
+  l->browsing_at = l;
   return SUCCESS;
 }
 
@@ -79,6 +80,20 @@ int linked_list_get_first(LINKED_LIST *l, LINKED_LIST **e) {
   return SUCCESS;
 }
 
+int linked_list_reset_browsing(LINKED_LIST* l) {
+  l->browsing_at = l;
+  return SUCCESS;
+}
+LINKED_LIST * linked_list_get_next(LINKED_LIST* l) {
+  LINKED_LIST *next = NULL;
+  if (!l) return NULL;
+  if (! l->browsing_at) linked_list_reset_browsing(l);
+  next = l->browsing_at->next;
+  if (next == l) return NULL; // end list
+  l->browsing_at = next;
+  return next;
+}
+
 /**
  * Print out all elements of a linked list. Normally used in testing
  * @param l : Linked list
@@ -103,6 +118,7 @@ int test_linked_list () {
   LINKED_LIST e3;
   LINKED_LIST e4;
   LINKED_LIST e5;
+  LINKED_LIST *next = NULL;
   printf("Test linked list:\n");
   try ( linked_list_init(&l) );
   try ( linked_list_insert(&l, &e1) );
@@ -111,6 +127,19 @@ int test_linked_list () {
   try ( linked_list_insert(&l, &e4) );
   try ( linked_list_insert(&l, &e5) );
 
+  linked_list_reset_browsing(&l);
+  for (; (next = linked_list_get_next(&l) != NULL);) {
+    printf("Get one element\n");
+  }
+  printf("Browsing second time\n");
+  for (; (next = linked_list_get_next(&l) != NULL);) {
+    printf("Get one element\n");
+  }
+  printf("Browsing third time\n");
+  linked_list_reset_browsing(&l);
+  for (; (next = linked_list_get_next(&l) != NULL);) {
+    printf("Get one element\n");
+  }
   print_list(&l);
   printf("Now, linked list is empty \n");
   print_list(&l);

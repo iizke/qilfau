@@ -84,6 +84,7 @@ extern long debug;
 #define ERR_VEXPR_NOT_VAR           (-52)
 #define ERR_VEXPR_DUP_VAR           (-53)
 #define ERR_VEXPR_VAR_NOEXIST       (-54)
+#define ERR_KNAPSACK_INSERT_FAIL    (-60)
 
 typedef struct trash {
   LINKED_LIST garbage_list;

@@ -35,6 +35,7 @@ int packet_list_init (PACKET_LIST *l, int conf) {
   check_null_pointer(l);
   try ( linked_list_man_init(&l->list) );
   l->size = 0;
+  packet_list_reset_browsing(l);
   packet_list_config(l, conf);
   return SUCCESS;
 }
@@ -179,5 +180,41 @@ int measurement_self_collect_data (PACKET *p) {
     break;
   }
   measurement_collect_data(m, p, curr_time);
+  return SUCCESS;
+}
+
+int packet_list_reset_browsing(PACKET_LIST *el) {
+  check_null_pointer(el);
+  linked_list_reset_browsing(&el->list.entries);
+  return SUCCESS;
+}
+
+PACKET* packet_list_get_next(PACKET_LIST *el) {
+  PACKET *p = NULL;
+  LINKED_LIST *next = NULL, *l = NULL;
+  if (!el) return NULL;
+  l = &el->list.entries;
+  next = linked_list_get_next(l);
+  if (next == NULL) return NULL;
+  p = container_of(next, PACKET, list_node);
+  return p;
+}
+
+int packet_list_test () {
+  PACKET_LIST pl;
+  PACKET p1, p2;
+  PACKET *p = NULL;
+  packet_list_init(&pl, LL_CONF_STORE_ENTRY | LL_CONF_STORE_FREE);
+  packet_init(&p1);
+  packet_init(&p2);
+  packet_list_insert_packet(&pl, &p1);
+  packet_list_insert_packet(&pl, &p2);
+  p1.info.id = 1;
+  p2.info.id = 2;
+  packet_list_reset_browsing(&pl);
+
+  for(;p = packet_list_get_next(&pl);)
+    printf("Packet id %d\n", p->info.id);
+
   return SUCCESS;
 }

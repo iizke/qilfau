@@ -61,7 +61,7 @@ typedef struct packet_list {
   /// Size of list
   int size;
   /// total burst
-  int total_burst;
+  long total_burst;
   /// Port type (no used now)
   int port_type;
   /// Port (no used now)
@@ -90,9 +90,12 @@ int packet_list_new_packet (PACKET_LIST *el, PACKET **e);
 int packet_list_insert_packet (PACKET_LIST *el, PACKET *e);
 int packet_list_remove_packet (PACKET_LIST *el, PACKET *e);
 int packet_list_get_first (PACKET_LIST *el, PACKET **e);
+int packet_list_reset_browsing(PACKET_LIST *el);
+PACKET* packet_list_get_next(PACKET_LIST *el);
 int packet_list_is_empty (PACKET_LIST *l);
 int packet_list_config (PACKET_LIST *el, int conf);
 
 int test_packet_list_new_packet ();
+int packet_list_test();
 int measurement_self_collect_data (PACKET *p) ;
 #endif /* PACKET_H_ */

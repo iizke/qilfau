@@ -18,6 +18,8 @@ typedef struct linked_list {
   struct linked_list *next;
   /// Connect to next node
   struct linked_list *prev;
+  /// browsing at
+  struct linked_list *browsing_at;
 } LINKED_LIST;
 
 /**
@@ -55,6 +57,9 @@ int linked_list_init (LINKED_LIST *l);
 int linked_list_insert (LINKED_LIST *l, LINKED_LIST *e);
 int linked_list_remove (LINKED_LIST *e);
 int linked_list_get_first(LINKED_LIST *l, LINKED_LIST **e);
+int linked_list_reset_browsing(LINKED_LIST*);
+LINKED_LIST * linked_list_get_next(LINKED_LIST*);
+
 int print_list (LINKED_LIST *l);
 int test_linked_list ();
 
