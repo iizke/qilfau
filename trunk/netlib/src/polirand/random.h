@@ -18,8 +18,7 @@ double polirand_weibull (double a, double b, long *);
 double polirand_iperexp (double alpha, double mu_1, double mu_2, long *);
 double polirand_pareto (double a, long *);
 double polirand_erlang (double a, double M, long *);
-double polirand_ipererl (double alpha, double m_1, double a_1, double m_2, double a_2,
-		long *);
+double polirand_ipererl (double alpha, double m_1, double a_1, double m_2, double a_2, long *);
 
 
 #endif

@@ -47,5 +47,9 @@ int random_dist_init_const (RANDOM_DIST *rd, double *val);
 int random_dist_init_mmpp(RANDOM_DIST *rd, struct mmpp_params *p);
 int random_dist_init_mmpp_r(RANDOM_DIST *rd, struct mmpp_r_params *p);
 int random_dist_init_poisson(RANDOM_DIST *rd, double *lambda);
+int random_dist_init_normal(RANDOM_DIST *rd, float mean, float sdev);
+int random_dist_init_normal_empty(RANDOM_DIST *rd);
+int random_dist_normal_set_mean (RANDOM_DIST *rd, float mean);
+int random_dist_normal_set_sdev (RANDOM_DIST *rd, float sdev);
 
 #endif /* RANDOM_H_ */

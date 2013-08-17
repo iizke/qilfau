@@ -86,6 +86,8 @@ struct random_distribution {
 int irand_init ();
 int irand_new_seed (unsigned long seed);
 int irand_random_seed();
+long irand_get_seed();
+
 unsigned long irand_gen_random (int type);
 unsigned long irand_gen_srandom (int type, unsigned long seed);
 double irand_gen_random_real (int type);

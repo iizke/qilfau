@@ -79,10 +79,11 @@ int main (int nargs, char** args) {
   signal(SIGINT, main_sig_handler);
   signal(SIGTERM, main_sig_handler);
   random_init();
+  printf("Seed value: %ld\n", irand_get_seed());
   //main_markov_parser(nargs, args);
 
-  printf("CHECK ONE_QUEUE -------------------------\n");
-  check_netsim();
+  //printf("CHECK ONE_QUEUE -------------------------\n");
+  //check_netsim();
 
   //check_schedsim();
   //main_graph(nargs, args);
