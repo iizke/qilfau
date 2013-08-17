@@ -59,6 +59,8 @@ int check_net_queue() {
 int check_babsq () {
   //netsim_start_thread("src/netsim/conf/test.conf");
   babs_start("src/netsim/conf/test_babs.conf");
+  printf("Check BABS Queue with Sched1 -----------------\n");
+  babs_start("src/netsim/conf/test_babs_sched1.conf");
   return 0;
 }
 

@@ -17,9 +17,9 @@ FCHAR						({CHAR}|{POINT}|{DIGIT})
 
 RANDOM_MARKOV				return R_MARKOV;
 RANDOM_UNIFORM				return R_UNF;
-RANDOM_FILE				return R_FILE;
+RANDOM_FILE					return R_FILE;
 RANDOM_OTHER				return R_OTHER;
-RANDOM_MMPP				return R_MMPP;
+RANDOM_MMPP					return R_MMPP;
 RANDOM_MMPP_RULES			return R_MMPP_R;
 RANDOM_POISSON				return R_POISSON;
 RANDOM_NORMAL				return R_NORMAL;
@@ -39,16 +39,17 @@ burst.from					return BURST_FROM;
 burst.to					return BURST_TO;
 burst.saveto				return BURST_SAVETO;
 burst.loadfrom				return BURST_LOADFROM;
-burst.mean				return BURST_MEAN;
-burst.sdev				return BURST_SDEV;
+burst.mean					return BURST_MEAN;
+burst.sdev					return BURST_SDEV;
 
 queue.maxlength				return QUEUE_MAXLENGTH;
 queue.servers				return QUEUE_SERVERS;
-queue.type				return QUEUE_KIND;
-QUEUE_BURST_FIFO				return BURST_FIFO_QUEUE;
+queue.type					return QUEUE_KIND;
+QUEUE_BURST_FIFO			return BURST_FIFO_QUEUE;
+QUEUE_BURST_SCHED1			return BURST_SCHED1_QUEUE;
 service.type				return SERVICE_TYPE;
 service.lambda				return SERVICE_LAMBDA;
-service.to				return SERVICE_TO;
+service.to					return SERVICE_TO;
 service.from				return SERVICE_FROM;
 service.saveto				return SERVICE_SAVETO;
 service.loadfrom			return SERVICE_LOADFROM;

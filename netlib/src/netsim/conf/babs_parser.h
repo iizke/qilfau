@@ -55,44 +55,45 @@
      BURST_SDEV = 273,
      QUEUE_KIND = 274,
      BURST_FIFO_QUEUE = 275,
-     QUEUE_MAXLENGTH = 276,
-     QUEUE_SERVERS = 277,
-     SERVICE_TYPE = 278,
-     SERVICE_LAMBDA = 279,
-     SERVICE_TO = 280,
-     SERVICE_FROM = 281,
-     SERVICE_SAVETO = 282,
-     SERVICE_LOADFROM = 283,
-     SERVICE_MEAN = 284,
-     SERVICE_SDEV = 285,
-     DEPARTURE_SAVETO = 286,
-     STOP_MAXTIME = 287,
-     STOP_MAXARRIVAL = 288,
-     STOP_QUEUEZERO = 289,
-     NTHREADS = 290,
-     PROTOCOL = 291,
-     PROTO_BABSQ = 292,
-     LIBS_RANDOM = 293,
-     LIB_RAND_IRAND = 294,
-     LIB_RAND_RANDLIB = 295,
-     R_MARKOV = 296,
-     R_UNF = 297,
-     R_FILE = 298,
-     R_MMPP = 299,
-     R_MMPP_R = 300,
-     R_POISSON = 301,
-     R_OTHER = 302,
-     R_NORMAL = 303,
-     DEBUG_ERROR = 304,
-     DEBUG_WARNING = 305,
-     DEBUG_INFO = 306,
-     YES = 307,
-     NO = 308,
-     EQ = 309,
-     ENDLINE = 310,
-     REALNUM = 311,
-     INTNUM = 312,
-     STRING = 313
+     BURST_SCHED1_QUEUE = 276,
+     QUEUE_MAXLENGTH = 277,
+     QUEUE_SERVERS = 278,
+     SERVICE_TYPE = 279,
+     SERVICE_LAMBDA = 280,
+     SERVICE_TO = 281,
+     SERVICE_FROM = 282,
+     SERVICE_SAVETO = 283,
+     SERVICE_LOADFROM = 284,
+     SERVICE_MEAN = 285,
+     SERVICE_SDEV = 286,
+     DEPARTURE_SAVETO = 287,
+     STOP_MAXTIME = 288,
+     STOP_MAXARRIVAL = 289,
+     STOP_QUEUEZERO = 290,
+     NTHREADS = 291,
+     PROTOCOL = 292,
+     PROTO_BABSQ = 293,
+     LIBS_RANDOM = 294,
+     LIB_RAND_IRAND = 295,
+     LIB_RAND_RANDLIB = 296,
+     R_MARKOV = 297,
+     R_UNF = 298,
+     R_FILE = 299,
+     R_MMPP = 300,
+     R_MMPP_R = 301,
+     R_POISSON = 302,
+     R_OTHER = 303,
+     R_NORMAL = 304,
+     DEBUG_ERROR = 305,
+     DEBUG_WARNING = 306,
+     DEBUG_INFO = 307,
+     YES = 308,
+     NO = 309,
+     EQ = 310,
+     ENDLINE = 311,
+     REALNUM = 312,
+     INTNUM = 313,
+     STRING = 314
    };
 #endif
 /* Tokens.  */
@@ -114,44 +115,45 @@
 #define BURST_SDEV 273
 #define QUEUE_KIND 274
 #define BURST_FIFO_QUEUE 275
-#define QUEUE_MAXLENGTH 276
-#define QUEUE_SERVERS 277
-#define SERVICE_TYPE 278
-#define SERVICE_LAMBDA 279
-#define SERVICE_TO 280
-#define SERVICE_FROM 281
-#define SERVICE_SAVETO 282
-#define SERVICE_LOADFROM 283
-#define SERVICE_MEAN 284
-#define SERVICE_SDEV 285
-#define DEPARTURE_SAVETO 286
-#define STOP_MAXTIME 287
-#define STOP_MAXARRIVAL 288
-#define STOP_QUEUEZERO 289
-#define NTHREADS 290
-#define PROTOCOL 291
-#define PROTO_BABSQ 292
-#define LIBS_RANDOM 293
-#define LIB_RAND_IRAND 294
-#define LIB_RAND_RANDLIB 295
-#define R_MARKOV 296
-#define R_UNF 297
-#define R_FILE 298
-#define R_MMPP 299
-#define R_MMPP_R 300
-#define R_POISSON 301
-#define R_OTHER 302
-#define R_NORMAL 303
-#define DEBUG_ERROR 304
-#define DEBUG_WARNING 305
-#define DEBUG_INFO 306
-#define YES 307
-#define NO 308
-#define EQ 309
-#define ENDLINE 310
-#define REALNUM 311
-#define INTNUM 312
-#define STRING 313
+#define BURST_SCHED1_QUEUE 276
+#define QUEUE_MAXLENGTH 277
+#define QUEUE_SERVERS 278
+#define SERVICE_TYPE 279
+#define SERVICE_LAMBDA 280
+#define SERVICE_TO 281
+#define SERVICE_FROM 282
+#define SERVICE_SAVETO 283
+#define SERVICE_LOADFROM 284
+#define SERVICE_MEAN 285
+#define SERVICE_SDEV 286
+#define DEPARTURE_SAVETO 287
+#define STOP_MAXTIME 288
+#define STOP_MAXARRIVAL 289
+#define STOP_QUEUEZERO 290
+#define NTHREADS 291
+#define PROTOCOL 292
+#define PROTO_BABSQ 293
+#define LIBS_RANDOM 294
+#define LIB_RAND_IRAND 295
+#define LIB_RAND_RANDLIB 296
+#define R_MARKOV 297
+#define R_UNF 298
+#define R_FILE 299
+#define R_MMPP 300
+#define R_MMPP_R 301
+#define R_POISSON 302
+#define R_OTHER 303
+#define R_NORMAL 304
+#define DEBUG_ERROR 305
+#define DEBUG_WARNING 306
+#define DEBUG_INFO 307
+#define YES 308
+#define NO 309
+#define EQ 310
+#define ENDLINE 311
+#define REALNUM 312
+#define INTNUM 313
+#define STRING 314
 
 
 
@@ -166,7 +168,7 @@ char* str; int ival; double dval;
 
 
 /* Line 2068 of yacc.c  */
-#line 170 "babs_parser.h"
+#line 172 "babs_parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

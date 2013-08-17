@@ -14,7 +14,7 @@
 /**
  * FIFO queue structure
  */
-typedef struct burst_fifo_queue {
+typedef struct burst_queue {
   /// Incomming packet list
   PACKET_LIST incomming_packets;
   /// Waiting packet list
@@ -29,14 +29,19 @@ typedef struct burst_fifo_queue {
   MEASURES measurement;
   /// Queue state
   int state;
+  /// Find the optimal solution within a Window size
+  int window;
   /// Maximum number of executing packets
-  int max_executing;
+  long max_executing;
   /// Maximum number of waiting packets
-  int max_waiting;
-} BURST_FIFO_QINFO;
+  long max_waiting;
+} BURST_QINFO;
+
+
 
 int burst_fifo_init (QUEUE_TYPE **q, int max_executing, int max_waiting);
 int burst_fifo_setup (QUEUE_TYPE *q, int max_executing, int max_waiting);
 
-
+int burst_sched1_init (QUEUE_TYPE **q, int max_executing, int max_waiting);
+int burst_sched1_setup (QUEUE_TYPE *q, int max_executing, int max_waiting);
 #endif /* BURST_FIFO_H_ */
