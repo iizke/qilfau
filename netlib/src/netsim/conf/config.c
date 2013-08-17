@@ -57,6 +57,9 @@ int config_random_conf (RANDOM_CONF *rc) {
   case RANDOM_POISSON:
     random_dist_init_poisson(&rc->distribution, &rc->lambda);
     break;
+  case RANDOM_NORMAL:
+    // has been processed at parser
+    break;
   default:
     iprint(LEVEL_ERROR, "This type (%d) of random type is not supported\n", rc->type);
     return ERR_RANDOM_TYPE_FAIL;

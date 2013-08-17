@@ -43,49 +43,56 @@
      ARRIVAL_LAMBDA = 261,
      ARRIVAL_SAVETO = 262,
      ARRIVAL_LOADFROM = 263,
-     BURST_TYPE = 264,
-     BURST_FROM = 265,
-     BURST_TO = 266,
-     BURST_LAMBDA = 267,
-     BURST_SAVETO = 268,
-     BURST_LOADFROM = 269,
-     QUEUE_KIND = 270,
-     BURST_FIFO_QUEUE = 271,
-     QUEUE_MAXLENGTH = 272,
-     QUEUE_SERVERS = 273,
-     SERVICE_TYPE = 274,
-     SERVICE_LAMBDA = 275,
-     SERVICE_TO = 276,
-     SERVICE_FROM = 277,
-     SERVICE_SAVETO = 278,
-     SERVICE_LOADFROM = 279,
-     DEPARTURE_SAVETO = 280,
-     STOP_MAXTIME = 281,
-     STOP_MAXARRIVAL = 282,
-     STOP_QUEUEZERO = 283,
-     NTHREADS = 284,
-     PROTOCOL = 285,
-     PROTO_BABSQ = 286,
-     LIBS_RANDOM = 287,
-     LIB_RAND_IRAND = 288,
-     LIB_RAND_RANDLIB = 289,
-     R_MARKOV = 290,
-     R_UNF = 291,
-     R_FILE = 292,
-     R_MMPP = 293,
-     R_MMPP_R = 294,
-     R_POISSON = 295,
-     R_OTHER = 296,
-     DEBUG_ERROR = 297,
-     DEBUG_WARNING = 298,
-     DEBUG_INFO = 299,
-     YES = 300,
-     NO = 301,
-     EQ = 302,
-     ENDLINE = 303,
-     REALNUM = 304,
-     INTNUM = 305,
-     STRING = 306
+     ARRIVAL_MEAN = 264,
+     ARRIVAL_SDEV = 265,
+     BURST_TYPE = 266,
+     BURST_FROM = 267,
+     BURST_TO = 268,
+     BURST_LAMBDA = 269,
+     BURST_SAVETO = 270,
+     BURST_LOADFROM = 271,
+     BURST_MEAN = 272,
+     BURST_SDEV = 273,
+     QUEUE_KIND = 274,
+     BURST_FIFO_QUEUE = 275,
+     QUEUE_MAXLENGTH = 276,
+     QUEUE_SERVERS = 277,
+     SERVICE_TYPE = 278,
+     SERVICE_LAMBDA = 279,
+     SERVICE_TO = 280,
+     SERVICE_FROM = 281,
+     SERVICE_SAVETO = 282,
+     SERVICE_LOADFROM = 283,
+     SERVICE_MEAN = 284,
+     SERVICE_SDEV = 285,
+     DEPARTURE_SAVETO = 286,
+     STOP_MAXTIME = 287,
+     STOP_MAXARRIVAL = 288,
+     STOP_QUEUEZERO = 289,
+     NTHREADS = 290,
+     PROTOCOL = 291,
+     PROTO_BABSQ = 292,
+     LIBS_RANDOM = 293,
+     LIB_RAND_IRAND = 294,
+     LIB_RAND_RANDLIB = 295,
+     R_MARKOV = 296,
+     R_UNF = 297,
+     R_FILE = 298,
+     R_MMPP = 299,
+     R_MMPP_R = 300,
+     R_POISSON = 301,
+     R_OTHER = 302,
+     R_NORMAL = 303,
+     DEBUG_ERROR = 304,
+     DEBUG_WARNING = 305,
+     DEBUG_INFO = 306,
+     YES = 307,
+     NO = 308,
+     EQ = 309,
+     ENDLINE = 310,
+     REALNUM = 311,
+     INTNUM = 312,
+     STRING = 313
    };
 #endif
 /* Tokens.  */
@@ -95,49 +102,56 @@
 #define ARRIVAL_LAMBDA 261
 #define ARRIVAL_SAVETO 262
 #define ARRIVAL_LOADFROM 263
-#define BURST_TYPE 264
-#define BURST_FROM 265
-#define BURST_TO 266
-#define BURST_LAMBDA 267
-#define BURST_SAVETO 268
-#define BURST_LOADFROM 269
-#define QUEUE_KIND 270
-#define BURST_FIFO_QUEUE 271
-#define QUEUE_MAXLENGTH 272
-#define QUEUE_SERVERS 273
-#define SERVICE_TYPE 274
-#define SERVICE_LAMBDA 275
-#define SERVICE_TO 276
-#define SERVICE_FROM 277
-#define SERVICE_SAVETO 278
-#define SERVICE_LOADFROM 279
-#define DEPARTURE_SAVETO 280
-#define STOP_MAXTIME 281
-#define STOP_MAXARRIVAL 282
-#define STOP_QUEUEZERO 283
-#define NTHREADS 284
-#define PROTOCOL 285
-#define PROTO_BABSQ 286
-#define LIBS_RANDOM 287
-#define LIB_RAND_IRAND 288
-#define LIB_RAND_RANDLIB 289
-#define R_MARKOV 290
-#define R_UNF 291
-#define R_FILE 292
-#define R_MMPP 293
-#define R_MMPP_R 294
-#define R_POISSON 295
-#define R_OTHER 296
-#define DEBUG_ERROR 297
-#define DEBUG_WARNING 298
-#define DEBUG_INFO 299
-#define YES 300
-#define NO 301
-#define EQ 302
-#define ENDLINE 303
-#define REALNUM 304
-#define INTNUM 305
-#define STRING 306
+#define ARRIVAL_MEAN 264
+#define ARRIVAL_SDEV 265
+#define BURST_TYPE 266
+#define BURST_FROM 267
+#define BURST_TO 268
+#define BURST_LAMBDA 269
+#define BURST_SAVETO 270
+#define BURST_LOADFROM 271
+#define BURST_MEAN 272
+#define BURST_SDEV 273
+#define QUEUE_KIND 274
+#define BURST_FIFO_QUEUE 275
+#define QUEUE_MAXLENGTH 276
+#define QUEUE_SERVERS 277
+#define SERVICE_TYPE 278
+#define SERVICE_LAMBDA 279
+#define SERVICE_TO 280
+#define SERVICE_FROM 281
+#define SERVICE_SAVETO 282
+#define SERVICE_LOADFROM 283
+#define SERVICE_MEAN 284
+#define SERVICE_SDEV 285
+#define DEPARTURE_SAVETO 286
+#define STOP_MAXTIME 287
+#define STOP_MAXARRIVAL 288
+#define STOP_QUEUEZERO 289
+#define NTHREADS 290
+#define PROTOCOL 291
+#define PROTO_BABSQ 292
+#define LIBS_RANDOM 293
+#define LIB_RAND_IRAND 294
+#define LIB_RAND_RANDLIB 295
+#define R_MARKOV 296
+#define R_UNF 297
+#define R_FILE 298
+#define R_MMPP 299
+#define R_MMPP_R 300
+#define R_POISSON 301
+#define R_OTHER 302
+#define R_NORMAL 303
+#define DEBUG_ERROR 304
+#define DEBUG_WARNING 305
+#define DEBUG_INFO 306
+#define YES 307
+#define NO 308
+#define EQ 309
+#define ENDLINE 310
+#define REALNUM 311
+#define INTNUM 312
+#define STRING 313
 
 
 
@@ -147,12 +161,12 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 23 "babs_parser.y"
+#line 24 "babs_parser.y"
 char* str; int ival; double dval;
 
 
 /* Line 2068 of yacc.c  */
-#line 156 "babs_parser.h"
+#line 170 "babs_parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

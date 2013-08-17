@@ -22,6 +22,7 @@ RANDOM_OTHER				return R_OTHER;
 RANDOM_MMPP				return R_MMPP;
 RANDOM_MMPP_RULES			return R_MMPP_R;
 RANDOM_POISSON				return R_POISSON;
+RANDOM_NORMAL				return R_NORMAL;
 
 arrival.type				return ARRIVAL_TYPE;
 arrival.lambda				return ARRIVAL_LAMBDA;
@@ -29,6 +30,8 @@ arrival.from				return ARRIVAL_FROM;
 arrival.to					return ARRIVAL_TO;
 arrival.saveto				return ARRIVAL_SAVETO;
 arrival.loadfrom			return ARRIVAL_LOADFROM;
+arrival.mean				return ARRIVAL_MEAN;
+arrival.sdev				return ARRIVAL_SDEV;
 
 burst.type					return BURST_TYPE;
 burst.lambda				return BURST_LAMBDA;
@@ -36,6 +39,8 @@ burst.from					return BURST_FROM;
 burst.to					return BURST_TO;
 burst.saveto				return BURST_SAVETO;
 burst.loadfrom				return BURST_LOADFROM;
+burst.mean				return BURST_MEAN;
+burst.sdev				return BURST_SDEV;
 
 queue.maxlength				return QUEUE_MAXLENGTH;
 queue.servers				return QUEUE_SERVERS;
@@ -47,6 +52,9 @@ service.to				return SERVICE_TO;
 service.from				return SERVICE_FROM;
 service.saveto				return SERVICE_SAVETO;
 service.loadfrom			return SERVICE_LOADFROM;
+service.mean				return SERVICE_MEAN;
+service.sdev				return SERVICE_SDEV;
+
 departure.saveto			return DEPARTURE_SAVETO;
 
 stop.maxtime				return STOP_MAXTIME;

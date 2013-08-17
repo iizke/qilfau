@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "random.h"
 #include "error.h"
+#include "irand/irand.h"
 //#include "conf/config.h"
 
 int librand = LIB_RANDOM_IRAND;
@@ -31,7 +32,7 @@ int random_init () {
  * @return a real number in range
  */
 float gen_uniform(float from, float to) {
-  extern long seed;
+  long seed = irand_get_seed();
   switch (librand) {
   case LIB_RANDOM_IRAND:
     return (float)irand_gen_uniform((double)from, (double)to);
@@ -49,7 +50,7 @@ float gen_uniform(float from, float to) {
  * @return an integer number in range
  */
 long gen_int_uniform(long from, long to) {
-  extern long seed;
+  long seed = irand_get_seed();
   switch (librand) {
   case LIB_RANDOM_IRAND:
     return irand_gen_int_uniform(from, to);
@@ -68,7 +69,7 @@ long gen_int_uniform(long from, long to) {
  */
 float gen_exponential(float lambda){
   // rate ~ lambda
-  extern long seed;
+  long seed = irand_get_seed();
   switch (librand) {
   case LIB_RANDOM_IRAND:
     return (float)irand_gen_exp((double)lambda);
@@ -97,7 +98,7 @@ float gen_normal(float mean, float sd) {
  */
 long gen_poisson(float lambda){
   /// seed used in polirand-functions
-  extern long seed;
+  long seed = irand_get_seed();
   switch (librand) {
   case LIB_RANDOM_POLIRAND:
     return polirand_poisson(lambda, &seed);
@@ -375,7 +376,7 @@ int random_dist_init_mmpp_r(RANDOM_DIST *rd, struct mmpp_r_params *p) {
 }
 
 /**
- * Generator of exponential distribution in an RANDOM_DIST
+ * Generator of poisson distribution in an RANDOM_DIST
  * @param rd : random distribution structure
  * @return A real number followed the exponential distribution
  */
@@ -401,3 +402,71 @@ int random_dist_init_poisson(RANDOM_DIST *rd, double *lambda) {
   rd->params = lambda;
   return SUCCESS;
 }
+
+struct normal_param {
+  float mean;
+  float sdev;
+};
+
+/**
+ * Generator of normal distribution in an RANDOM_DIST
+ * @param rd : random distribution structure
+ * @return A real number followed the exponential distribution
+ */
+double random_dist_gen_normal (RANDOM_DIST *rd) {
+  struct normal_param *param;
+  double ret = 0;
+  check_null_pointer(rd);
+  param = rd->params;
+  ret = (double)gen_normal(param->mean, param->sdev);
+  return ret;
+}
+
+/**
+ * Initialize random distribution structure of normal distribution
+ * @param rd : Random distribution structure
+ * @param mean : mean value
+ * @param sdev : standard deviation value
+ * @return Error code (see more in def.h and error.h)
+ */
+int random_dist_init_normal(RANDOM_DIST *rd, float mean, float sdev) {
+  struct normal_param * param = NULL;
+  check_null_pointer(rd);
+  rd->gen = random_dist_gen_normal;
+  rd->cdf = NULL;
+  param = gc_malloc(sizeof(struct normal_param));
+  param->mean = mean;
+  param->sdev = sdev;
+  rd->params = param;
+  return SUCCESS;
+}
+
+int random_dist_init_normal_empty(RANDOM_DIST *rd) {
+  struct normal_param * param = NULL;
+  check_null_pointer(rd);
+  rd->gen = random_dist_gen_normal;
+  rd->cdf = NULL;
+  param = gc_malloc(sizeof(struct normal_param));
+  rd->params = param;
+  return SUCCESS;
+}
+
+int random_dist_normal_set_mean (RANDOM_DIST *rd, float mean) {
+  struct normal_param *param = NULL;
+  check_null_pointer(rd);
+  check_null_pointer(rd->params);
+  param = (struct normal_param*)rd->params;
+  param->mean = mean;
+  return SUCCESS;
+}
+
+int random_dist_normal_set_sdev (RANDOM_DIST *rd, float sdev) {
+  struct normal_param *param = NULL;
+  check_null_pointer(rd);
+  check_null_pointer(rd->params);
+  param = (struct normal_param*)rd->params;
+  param->sdev = sdev;
+  return SUCCESS;
+}
+
+

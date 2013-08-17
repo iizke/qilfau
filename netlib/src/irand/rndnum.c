@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <sys/time.h>
 #include "../error.h"
 #include "irand.h"
 
@@ -47,6 +48,8 @@ typedef struct combined_linear_congruential_gen {
 LINEAR_LEHMER_GEN linear_rnd_gen;
 /// Pseudo Random generator using Combined Linear Congruential technique.
 COMBINED_LINEAR_GEN combined_rnd_gen;
+/// seed for other random library
+//extern long int seed;
 
 /**
  * Linear Congruential Generator
@@ -242,7 +245,14 @@ int irand_new_seed (unsigned long seed) {
  * @return integer pseudo random value
  */
 int irand_random_seed() {
-  unsigned long seed = clock() % 2009; //time(0) % 2009;
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  unsigned long seed = (tv.tv_usec % 2009 + tv.tv_sec % 2009) % 2009 + 1; //time(0) % 2009;
+
   irand_new_seed(seed);
   return SUCCESS;
+}
+
+long irand_get_seed() {
+  return linear_rnd_gen.seed;
 }

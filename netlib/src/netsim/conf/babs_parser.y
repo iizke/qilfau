@@ -6,6 +6,7 @@
 #include "../queue_babs.h"
 #include "error.h"
 #include "../queues/queue_man.h"
+#include "random.h"
 
 //#ifndef DEF_DEBUG
 //#define DEF_DEBUG
@@ -28,6 +29,8 @@ BABSQ_CONFIG babs_conf;
 %token ARRIVAL_LAMBDA
 %token ARRIVAL_SAVETO
 %token ARRIVAL_LOADFROM
+%token ARRIVAL_MEAN
+%token ARRIVAL_SDEV
 
 %token BURST_TYPE
 %token BURST_FROM
@@ -35,6 +38,8 @@ BABSQ_CONFIG babs_conf;
 %token BURST_LAMBDA
 %token BURST_SAVETO
 %token BURST_LOADFROM
+%token BURST_MEAN
+%token BURST_SDEV
 
 %token QUEUE_KIND
 %token BURST_FIFO_QUEUE
@@ -46,6 +51,8 @@ BABSQ_CONFIG babs_conf;
 %token SERVICE_FROM;
 %token SERVICE_SAVETO;
 %token SERVICE_LOADFROM;
+%token SERVICE_MEAN;
+%token SERVICE_SDEV;
 
 %token DEPARTURE_SAVETO;
 
@@ -69,6 +76,7 @@ BABSQ_CONFIG babs_conf;
 %token R_MMPP_R;
 %token R_POISSON;
 %token R_OTHER;
+%token R_NORMAL;
 
 %token DEBUG_ERROR;
 %token DEBUG_WARNING;
@@ -98,26 +106,34 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| ARRIVAL_TYPE EQ R_MMPP { babs_conf.arrival_conf.type = RANDOM_MMPP; }
 		| ARRIVAL_TYPE EQ R_MMPP_R { babs_conf.arrival_conf.type = RANDOM_MMPP_R; }
 		| ARRIVAL_TYPE EQ R_OTHER { babs_conf.arrival_conf.type = RANDOM_OTHER; }
+		| ARRIVAL_TYPE EQ R_NORMAL { babs_conf.arrival_conf.type = RANDOM_NORMAL; random_dist_init_normal_empty(&babs_conf.arrival_conf.distribution); }
 		| ARRIVAL_FROM EQ INTNUM { babs_conf.arrival_conf.from = $3; }
 		| ARRIVAL_TO EQ INTNUM { babs_conf.arrival_conf.to = $3; }
 		| ARRIVAL_LAMBDA EQ REALNUM { babs_conf.arrival_conf.lambda = $3; }
 		| ARRIVAL_LAMBDA EQ INTNUM { babs_conf.arrival_conf.lambda = $3; }
 		| ARRIVAL_SAVETO EQ STRING { babs_conf.arrival_conf.to_file = fopen($3, "w+"); }
 		| ARRIVAL_LOADFROM EQ STRING { babs_conf.arrival_conf.from_file = fopen($3, "r"); }
-
+		| ARRIVAL_MEAN EQ REALNUM { if (random_dist_normal_set_mean(&babs_conf.arrival_conf.distribution, $3) < 0) exit(1); }
+		| ARRIVAL_MEAN EQ INTNUM { if (random_dist_normal_set_mean(&babs_conf.arrival_conf.distribution, $3) < 0) exit(1); }
+		| ARRIVAL_SDEV EQ REALNUM { if (random_dist_normal_set_sdev(&babs_conf.arrival_conf.distribution, $3) < 0) exit(1); }
+		| ARRIVAL_SDEV EQ INTNUM { if (random_dist_normal_set_sdev(&babs_conf.arrival_conf.distribution, $3) < 0) exit(1); }
 		| BURST_TYPE EQ R_POISSON { babs_conf.burst_conf.type = RANDOM_POISSON; }
-        | BURST_TYPE EQ R_UNF { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
-        | BURST_TYPE EQ R_FILE { babs_conf.burst_conf.type = RANDOM_FILE; }
-        | BURST_TYPE EQ R_MMPP { babs_conf.burst_conf.type = RANDOM_MMPP; }
-        | BURST_TYPE EQ R_MMPP_R { babs_conf.burst_conf.type = RANDOM_MMPP_R; }
-        | BURST_TYPE EQ R_OTHER { babs_conf.burst_conf.type = RANDOM_OTHER; }
-        | BURST_FROM EQ INTNUM { babs_conf.burst_conf.from = $3; }
-        | BURST_TO EQ INTNUM { babs_conf.burst_conf.to = $3; }
+	        | BURST_TYPE EQ R_UNF { babs_conf.burst_conf.type = RANDOM_UNIFORM; }
+        	| BURST_TYPE EQ R_FILE { babs_conf.burst_conf.type = RANDOM_FILE; }
+	        | BURST_TYPE EQ R_MMPP { babs_conf.burst_conf.type = RANDOM_MMPP; }
+        	| BURST_TYPE EQ R_MMPP_R { babs_conf.burst_conf.type = RANDOM_MMPP_R; }
+	        | BURST_TYPE EQ R_OTHER { babs_conf.burst_conf.type = RANDOM_OTHER; }
+		| BURST_TYPE EQ R_NORMAL { babs_conf.burst_conf.type = RANDOM_NORMAL; random_dist_init_normal_empty(&babs_conf.burst_conf.distribution);}
+	        | BURST_FROM EQ INTNUM { babs_conf.burst_conf.from = $3; }
+        	| BURST_TO EQ INTNUM { babs_conf.burst_conf.to = $3; }
 		| BURST_LAMBDA EQ REALNUM { babs_conf.burst_conf.lambda = $3; }
 		| BURST_LAMBDA EQ INTNUM { babs_conf.burst_conf.lambda = $3; }
 		| BURST_SAVETO EQ STRING { babs_conf.burst_conf.to_file = fopen($3, "w+"); }
 		| BURST_LOADFROM EQ STRING { babs_conf.burst_conf.from_file = fopen($3, "r"); }
-	
+		| BURST_MEAN EQ REALNUM { if (random_dist_normal_set_mean (&babs_conf.burst_conf.distribution, $3) < 0) exit(1); }
+		| BURST_MEAN EQ INTNUM { if (random_dist_normal_set_mean (&babs_conf.burst_conf.distribution, $3) < 0) exit(1); }
+		| BURST_SDEV EQ REALNUM { if (random_dist_normal_set_sdev (&babs_conf.burst_conf.distribution, $3) < 0) exit(1); }
+		| BURST_SDEV EQ INTNUM { if (random_dist_normal_set_sdev (&babs_conf.burst_conf.distribution, $3) < 0) exit(1); }
 		| QUEUE_MAXLENGTH EQ INTNUM { babs_conf.queue_conf.max_waiters = $3; }
 		| QUEUE_KIND EQ INTNUM { babs_conf.queue_conf.type = $3; }
 		| QUEUE_KIND EQ BURST_FIFO_QUEUE { babs_conf.queue_conf.type = QUEUE_BURST_FIFO; }
@@ -128,6 +144,7 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| SERVICE_TYPE EQ R_MMPP_R {babs_conf.service_conf.type = RANDOM_MMPP_R; }
 		| SERVICE_TYPE EQ R_UNF {babs_conf.service_conf.type = RANDOM_UNIFORM; }
 		| SERVICE_TYPE EQ R_OTHER {babs_conf.service_conf.type = RANDOM_OTHER; }
+		| SERVICE_TYPE EQ R_NORMAL {babs_conf.service_conf.type = RANDOM_NORMAL; random_dist_init_normal_empty(&babs_conf.service_conf.distribution);}
 		| SERVICE_FROM EQ REALNUM { babs_conf.service_conf.from = $3; }
 		| SERVICE_TO EQ REALNUM { babs_conf.service_conf.to = $3; }
 		| SERVICE_FROM EQ INTNUM { babs_conf.service_conf.from = $3; }
@@ -136,7 +153,10 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| SERVICE_LAMBDA EQ INTNUM { babs_conf.service_conf.lambda = $3; }
 		| SERVICE_SAVETO EQ STRING {babs_conf.service_conf.to_file = fopen($3, "w+");}
 		| SERVICE_LOADFROM EQ STRING {babs_conf.service_conf.from_file = fopen($3, "r");}
-		
+		| SERVICE_MEAN EQ REALNUM { if (random_dist_normal_set_mean (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
+                | SERVICE_MEAN EQ INTNUM { if (random_dist_normal_set_mean (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
+                | SERVICE_SDEV EQ REALNUM { if (random_dist_normal_set_sdev (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
+                | SERVICE_SDEV EQ INTNUM { if (random_dist_normal_set_sdev (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }		
 		| DEPARTURE_SAVETO EQ STRING { babs_conf.queue_conf.out_file = fopen($3, "w+");}
 		| STOP_MAXTIME EQ INTNUM { babs_conf.stop_conf.max_time = $3; }
 		| STOP_MAXARRIVAL EQ INTNUM { babs_conf.stop_conf.max_arrival = $3; }
