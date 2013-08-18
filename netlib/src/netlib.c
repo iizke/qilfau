@@ -17,6 +17,7 @@
 #include "netsim/netqueue.h"
 #include "schedsim/schedsim.h"
 #include "netsimv2/onequeue/onequeue.h"
+#include "optimal/knapsack.h"
 
 int check_netsim () {
   //netsim_start_thread("src/netsim/conf/test.conf");
@@ -95,9 +96,10 @@ int main (int nargs, char** args) {
   //check_net_queue();
   //test_gen_distribution();
 
-  printf("CHECK BABS_QUEUE -------------------------\n");
-  check_babsq();
+  //printf("CHECK BABS_QUEUE -------------------------\n");
+  //check_babsq();
 
+  knapsack01_test();
   trash_clean();
   return SUCCESS;
 }
