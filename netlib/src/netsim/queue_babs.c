@@ -393,7 +393,10 @@ int babs_state_init (BABSQ_STATE *state, BABSQ_CONFIG *conf) {
 
   switch (conf->queue_conf.type){
   case QUEUE_BURST_SCHED1:
-    burst_sched1_init(&burst_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters);
+    burst_sched1_init(&burst_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters, conf->queue_conf.max_window_size);
+    break;
+  case QUEUE_BURST_SCHEDWIN:
+    burst_schedwin_init(&burst_queue, conf->queue_conf.num_servers, conf->queue_conf.max_waiters, conf->queue_conf.max_window_size);
     break;
   case QUEUE_BURST_FIFO:
   default:

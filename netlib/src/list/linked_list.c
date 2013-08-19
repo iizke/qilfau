@@ -43,6 +43,18 @@ int linked_list_insert (LINKED_LIST *l, LINKED_LIST *e) {
   return SUCCESS;
 }
 
+int linked_list_insert_head (LINKED_LIST *l, LINKED_LIST *e) {
+  LINKED_LIST *head = NULL;
+  check_null_pointer(l);
+  check_null_pointer(e);
+  /* Connect last element in list to e */
+  head = l->next;
+  l->next = e;
+  e->prev = l;
+  e->next = head;
+  head->prev = e;
+  return SUCCESS;
+}
 /**
  * Remove an element out of linked list
  * @param e : Removed element
@@ -183,6 +195,16 @@ int linked_list_man_insert (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
   linked_list_remove(e);
   if (lm->conf & LL_CONF_STORE_ENTRY) {
     try ( linked_list_insert(&lm->entries, e) );
+  }
+  return SUCCESS;
+}
+
+int linked_list_man_insert_head (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
+  check_null_pointer(lm);
+  check_null_pointer(e);
+  linked_list_remove(e);
+  if (lm->conf & LL_CONF_STORE_ENTRY) {
+    try ( linked_list_insert_head(&lm->entries, e) );
   }
   return SUCCESS;
 }

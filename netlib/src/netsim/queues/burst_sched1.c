@@ -42,6 +42,7 @@ static int bs1_find_firstfit_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
     *p = newp;
   } else {
     // find reasonable requests
+    int count = 0;
     packet_list_reset_browsing(&fq->waiting_packets);
     for (; (newp = packet_list_get_next(&fq->waiting_packets)) != NULL;) {
       if (newp->info.burst + total_burst <= fq->max_executing) {
@@ -49,6 +50,11 @@ static int bs1_find_firstfit_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
         *p = newp;
         packet_list_reset_browsing(&fq->waiting_packets);
         break;
+      }
+      if (fq->max_window_size > 0) {
+        count++;
+        if (count >= fq->max_window_size)
+          break;
       }
     }
   }
@@ -87,7 +93,7 @@ static int bs1_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
  * @param max_waiting: Maximum number of waiting packets (negative value ~ infinite)
  * @return Error code (see more in def.h and error.h)
  */
-int burst_sched1_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
+int burst_sched1_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting, int window) {
 
   if (! *q_fifo) {
     *q_fifo = malloc_gc(sizeof(QUEUE_TYPE));
@@ -95,7 +101,7 @@ int burst_sched1_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) 
       return ERR_MALLOC_FAIL;
   }
   memset(*q_fifo, 0, sizeof(QUEUE_TYPE));
-  burst_sched1_setup(*q_fifo, max_executing, max_waiting);
+  burst_sched1_setup(*q_fifo, max_executing, max_waiting, window);
   return SUCCESS;
 }
 
@@ -106,10 +112,15 @@ int burst_sched1_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) 
  * @param max_waiting: Maximum number of waiting packets (negative value ~ infinite)
  * @return Error code (see more in def.h and error.h)
  */
-int burst_sched1_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
-  check_null_pointer(q_fifo);
-  burst_fifo_setup(q_fifo, max_executing, max_waiting);
-  q_fifo->select_waiting_packet = bs1_select_waiting_packet;
-  q_fifo->is_servable = bs1_is_servable;
+int burst_sched1_setup (QUEUE_TYPE *q, int max_executing, int max_waiting, int window) {
+  BURST_QINFO *fq = NULL;
+  check_null_pointer(q);
+  burst_fifo_setup(q, max_executing, max_waiting);
+  fq = (BURST_QINFO *)q->info;
+  q->type = QUEUE_BURST_SCHED1;
+  fq->max_window_size = window;
+  q->select_waiting_packet = bs1_select_waiting_packet;
+  q->is_servable = bs1_is_servable;
   return SUCCESS;
 }
+

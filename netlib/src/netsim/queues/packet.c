@@ -78,6 +78,15 @@ int packet_list_insert_packet (PACKET_LIST *pf, PACKET *p) {
   return SUCCESS;
 }
 
+int packet_list_insert_head (PACKET_LIST *pf, PACKET *p) {
+  check_null_pointer(pf);
+  check_null_pointer(p);
+  try ( linked_list_man_insert_head(&pf->list, &p->list_node) );
+  pf->size++;
+  pf->total_burst+= p->info.burst;
+  return SUCCESS;
+}
+
 /**
  * Remove one packet out of packet list.
  * @param pf : packet list

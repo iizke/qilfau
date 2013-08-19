@@ -44,6 +44,8 @@ BABSQ_CONFIG babs_conf;
 %token QUEUE_KIND
 %token BURST_FIFO_QUEUE
 %token BURST_SCHED1_QUEUE
+%token BURST_SCHEDWIN_QUEUE
+%token QUEUE_WINDOW
 %token QUEUE_MAXLENGTH
 %token QUEUE_SERVERS
 %token SERVICE_TYPE;
@@ -139,7 +141,9 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| QUEUE_KIND EQ INTNUM { babs_conf.queue_conf.type = $3; }
 		| QUEUE_KIND EQ BURST_FIFO_QUEUE { babs_conf.queue_conf.type = QUEUE_BURST_FIFO; }
 		| QUEUE_KIND EQ BURST_SCHED1_QUEUE { babs_conf.queue_conf.type = QUEUE_BURST_SCHED1; }
+		| QUEUE_KIND EQ BURST_SCHEDWIN_QUEUE { babs_conf.queue_conf.type = QUEUE_BURST_SCHEDWIN; }
 		| QUEUE_SERVERS EQ INTNUM { babs_conf.queue_conf.num_servers = $3; }
+		| QUEUE_WINDOW EQ INTNUM { babs_conf.queue_conf.max_window_size = $3; }
 		| SERVICE_TYPE EQ INTNUM { babs_conf.service_conf.type = $3; }
 		| SERVICE_TYPE EQ R_MARKOV {babs_conf.service_conf.type = RANDOM_MARKOVIAN; }
 		| SERVICE_TYPE EQ R_MMPP {babs_conf.service_conf.type = RANDOM_MMPP; }
@@ -156,9 +160,9 @@ exp:      ARRIVAL_TYPE EQ INTNUM { babs_conf.arrival_conf.type = $3; }
 		| SERVICE_SAVETO EQ STRING {babs_conf.service_conf.to_file = fopen($3, "w+");}
 		| SERVICE_LOADFROM EQ STRING {babs_conf.service_conf.from_file = fopen($3, "r");}
 		| SERVICE_MEAN EQ REALNUM { if (random_dist_normal_set_mean (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
-                | SERVICE_MEAN EQ INTNUM { if (random_dist_normal_set_mean (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
-                | SERVICE_SDEV EQ REALNUM { if (random_dist_normal_set_sdev (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
-                | SERVICE_SDEV EQ INTNUM { if (random_dist_normal_set_sdev (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }		
+        | SERVICE_MEAN EQ INTNUM { if (random_dist_normal_set_mean (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
+        | SERVICE_SDEV EQ REALNUM { if (random_dist_normal_set_sdev (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }
+        | SERVICE_SDEV EQ INTNUM { if (random_dist_normal_set_sdev (&babs_conf.service_conf.distribution, $3) < 0) exit(1); }		
 		| DEPARTURE_SAVETO EQ STRING { babs_conf.queue_conf.out_file = fopen($3, "w+");}
 		| STOP_MAXTIME EQ INTNUM { babs_conf.stop_conf.max_time = $3; }
 		| STOP_MAXARRIVAL EQ INTNUM { babs_conf.stop_conf.max_arrival = $3; }
