@@ -11,10 +11,45 @@
 #include <string.h>
 #include "error.h"
 #include "burst_queue.h"
+#include "optimal/knapsack.h"
 
+static int bsw_rearrange_waiting_packet (QUEUE_TYPE *q) {
+  int i = 0, count = 0;
+  KNAPSACK01_T ks;
+  BURST_QINFO *fq = NULL;
+  check_null_pointer(q);
+  fq = (BURST_QINFO*)q->info;
+  if (fq->waiting_packets.size < fq->max_window_size)
+    fq->window = fq->waiting_packets.size;
+  else fq->window = fq->max_window_size;
+  // Describe problem using knapsack01 algorithm
+  knapsack01_setup(&ks, fq->max_executing - fq->executing_packets.total_burst, fq->window);
+  packet_list_reset_browsing(&fq->waiting_packets);
+  for (i = 0; i < fq->window; i++) {
+    PACKET * p = packet_list_get_next(&fq->waiting_packets);
+    if (p) knapsack01_insert_item(&ks, p->info.burst, (p->info.burst));
+  }
+  packet_list_reset_browsing(&fq->waiting_packets);
+  knapsack01_solve2(&ks);
+  // rearrage packet followed by knapsack solution
+  packet_list_reset_browsing(&fq->waiting_packets);
+  for (i = 0; i < fq->window; i++) {
+    PACKET * p = packet_list_get_next(&fq->waiting_packets);
+    if ((ks.items)[i].is_chosen == 1) {
+      // let packet in the first position
+      packet_list_remove_packet(&fq->waiting_packets, p);
+      packet_list_insert_head(&fq->waiting_packets, p);
+      count++;
+    }
+  }
+//  if (count == 0 && fq->window < fq->max_window_size) fq->window = 0;
+//  else
+  if (count > 0 && count < fq->window) fq->window = count + 1;
+  packet_list_reset_browsing(&fq->waiting_packets);
+  return SUCCESS;
+}
 /**
- * If the first request in the waiting list could not be served,
- * find other reasonable request in this list
+ * Find packet that optimizing total burst
  * @param q : FIFO queue
  * @param p : selected packet (output)
  * @return Error code (more in def.h and error.h)
@@ -28,8 +63,8 @@ static int bsw_find_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   check_null_pointer(p);
   *p = NULL;
   fq = (BURST_QINFO*)q->info;
-  packet_list_get_first(&fq->waiting_packets, &newp);
   total_burst = fq->executing_packets.total_burst;
+  packet_list_get_first(&fq->waiting_packets, &newp);
   if (newp) burst = newp->info.burst;
   if (fq->max_executing < 0){
     // infinite executing capacity
@@ -37,19 +72,23 @@ static int bsw_find_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
     return SUCCESS;
   }
 
-  if (total_burst + burst <= fq->max_executing) {
-    // choose the first request in waiting list
-    *p = newp;
-  } else {
-    // find reasonable requests
-    packet_list_reset_browsing(&fq->waiting_packets);
-    for (; (newp = packet_list_get_next(&fq->waiting_packets)) != NULL;) {
-      if (newp->info.burst + total_burst <= fq->max_executing) {
-        // choose this packet to go first
-        *p = newp;
-        packet_list_reset_browsing(&fq->waiting_packets);
-        break;
-      }
+//  if (total_burst + burst <= fq->max_executing) {
+//    // choose the first request in waiting list
+//    *p = newp;
+//  }
+//
+//  else
+  {
+    //if (fq->window <= 0)
+      bsw_rearrange_waiting_packet(q);
+
+    burst = 0;
+    packet_list_get_first(&fq->waiting_packets, &newp);
+    if (newp) burst = newp->info.burst;
+
+    if (total_burst + burst <= fq->max_executing) {
+      // choose the first request in waiting list
+      *p = newp;
     }
   }
   return SUCCESS;
@@ -66,7 +105,7 @@ static int bsw_is_servable (QUEUE_TYPE *q) {
   check_null_pointer(q);
   fq = (BURST_QINFO*)q->info;
   bsw_find_waiting_packet(q, &p);
-  return (fq->max_executing < 0) ? 1 : ((p) ? 1 : 0);
+  return (fq->max_executing < 0) ? 1 : ((p != NULL) ? 1 : 0);
 }
 
 static int bsw_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
@@ -76,7 +115,10 @@ static int bsw_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   *p = NULL;
   fq = (BURST_QINFO*)q->info;
   bsw_find_waiting_packet(q, p);
-  packet_list_remove_packet(&fq->waiting_packets, *p);
+  if ((*p) != NULL) {
+    packet_list_remove_packet(&fq->waiting_packets, *p);
+    fq->window--;
+  }
   return SUCCESS;
 }
 
@@ -87,7 +129,7 @@ static int bsw_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
  * @param max_waiting: Maximum number of waiting packets (negative value ~ infinite)
  * @return Error code (see more in def.h and error.h)
  */
-int burst_schedwin_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting) {
+int burst_schedwin_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting, int window) {
 
   if (! *q_fifo) {
     *q_fifo = malloc_gc(sizeof(QUEUE_TYPE));
@@ -95,7 +137,7 @@ int burst_schedwin_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting
       return ERR_MALLOC_FAIL;
   }
   memset(*q_fifo, 0, sizeof(QUEUE_TYPE));
-  burst_schedwin_setup(*q_fifo, max_executing, max_waiting);
+  burst_schedwin_setup(*q_fifo, max_executing, max_waiting, window);
   return SUCCESS;
 }
 
@@ -106,10 +148,14 @@ int burst_schedwin_init (QUEUE_TYPE **q_fifo, int max_executing, int max_waiting
  * @param max_waiting: Maximum number of waiting packets (negative value ~ infinite)
  * @return Error code (see more in def.h and error.h)
  */
-int burst_schedwin_setup (QUEUE_TYPE *q, int max_executing, int max_waiting) {
+int burst_schedwin_setup (QUEUE_TYPE *q, int max_executing, int max_waiting, int window) {
+  BURST_QINFO *queue_info = NULL;
   check_null_pointer(q);
   // Inheritance of burst-fifo
   burst_fifo_setup(q, max_executing, max_waiting);
+  queue_info = (BURST_QINFO*)q->info;
+  queue_info->max_window_size = window;
+  q->type = QUEUE_BURST_SCHEDWIN;
   q->select_waiting_packet = bsw_select_waiting_packet;
   q->is_servable = bsw_is_servable;
   return SUCCESS;

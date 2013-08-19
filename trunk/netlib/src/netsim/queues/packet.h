@@ -88,6 +88,7 @@ int packet_init (PACKET *p);
 int packet_list_init (PACKET_LIST *el, int conf);
 int packet_list_new_packet (PACKET_LIST *el, PACKET **e);
 int packet_list_insert_packet (PACKET_LIST *el, PACKET *e);
+int packet_list_insert_head (PACKET_LIST *el, PACKET *e);
 int packet_list_remove_packet (PACKET_LIST *el, PACKET *e);
 int packet_list_get_first (PACKET_LIST *el, PACKET **e);
 int packet_list_reset_browsing(PACKET_LIST *el);

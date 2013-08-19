@@ -26,7 +26,9 @@ int knapsack01_setup (KNAPSACK01_T *, long c, int n);
 
 int knapsack01_set_item (KNAPSACK01_T*, int id, long weight, double value);
 int knapsack01_insert_item (KNAPSACK01_T*, long weight, double value);
-long knapsack01_solve (KNAPSACK01_T *ks);
+long knapsack01_solve1 (KNAPSACK01_T *ks);
+long knapsack01_solve2 (KNAPSACK01_T *ks);
+
 int knapsack01_test ();
 
 #endif /* KNAPSACK_H_ */

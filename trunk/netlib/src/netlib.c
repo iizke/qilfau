@@ -59,9 +59,11 @@ int check_net_queue() {
 
 int check_babsq () {
   //netsim_start_thread("src/netsim/conf/test.conf");
-  babs_start("src/netsim/conf/test_babs.conf");
-  printf("Check BABS Queue with Sched1 -----------------\n");
-  babs_start("src/netsim/conf/test_babs_sched1.conf");
+//  babs_start("src/netsim/conf/test_babs.conf");
+//  printf("Check BABS Queue with Sched1 -----------------\n");
+//  babs_start("src/netsim/conf/test_babs_sched1.conf");
+  printf("Check BABS Queue with SchedWin -----------------\n");
+  babs_start("src/netsim/conf/test_babs_schedwin.conf");
   return 0;
 }
 
@@ -96,10 +98,10 @@ int main (int nargs, char** args) {
   //check_net_queue();
   //test_gen_distribution();
 
-  //printf("CHECK BABS_QUEUE -------------------------\n");
-  //check_babsq();
+  printf("CHECK BABS_QUEUE -------------------------\n");
+  check_babsq();
 
-  knapsack01_test();
+  //knapsack01_test();
   trash_clean();
   return SUCCESS;
 }

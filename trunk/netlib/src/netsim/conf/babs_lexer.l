@@ -45,8 +45,11 @@ burst.sdev					return BURST_SDEV;
 queue.maxlength				return QUEUE_MAXLENGTH;
 queue.servers				return QUEUE_SERVERS;
 queue.type					return QUEUE_KIND;
+queue.window				return QUEUE_WINDOW;
 QUEUE_BURST_FIFO			return BURST_FIFO_QUEUE;
 QUEUE_BURST_SCHED1			return BURST_SCHED1_QUEUE;
+QUEUE_BURST_SCHEDWIN		return BURST_SCHEDWIN_QUEUE;
+
 service.type				return SERVICE_TYPE;
 service.lambda				return SERVICE_LAMBDA;
 service.to					return SERVICE_TO;

@@ -75,6 +75,8 @@ typedef struct queue_config {
   int num_servers;
   /// maximum number of clients allowing to wait in a system
   int max_waiters;
+  /// max window size to re-arrange packets in waiting list
+  int max_window_size;
   /// file name used to store event of departure flow
   FILE *out_file;
 } QUEUE_CONF;

@@ -31,6 +31,7 @@ typedef struct burst_queue {
   int state;
   /// Find the optimal solution within a Window size
   int window;
+  int max_window_size;
   /// Maximum number of executing packets
   long max_executing;
   /// Maximum number of waiting packets
@@ -42,6 +43,10 @@ typedef struct burst_queue {
 int burst_fifo_init (QUEUE_TYPE **q, int max_executing, int max_waiting);
 int burst_fifo_setup (QUEUE_TYPE *q, int max_executing, int max_waiting);
 
-int burst_sched1_init (QUEUE_TYPE **q, int max_executing, int max_waiting);
-int burst_sched1_setup (QUEUE_TYPE *q, int max_executing, int max_waiting);
+int burst_sched1_init (QUEUE_TYPE **q, int max_executing, int max_waiting, int window);
+int burst_sched1_setup (QUEUE_TYPE *q, int max_executing, int max_waiting, int window);
+
+int burst_schedwin_init (QUEUE_TYPE **q, int max_executing, int max_waiting, int window);
+int burst_schedwin_setup (QUEUE_TYPE *q, int max_executing, int max_waiting, int window);
+
 #endif /* BURST_FIFO_H_ */
