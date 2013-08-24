@@ -34,6 +34,7 @@ int print_measurement (MEASURES *m) {
   print_statistical_value("Queue response time", &m->waittime, 0.999);
   print_statistical_value("service time", &m->servtime, 0.999);
   print_statistical_value("inter-arrival time", &m->interarrival_time, 0.999);
+  print_statistical_value("Effective usage", &m->eutil, 0.999);
   print_statistical_value("Burst", &m->burst, 0.999);
 
   printf("%20s : %d \n", "total arrival",(int)m->total_arrivals);
@@ -41,7 +42,7 @@ int print_measurement (MEASURES *m) {
   printf("%20s : %d \n", "total dropped", (int)m->total_dropped);
   printf("%20s : %.3f \n", "total time", m->total_time);
   printf("%20s : %4.5f \n","throughput", m->total_departures/m->total_time);
-  printf("%20s : %4.5f \n","utilization", (m->busy_time / m->total_time));
+  printf("%20s : %4.5f \n","Busy/total time", (m->busy_time / m->total_time));
   //printf("%20s : %4.5f \n","utilization", (m->total_departures * m->servtime.avg / m->total_time));
   printf("%20s : %4.5f \n","drop probability", (float)m->total_dropped/(float)m->total_arrivals);
 
@@ -65,6 +66,7 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
   case PACKET_STATE_PROCESSING:
     stat_num_new_sample(&m->waittime, p->info.stime.real - p->info.atime.real);
     stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) + 1, curr_time.real);
+    stat_num_new_time_sample(&m->eutil, (qt->get_active_servers(qt) - p->info.burst)/qt->get_max_servers(qt), curr_time.real);
     break;
   case PACKET_STATE_WAITING:
     stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) - 1, curr_time.real);
@@ -86,6 +88,7 @@ int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time) {
       m->busy_time += (curr_time.real - m->last_idle_time);
       m->last_idle_time = curr_time.real;
     }
+    stat_num_new_time_sample(&m->eutil, (qt->get_active_servers(qt) + p->info.burst)/qt->get_max_servers(qt), curr_time.real);
 
     //stat_num_new_time_sample(&m->queue_len, qt->get_waiting_length(qt) + 1, curr_time.real);
     //stat_num_new_sample(&m->waittime, curr_time.real - p->info.atime.real);

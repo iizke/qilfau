@@ -13,7 +13,7 @@
 #include "burst_queue.h"
 #include "optimal/knapsack.h"
 
-static int bsw_rearrange_waiting_packet (QUEUE_TYPE *q) {
+int bsw_rearrange_waiting_packet (QUEUE_TYPE *q) {
   int i = 0, count = 0;
   KNAPSACK01_T ks;
   BURST_QINFO *fq = NULL;
@@ -28,33 +28,38 @@ static int bsw_rearrange_waiting_packet (QUEUE_TYPE *q) {
   for (i = 0; i < fq->window; i++) {
     PACKET * p = packet_list_get_next(&fq->waiting_packets);
     if (p) knapsack01_insert_item(&ks, p->info.burst, (p->info.burst));
+    else iprint(LEVEL_ERROR,"Null Packet\n");
   }
   packet_list_reset_browsing(&fq->waiting_packets);
   knapsack01_solve2(&ks);
   // rearrage packet followed by knapsack solution
-  packet_list_reset_browsing(&fq->waiting_packets);
+  //packet_list_reset_browsing(&fq->waiting_packets);
   for (i = 0; i < fq->window; i++) {
     PACKET * p = packet_list_get_next(&fq->waiting_packets);
-    if ((ks.items)[i].is_chosen == 1) {
+    if ((ks.items)[i].is_chosen == 1 && (ks.items)[i].weight == p->info.burst) {
       // let packet in the first position
-      packet_list_remove_packet(&fq->waiting_packets, p);
-      packet_list_insert_head(&fq->waiting_packets, p);
+      packet_list_move_head(&fq->waiting_packets, p);
       count++;
+    } else {
+      if ((ks.items)[i].weight != p->info.burst)
+        iprint(LEVEL_ERROR, "Mismatch knapsack and waiting list item\n");
     }
   }
 //  if (count == 0 && fq->window < fq->max_window_size) fq->window = 0;
 //  else
   if (count > 0 && count < fq->window) fq->window = count + 1;
   packet_list_reset_browsing(&fq->waiting_packets);
+  gc_free(ks.items);
   return SUCCESS;
 }
+
 /**
  * Find packet that optimizing total burst
  * @param q : FIFO queue
  * @param p : selected packet (output)
  * @return Error code (more in def.h and error.h)
  */
-static int bsw_find_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
+int bsw_find_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   BURST_QINFO *fq = NULL;
   PACKET * newp = NULL;
   long total_burst = 0;
@@ -63,34 +68,24 @@ static int bsw_find_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   check_null_pointer(p);
   *p = NULL;
   fq = (BURST_QINFO*)q->info;
-  total_burst = fq->executing_packets.total_burst;
-  packet_list_get_first(&fq->waiting_packets, &newp);
-  if (newp) burst = newp->info.burst;
   if (fq->max_executing < 0){
     // infinite executing capacity
     *p = newp;
     return SUCCESS;
   }
 
-//  if (total_burst + burst <= fq->max_executing) {
-//    // choose the first request in waiting list
-//    *p = newp;
-//  }
-//
-//  else
-  {
-    //if (fq->window <= 0)
-      bsw_rearrange_waiting_packet(q);
+  bsw_rearrange_waiting_packet(q);
 
-    burst = 0;
-    packet_list_get_first(&fq->waiting_packets, &newp);
-    if (newp) burst = newp->info.burst;
+  burst = 0;
+  total_burst = fq->executing_packets.total_burst;
+  packet_list_get_first(&fq->waiting_packets, &newp);
+  if (newp) burst = newp->info.burst;
 
-    if (total_burst + burst <= fq->max_executing) {
-      // choose the first request in waiting list
-      *p = newp;
-    }
+  if (total_burst + burst <= fq->max_executing) {
+    // choose the first request in waiting list
+    *p = newp;
   }
+
   return SUCCESS;
 }
 
@@ -99,16 +94,24 @@ static int bsw_find_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
  * @param q : Burst queue type
  * @return 1 if this queue is ready to process a packet
  */
-static int bsw_is_servable (QUEUE_TYPE *q) {
+int bsw_is_servable (QUEUE_TYPE *q) {
   BURST_QINFO *fq = NULL;
   PACKET *p = NULL;
+  long burst = 0;
   check_null_pointer(q);
   fq = (BURST_QINFO*)q->info;
   bsw_find_waiting_packet(q, &p);
-  return (fq->max_executing < 0) ? 1 : ((p != NULL) ? 1 : 0);
+  burst = fq->executing_packets.total_burst;
+  if (p) burst += p->info.burst;
+  //return (fq->max_executing < 0) ? 1 : ((p != NULL && burst <= fq->max_executing) ? 1 : 0);
+  //return (fq->max_executing < 0) ? 1 : ((p != NULL) ? 1 : 0);
+  //iprint(LEVEL_ERROR, "servable: max %d, pburst %d p %d\n", fq->max_executing, burst, p);
+  if (fq->max_executing < 0) return 1;
+  if (p) return 1;
+  return 0;
 }
 
-static int bsw_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
+int bsw_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   BURST_QINFO *fq = NULL;
   check_null_pointer(q);
   check_null_pointer(p);
@@ -116,8 +119,8 @@ static int bsw_select_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   fq = (BURST_QINFO*)q->info;
   bsw_find_waiting_packet(q, p);
   if ((*p) != NULL) {
-    packet_list_remove_packet(&fq->waiting_packets, *p);
-    fq->window--;
+    packet_list_remove_packet(&fq->waiting_packets, (*p));
+    //fq->window--;
   }
   return SUCCESS;
 }

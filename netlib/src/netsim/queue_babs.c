@@ -168,11 +168,25 @@ static int babs_setup_burst (BABSQ_STATE *state, RANDOM_CONF *burst_conf) {
  * @return Error code (see more in def.h and error.h)
  */
 static int babs_process_packet (BABSQ_CONFIG *conf, BABSQ_STATE *state) {
-  QUEUE_TYPE *qt = state->queues.curr_queue;
+  QUEUE_TYPE *qt = NULL;
   EVENT *e = NULL;
   PACKET *p = NULL;
+  int ret = 0;
 
-  qt->select_waiting_packet(qt, &p);
+  qt = state->queues.curr_queue;
+  ret = qt->select_waiting_packet(qt, &p);
+  if (p == NULL) {
+    // stop here
+    iprint(LEVEL_ERROR, "p is null\n");
+    ret = qt->is_servable(qt);
+    ret = qt->get_waiting_length(qt);
+    bsw_find_waiting_packet (qt, &p);
+    bsw_find_waiting_packet (qt, &p);
+    bsw_find_waiting_packet (qt, &p);
+    bsw_find_waiting_packet (qt, &p);
+
+  }
+
   p->info.stime.real = state->curr_time.real;
   qt->process_packet(qt, p);
   measurement_collect_data(&state->measurement, p, state->curr_time);
@@ -219,7 +233,7 @@ int babs_packet_from_event (EVENT *e, PACKET *p) {
 int babs_process_arrival (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) {
   PACKET *packet = NULL;
   QUEUE_TYPE *qt = state->queues.curr_queue;
-  int burst = 0;
+  int burst = 0, servable = 0, wlen = 0;
 
   try ( babs_update_time(e, state) );
   try ( babs_new_packet(state, &packet) );
@@ -235,8 +249,18 @@ int babs_process_arrival (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) {
 
   babs_generate_arrival(conf, state);
 
-  while ((qt->is_servable(qt)) && (qt->get_waiting_length(qt) > 0))
+  servable = qt->is_servable(qt);
+  wlen = qt->get_waiting_length(qt);
+  while ((servable > 0) && (wlen > 0)) {
+//    if (servable <= 0 || wlen <= 0) {
+//      iprint(LEVEL_ERROR, "Impossible %d %d\n", servable, wlen);
+//      int ret = qt->get_waiting_length(qt);
+//      ret = qt->is_servable(qt);
+//    }
     babs_process_packet(conf, state);
+    servable = qt->is_servable(qt);
+    wlen = qt->get_waiting_length(qt);
+  }
 
   return SUCCESS;
 }
@@ -251,6 +275,7 @@ int babs_process_arrival (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) {
 int babs_process_end_service (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) {
   PACKET *packet = e->info.packet;
   QUEUE_TYPE *qt = state->queues.curr_queue;
+  int servable = 0, wlen = 0;
 
   try ( babs_update_time(e, state) );
   babs_packet_from_event(e, packet);
@@ -258,9 +283,19 @@ int babs_process_end_service (EVENT *e, BABSQ_CONFIG *conf, BABSQ_STATE *state) 
   measurement_collect_data(&state->measurement, packet, state->curr_time);
   try ( babs_free_packet(state, packet) );
 
-  while (qt->is_servable(qt) && (qt->get_waiting_length(qt) > 0))
-    babs_process_packet(conf, state);
+  servable = qt->is_servable(qt);
+  wlen = qt->get_waiting_length(qt);
+  while (servable > 0 && wlen > 0) {
+//    if (servable <= 0 || wlen <= 0) {
+//      iprint(LEVEL_ERROR, "Impossible %d %d\n", qt->is_servable(qt), qt->get_waiting_length(qt));
+//      int ret = qt->get_waiting_length(qt);
+//      ret = qt->is_servable(qt);
+//    }
 
+    babs_process_packet(conf, state);
+    servable = qt->is_servable(qt);
+    wlen = qt->get_waiting_length(qt);
+  }
   return SUCCESS;
 }
 

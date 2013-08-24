@@ -53,6 +53,7 @@ int linked_list_insert_head (LINKED_LIST *l, LINKED_LIST *e) {
   e->prev = l;
   e->next = head;
   head->prev = e;
+  //if (head == l->browsing_at) l->browsing_at = e;
   return SUCCESS;
 }
 /**
@@ -72,6 +73,7 @@ int linked_list_remove (LINKED_LIST *e) {
   next->prev = prev;
   e->next = e;
   e->prev = e;
+  e->browsing_at = e;
   return SUCCESS;
 }
 
@@ -218,9 +220,25 @@ int linked_list_man_insert_head (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
 int linked_list_man_remove (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
   check_null_pointer(lm);
   check_null_pointer(e);
-  try ( linked_list_remove(e) );
+  if (lm->entries.browsing_at == e)
+    lm->entries.browsing_at = e->prev;
+  linked_list_remove(e);
   if (lm->conf & LL_CONF_STORE_FREE) {
     try ( linked_list_insert(&lm->free_entries, e) );
+  }
+  return SUCCESS;
+}
+
+int linked_list_man_move_head (LINKED_LIST_MAN *lm, LINKED_LIST *e) {
+  LINKED_LIST * first = NULL;
+  check_null_pointer(lm);
+  check_null_pointer(e);
+  linked_list_man_get_first(lm, &first);
+  if (e == first) return SUCCESS; // nothing happen, already at head of list
+  if (lm->conf & LL_CONF_STORE_ENTRY) {
+    if (lm->entries.browsing_at == e) lm->entries.browsing_at = e->prev;
+    linked_list_remove(e);
+    try ( linked_list_insert_head(&lm->entries, e) );
   }
   return SUCCESS;
 }
