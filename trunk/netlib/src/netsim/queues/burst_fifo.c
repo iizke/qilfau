@@ -193,6 +193,21 @@ static int bff_get_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   return SUCCESS;
 }
 
+static int bff_get_active_servers (QUEUE_TYPE* q) {
+  BURST_QINFO *fq = NULL;
+  check_null_pointer(q);
+  fq = (BURST_QINFO*)q->info;
+  return fq->executing_packets.total_burst;
+}
+
+static int bff_get_max_servers (QUEUE_TYPE* q) {
+  BURST_QINFO *fq = NULL;
+  check_null_pointer(q);
+  fq = (BURST_QINFO*)q->info;
+  return fq->max_executing;
+}
+
+
 /**
  * Initialization of FIFO queue, maybe allocate new memory if needed
  * @param q_fifo : A queue type based on FIFO queue
@@ -243,6 +258,8 @@ int burst_fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   q_fifo->get_executing_packet = bff_get_executing_packet;
   q_fifo->get_waiting_packet = bff_get_waiting_packet;
   q_fifo->find_executing_packet_to = bff_find_executing_packet_to;
+  q_fifo->get_active_servers = bff_get_active_servers;
+  q_fifo->get_max_servers = bff_get_max_servers;
   q_fifo->init(q_fifo);
   return SUCCESS;
 }

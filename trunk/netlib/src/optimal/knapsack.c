@@ -157,6 +157,12 @@ long knapsack01_solve2 (KNAPSACK01_T *ks){
   return m;
 }
 
+int knapsack01_clean (KNAPSACK01_T *ks) {
+  gc_free(ks->items);
+  gc_free(ks);
+  return SUCCESS;
+}
+
 int knapsack01_test () {
   KNAPSACK01_T ks;
   int i;

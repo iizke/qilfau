@@ -71,6 +71,7 @@ int linked_list_man_remove (LINKED_LIST_MAN *lm, LINKED_LIST *e);
 int linked_list_man_get_first(LINKED_LIST_MAN *l, LINKED_LIST **e);
 int linked_list_man_get_free_entry (LINKED_LIST_MAN *lm, LINKED_LIST **e);
 int linked_list_man_alloc (LINKED_LIST_MAN *l, LINKED_LIST **e, int size);
+linked_list_man_move_head(LINKED_LIST_MAN *lm, LINKED_LIST *e);
 int test_linked_list_man () ;
 
 #endif /* LINEAR_LIST_H_ */

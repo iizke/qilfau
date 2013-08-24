@@ -189,6 +189,20 @@ static int ff_get_waiting_packet (QUEUE_TYPE* q, PACKET ** p) {
   return SUCCESS;
 }
 
+static int ff_get_active_servers (QUEUE_TYPE* q) {
+  FIFO_QINFO *fq = NULL;
+  check_null_pointer(q);
+  fq = (FIFO_QINFO*)q->info;
+  return fq->executing_packets.size;
+}
+
+static int ff_get_max_servers (QUEUE_TYPE* q) {
+  FIFO_QINFO *fq = NULL;
+  check_null_pointer(q);
+  fq = (FIFO_QINFO*)q->info;
+  return fq->max_executing;
+}
+
 /**
  * Initialization of FIFO queue, maybe allocate new memory if needed
  * @param q_fifo : A queue type based on FIFO queue
@@ -239,6 +253,8 @@ int fifo_setup (QUEUE_TYPE *q_fifo, int max_executing, int max_waiting) {
   q_fifo->get_executing_packet = ff_get_executing_packet;
   q_fifo->get_waiting_packet = ff_get_waiting_packet;
   q_fifo->find_executing_packet_to = ff_find_executing_packet_to;
+  q_fifo->get_active_servers = ff_get_active_servers;
+  q_fifo->get_max_servers = ff_get_max_servers;
   q_fifo->init(q_fifo);
   return SUCCESS;
 }

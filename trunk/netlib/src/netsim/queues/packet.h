@@ -95,7 +95,7 @@ int packet_list_reset_browsing(PACKET_LIST *el);
 PACKET* packet_list_get_next(PACKET_LIST *el);
 int packet_list_is_empty (PACKET_LIST *l);
 int packet_list_config (PACKET_LIST *el, int conf);
-
+int packet_list_move_head (PACKET_LIST *pl, PACKET *p);
 int test_packet_list_new_packet ();
 int packet_list_test();
 int measurement_self_collect_data (PACKET *p) ;

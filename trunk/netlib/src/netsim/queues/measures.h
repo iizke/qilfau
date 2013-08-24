@@ -37,6 +37,8 @@ typedef struct measures {
   STAT_NUM interarrival_time;
   /// Statistical bust value
   STAT_NUM burst;
+  /// resource usage
+  STAT_NUM eutil;
   /// Last value of arrival time (temporary variable supporting to compute interarrival_time
   float last_arrival_time;
   double last_idle_time;

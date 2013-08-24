@@ -22,6 +22,7 @@ int packet_init (PACKET *p) {
   check_null_pointer(p);
   memset(p, 0, sizeof(PACKET));
   linked_list_init(&p->list_node);
+  p->info.burst = 1;
   return SUCCESS;
 }
 
@@ -71,7 +72,11 @@ int packet_list_new_packet (PACKET_LIST *pf, PACKET **p){
  */
 int packet_list_insert_packet (PACKET_LIST *pf, PACKET *p) {
   check_null_pointer(pf);
-  check_null_pointer(p);
+  //check_null_pointer(p);
+  if (!p){
+    iprint(LEVEL_ERROR, "p is NULL\n");
+    return ERR_POINTER_NULL;
+  }
   try ( linked_list_man_insert(&pf->list, &p->list_node) );
   pf->size++;
   pf->total_burst+= p->info.burst;
@@ -87,6 +92,12 @@ int packet_list_insert_head (PACKET_LIST *pf, PACKET *p) {
   return SUCCESS;
 }
 
+int packet_list_move_head (PACKET_LIST *pl, PACKET *p) {
+  check_null_pointer(pl);
+  check_null_pointer(p);
+  linked_list_man_move_head(&pl->list, &p->list_node);
+  return SUCCESS;
+}
 /**
  * Remove one packet out of packet list.
  * @param pf : packet list
@@ -96,7 +107,7 @@ int packet_list_insert_head (PACKET_LIST *pf, PACKET *p) {
 int packet_list_remove_packet (PACKET_LIST *pf, PACKET *p) {
   check_null_pointer(pf);
   check_null_pointer(p);
-  try ( linked_list_man_remove(&pf->list, &p->list_node) );
+  linked_list_man_remove(&pf->list, &p->list_node);
   pf->size--;
   pf->total_burst-=p->info.burst;
   return SUCCESS;
@@ -211,19 +222,47 @@ PACKET* packet_list_get_next(PACKET_LIST *el) {
 
 int packet_list_test () {
   PACKET_LIST pl;
-  PACKET p1, p2;
-  PACKET *p = NULL;
-  packet_list_init(&pl, LL_CONF_STORE_ENTRY | LL_CONF_STORE_FREE);
+  PACKET p1, p2, p3, p4, p5;
+  PACKET *p = NULL, *pt = NULL;
+  packet_list_init(&pl, LL_CONF_STORE_ENTRY);
   packet_init(&p1);
   packet_init(&p2);
+  packet_init(&p3);
+  packet_init(&p4);
+  packet_init(&p5);
   packet_list_insert_packet(&pl, &p1);
   packet_list_insert_packet(&pl, &p2);
+  packet_list_insert_packet(&pl, &p3);
+  packet_list_insert_packet(&pl, &p4);
+  packet_list_insert_packet(&pl, &p5);
   p1.info.id = 1;
   p2.info.id = 2;
+  p3.info.id = 3;
+  p4.info.id = 4;
+  p5.info.id = 5;
   packet_list_reset_browsing(&pl);
-
-  for(;p = packet_list_get_next(&pl);)
+  for(;p = packet_list_get_next(&pl);){
     printf("Packet id %d\n", p->info.id);
+    if (p->info.id == 3 || p->info.id == 1 || p->info.id == 4) {
+      pt = p;
+      packet_list_move_head(&pl, p);
+    }
+  }
 
+  printf("New list\n");
+  packet_list_reset_browsing(&pl);
+  for(;p = packet_list_get_next(&pl);) {
+    if (p->info.id == 4) pt = p;
+    printf("Packet id %d/%d\n", p->info.id, pl.size);
+  }
+
+  printf("New list\n");
+  //packet_list_remove_packet(&pl, pt);
+  packet_list_insert_head(&pl, pt);
+  packet_list_reset_browsing(&pl);
+  for(;p = packet_list_get_next(&pl);) {
+    if (p->info.id == 4) pt = p;
+    printf("Packet id %d/%d\n", p->info.id, pl.size);
+  }
   return SUCCESS;
 }
