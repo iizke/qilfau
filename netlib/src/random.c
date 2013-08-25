@@ -362,7 +362,7 @@ int random_dist_init_mmpp(RANDOM_DIST *rd, struct mmpp_params *p) {
 }
 
 double random_dist_gen_mmpp_r (RANDOM_DIST *rd) {
-  struct mmpp_params *p = NULL;
+  struct mmpp_r_params *p = NULL;
   check_null_pointer(rd);
   p = rd->params;
   return irand_gen_mmpp_r(p);
@@ -460,6 +460,22 @@ int random_dist_normal_set_mean (RANDOM_DIST *rd, float mean) {
   return SUCCESS;
 }
 
+float random_dist_normal_get_mean (RANDOM_DIST *rd) {
+  struct normal_param *param = NULL;
+  check_null_pointer(rd);
+  check_null_pointer(rd->params);
+  param = (struct normal_param*)rd->params;
+  return param->mean;
+}
+
+float random_dist_normal_get_sdev (RANDOM_DIST *rd) {
+  struct normal_param *param = NULL;
+  check_null_pointer(rd);
+  check_null_pointer(rd->params);
+  param = (struct normal_param*)rd->params;
+  return param->sdev;
+}
+
 int random_dist_normal_set_sdev (RANDOM_DIST *rd, float sdev) {
   struct normal_param *param = NULL;
   check_null_pointer(rd);
@@ -467,6 +483,55 @@ int random_dist_normal_set_sdev (RANDOM_DIST *rd, float sdev) {
   param = (struct normal_param*)rd->params;
   param->sdev = sdev;
   return SUCCESS;
+}
+
+float random_dist_get_mean (RANDOM_DIST *rd) {
+  float fval;
+  if (rd->gen == random_dist_gen_const || rd->gen == random_dist_gen_bernoulli || rd->gen == random_dist_gen_poisson){
+    double * val = (double*)(rd->params);
+    fval = (float)(*val);
+    return fval;
+  }
+  if (rd->gen == random_dist_gen_exp) {
+    double * val = (double*)(rd->params);
+    fval = (float)(1/ (*val));
+    return fval;
+  }
+  if (rd->gen == random_dist_gen_normal)
+    return random_dist_normal_get_mean(rd);
+  if (rd->gen == random_dist_gen_uniform){
+    struct uniform_params *up = rd->params;
+    fval = (float)((up->from + up->to)/2);
+    return fval;
+  }
+  return 0;
+}
+
+float random_dist_get_sdev (RANDOM_DIST *rd) {
+  if (rd->gen == random_dist_gen_const)
+    return 0;
+
+  if (rd->gen == random_dist_gen_bernoulli){
+    double pr = (double)(*(double*)(rd->params));
+    return (float)(sqrt(pr*(1-pr)));
+  }
+
+  if (rd->gen == random_dist_gen_poisson){
+    double l = (double)(*(double*)(rd->params));
+    return (float)(sqrt(l));
+  }
+
+  if (rd->gen == random_dist_gen_exp)
+    return (float)(1/ (*(double*)(rd->params)));
+
+  if (rd->gen == random_dist_gen_normal)
+    return random_dist_normal_get_sdev(rd);
+
+  if (rd->gen == random_dist_gen_uniform){
+    struct uniform_params *up = rd->params;
+    return (float)((up->to - up->from)/sqrt(12));
+  }
+  return 0;
 }
 
 

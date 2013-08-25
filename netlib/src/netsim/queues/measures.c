@@ -49,6 +49,15 @@ int print_measurement (MEASURES *m) {
   return SUCCESS;
 }
 
+int print_formated_measurement (MEASURES *m, char * str) {
+  check_null_pointer(m);
+  sprintf(str, "%4.5f %4.5f %4.5f %4.5f %4.5f %4.5f %4.5f %4.5f %4.5f %4.5f %4.5f", m->queue_len.avg, m->queue_len.sdev,stat_num_calc_confidence_interval(&m->queue_len, 0.999),
+      m->waittime.avg, m->waittime.sdev,stat_num_calc_confidence_interval(&m->waittime, 0.999),
+      m->total_departures/m->total_time, m->busy_time / m->total_time,
+      m->eutil.avg, m->eutil.sdev,stat_num_calc_confidence_interval(&m->eutil, 0.999));
+  return SUCCESS;
+}
+
 /**
  * Collect new data into measurement structure
  * @param m : measurement

@@ -109,7 +109,7 @@ int _allow_continue (CONFIG *conf, SYS_STATE_OPS *ops) {
       ((conf->arrival_conf.type == RANDOM_FILE) && (conf->arrival_conf.from_file) && (feof(conf->arrival_conf.from_file)))) {
 
     conf->arrival_conf.type = RANDOM_OTHER;
-    conf->arrival_conf.distribution.gen = NULL;
+    //conf->arrival_conf.distribution.gen = NULL;
     if (conf->stop_conf.queue_zero == STOP_QUEUE_ZERO) {
       QUEUE_TYPE *qt = NULL;
       qt = state->queues.curr_queue;
