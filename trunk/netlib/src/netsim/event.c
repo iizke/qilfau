@@ -221,6 +221,8 @@ int event_setup (EVENT *e, RANDOM_CONF *fc, TIME curr_time) {
     e->info.time.real = time;
     iprint(LEVEL_INFO, "Get time from file, value %f \n", e->info.time.real);
     break;
+  case RANDOM_OTHER:
+    return ERR_RANDOM_TYPE_FAIL;
 //  case RANDOM_UNIFORM:
 //    e->info.time.real = curr_time.real + gen_uniform(fc->from, fc->to);
 //    break;

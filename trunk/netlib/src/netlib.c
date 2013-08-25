@@ -57,13 +57,14 @@ int check_net_queue() {
   return SUCCESS;
 }
 
-int check_babsq () {
-    //netsim_start_thread("src/netsim/conf/test.conf");
-  babs_start("src/netsim/conf/test_babs.conf");
-  printf("Check BABS Queue with Sched1 -----------------\n");
-  babs_start("src/netsim/conf/test_babs_sched1.conf");
-  printf("Check BABS Queue with SchedWin -----------------\n");
-  babs_start("src/netsim/conf/test_babs_schedwin.conf");
+int check_babsq (char *file) {
+  if (file == NULL) {
+    babs_start("src/netsim/conf/test_babs.conf");
+    //printf("Check BABS Queue with Sched1 -----------------\n");
+    babs_start("src/netsim/conf/test_babs_sched1.conf");
+    //printf("Check BABS Queue with SchedWin -----------------\n");
+    babs_start("src/netsim/conf/test_babs_schedwin.conf");
+  } else babs_start(file);
   return 0;
 }
 
@@ -84,7 +85,7 @@ int main (int nargs, char** args) {
   signal(SIGINT, main_sig_handler);
   signal(SIGTERM, main_sig_handler);
   random_init();
-  printf("Seed value: %ld\n", irand_get_seed());
+  //printf("Seed value: %ld\n", irand_get_seed());
   //main_markov_parser(nargs, args);
 
   //printf("CHECK ONE_QUEUE -------------------------\n");
@@ -98,10 +99,9 @@ int main (int nargs, char** args) {
   //check_net_queue();
   //test_gen_distribution();
 
-  printf("CHECK BABS_QUEUE -------------------------\n");
-  check_babsq();
-  //packet_list_test();
-  //knapsack01_test();
+  //printf("CHECK BABS_QUEUE -------------------------\n");
+  if (nargs > 1) check_babsq(args[1]);
+  else check_babsq(NULL);
   trash_clean();
   return SUCCESS;
 }

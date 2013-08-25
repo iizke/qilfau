@@ -51,5 +51,9 @@ int random_dist_init_normal(RANDOM_DIST *rd, float mean, float sdev);
 int random_dist_init_normal_empty(RANDOM_DIST *rd);
 int random_dist_normal_set_mean (RANDOM_DIST *rd, float mean);
 int random_dist_normal_set_sdev (RANDOM_DIST *rd, float sdev);
+float random_dist_normal_get_mean (RANDOM_DIST *rd);
+float random_dist_normal_get_sdev (RANDOM_DIST *rd);
+float random_dist_get_mean (RANDOM_DIST *rd);
+float random_dist_get_sdev (RANDOM_DIST *rd);
 
 #endif /* RANDOM_H_ */

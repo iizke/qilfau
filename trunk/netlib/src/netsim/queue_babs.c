@@ -10,10 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <math.h>
 
 #include "error.h"
 #include "queues/burst_queue.h"
 #include "queue_babs.h"
+#include "random.h"
 
 extern BABSQ_CONFIG babs_conf;
 
@@ -70,6 +72,8 @@ static int babs_update_time (EVENT *e, BABSQ_STATE *state) {
 EVENT* babs_generate_arrival (BABSQ_CONFIG *conf, BABSQ_STATE *state) {
   EVENT *e = NULL;
   int error_code = SUCCESS;
+  if (state->stop_flag == 1) return NULL;
+
   event_list_new_event(&state->future_events, &e);
   e->info.type = EVENT_ARRIVAL;
   error_code = event_setup(e, &conf->arrival_conf, state->curr_time);
@@ -116,8 +120,9 @@ int babs_allow_continue (BABSQ_CONFIG *conf, SYS_STATE_OPS *ops) {
     /** these commands stops the process of simulation
      *  waiting for processing all events
      */
-    conf->arrival_conf.type = RANDOM_OTHER;
-    conf->arrival_conf.distribution.gen = NULL;
+    //conf->arrival_conf.type = RANDOM_OTHER;
+    //conf->arrival_conf.distribution.gen = NULL;
+    state->stop_flag = 1;
     if (conf->stop_conf.queue_zero == STOP_QUEUE_ZERO) {
       QUEUE_TYPE *qt = NULL;
       qt = state->queues.curr_queue;
@@ -171,21 +176,20 @@ static int babs_process_packet (BABSQ_CONFIG *conf, BABSQ_STATE *state) {
   QUEUE_TYPE *qt = NULL;
   EVENT *e = NULL;
   PACKET *p = NULL;
-  int ret = 0;
 
   qt = state->queues.curr_queue;
-  ret = qt->select_waiting_packet(qt, &p);
-  if (p == NULL) {
-    // stop here
-    iprint(LEVEL_ERROR, "p is null\n");
-    ret = qt->is_servable(qt);
-    ret = qt->get_waiting_length(qt);
-    bsw_find_waiting_packet (qt, &p);
-    bsw_find_waiting_packet (qt, &p);
-    bsw_find_waiting_packet (qt, &p);
-    bsw_find_waiting_packet (qt, &p);
-
-  }
+  qt->select_waiting_packet(qt, &p);
+//  if (p == NULL) {
+//    // stop here
+//    iprint(LEVEL_ERROR, "p is null\n");
+//    ret = qt->is_servable(qt);
+//    ret = qt->get_waiting_length(qt);
+//    bsw_find_waiting_packet (qt, &p);
+//    bsw_find_waiting_packet (qt, &p);
+//    bsw_find_waiting_packet (qt, &p);
+//    bsw_find_waiting_packet (qt, &p);
+//
+//  }
 
   p->info.stime.real = state->curr_time.real;
   qt->process_packet(qt, p);
@@ -425,6 +429,7 @@ int babs_state_init (BABSQ_STATE *state, BABSQ_CONFIG *conf) {
   measures_init (&state->measurement);
   queue_man_init(&state->queues);
   stat_num_init(&state->burst_trace);
+  state->stop_flag = 0;
 
   switch (conf->queue_conf.type){
   case QUEUE_BURST_SCHED1:
@@ -465,6 +470,33 @@ static void babs_sig_handler(int n) {
   exit(1);
 }
 
+static float babs_random_get_mean (RANDOM_CONF *conf) {
+  float val = 0;
+  switch (conf->type) {
+  case RANDOM_MARKOVIAN:
+  case RANDOM_POISSON:
+    val = (float)(conf->lambda);
+    break;
+  default:
+    val = random_dist_get_mean(&conf->distribution);
+    break;
+  }
+  return val;
+}
+
+static float babs_random_get_sdev (RANDOM_CONF *conf) {
+  float ret = 0;
+  switch (conf->type) {
+  case RANDOM_MARKOVIAN:
+    ret = (float)(sqrt(conf->lambda));
+    break;
+  default:
+    ret = random_dist_get_sdev(&conf->distribution);
+    break;
+  }
+  return ret;
+}
+
 /**
  * Main program. Do parse user configuration file, and run a chosen simulation
  * @param nargs : number of parameters
@@ -474,9 +506,12 @@ static void babs_sig_handler(int n) {
 int babs_start (char *conf_file) {
   BABSQ_STATE babs_state;
   SYS_STATE_OPS *ops = NULL;
+  char result[130];
 
   signal(SIGINT, babs_sig_handler);
   signal(SIGTERM, babs_sig_handler);
+
+  memset(result, 0, 130);
 
   random_init();
   try( config_parse_babs_file (conf_file) );
@@ -496,8 +531,16 @@ int babs_start (char *conf_file) {
   if (babs_state.curr_time.real > babs_state.measurement.last_idle_time)
     babs_state.measurement.busy_time += babs_state.curr_time.real - babs_state.measurement.last_idle_time;
 
-  print_measurement(&babs_state.measurement);
-  print_statistical_value("Burst-trace", &babs_state.burst_trace, 0.999);
+  //print_measurement(&babs_state.measurement);
+  //print_statistical_value("Burst-trace", &babs_state.burst_trace, 0.999);
+  print_formated_measurement(&babs_state.measurement, result);
+  float rho = babs_random_get_mean(&babs_conf.arrival_conf)/babs_random_get_mean(&babs_conf.service_conf);
+  float burst = babs_random_get_mean(&babs_conf.burst_conf);
+  float burst_sdev = babs_random_get_sdev(&babs_conf.burst_conf);
+
+  printf("%d %f %f %f %d %d %s\n", babs_conf.queue_conf.type, rho, burst, burst_sdev,
+      babs_conf.queue_conf.num_servers, babs_conf.queue_conf.max_window_size,
+      result);
   return SUCCESS;
 }
 

@@ -57,4 +57,5 @@ int measures_init (MEASURES *m);
 int print_measurement (MEASURES *m);
 int measurement_collect_data (MEASURES *m, PACKET *p, TIME curr_time);
 int measurement_merge (MEASURES *m1, MEASURES *m2);
+int print_formated_measurement (MEASURES *m, char * str);
 #endif /* MEASURES_H_ */
