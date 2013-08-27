@@ -30,7 +30,8 @@ src/netlib.d: ../src/netlib.c ../src/error.h ../src/list/linked_list.h \
  ../src/schedsim/queues/measures.h ../src/schedsim/queues/job.h \
  ../src/netsimv2/onequeue/onequeue.h \
  /home/iizke/workspace/netlib/src/netsimv2/des.h \
- /home/iizke/workspace/netlib/src/netsimv2/../netsim/conf/config.h
+ /home/iizke/workspace/netlib/src/netsimv2/../netsim/conf/config.h \
+ ../src/optimal/knapsack.h
 
 ../src/error.h:
 
@@ -127,3 +128,5 @@ src/netlib.d: ../src/netlib.c ../src/error.h ../src/list/linked_list.h \
 /home/iizke/workspace/netlib/src/netsimv2/des.h:
 
 /home/iizke/workspace/netlib/src/netsimv2/../netsim/conf/config.h:
+
+../src/optimal/knapsack.h:
