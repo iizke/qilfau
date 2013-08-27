@@ -15,6 +15,7 @@ RM := rm -rf
 -include src/ranlib/subdir.mk
 -include src/polirand/subdir.mk
 -include src/poligraph/subdir.mk
+-include src/optimal/subdir.mk
 -include src/netsimv2/onequeue/subdir.mk
 -include src/netsimv2/subdir.mk
 -include src/netsim/queues/subdir.mk

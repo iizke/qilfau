@@ -1,7 +1,7 @@
 src/netsim/queue_babs.d: ../src/netsim/queue_babs.c \
  /home/iizke/workspace/netlib/src/error.h \
  /home/iizke/workspace/netlib/src/list/linked_list.h \
- ../src/netsim/queues/burst_fifo.h ../src/netsim/queues/queue_man.h \
+ ../src/netsim/queues/burst_queue.h ../src/netsim/queues/queue_man.h \
  ../src/netsim/queues/packet.h /home/iizke/workspace/netlib/src/def.h \
  /home/iizke/workspace/netlib/src/list/linked_list.h \
  ../src/netsim/queues/measures.h \
@@ -23,7 +23,7 @@ src/netsim/queue_babs.d: ../src/netsim/queue_babs.c \
 
 /home/iizke/workspace/netlib/src/list/linked_list.h:
 
-../src/netsim/queues/burst_fifo.h:
+../src/netsim/queues/burst_queue.h:
 
 ../src/netsim/queues/queue_man.h:
 
